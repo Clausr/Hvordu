@@ -32,6 +32,12 @@ class HomeFragment : Fragment() {
         homeViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+
+        _binding!!.fab.setOnClickListener {
+
+//            CheckinBottomSheet()
+        }
+
         return root
     }
 

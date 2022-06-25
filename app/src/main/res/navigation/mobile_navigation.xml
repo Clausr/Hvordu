@@ -13,9 +13,10 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="dk.clausr.koncert.ui.dashboard.DashboardFragment"
+        android:name="dk.clausr.koncert.ui.widgets.CheckInFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
+    <!--    android:name="dk.clausr.koncert.ui.dashboard.DashboardFragment"-->
 
     <fragment
         android:id="@+id/navigation_notifications"

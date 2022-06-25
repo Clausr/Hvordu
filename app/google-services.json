@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1077745174222",
+    "project_id": "koncert-418d3",
+    "storage_bucket": "koncert-418d3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1077745174222:android:0b9cde1a08229f9c0d329f",
+        "android_client_info": {
+          "package_name": "dk.clausr.koncert"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1077745174222-2hhefums8n7nr9n2hjlndqp2hf0m86dp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWnf-34KM3fT420hHGBqcs7mt8Tl-atxo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1077745174222-2hhefums8n7nr9n2hjlndqp2hf0m86dp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
