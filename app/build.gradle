@@ -43,6 +43,7 @@ android {
 
 dependencies {
     implementation project(path: ':repo')
+    implementation project(path: ':core')
 
     //Hilt
     implementation "com.google.dagger:hilt-android:2.38.1"
