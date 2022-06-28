@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import dk.clausr.koncert.ui.compose.preview.PreviewColorPaletteProviderLightDark
 import dk.clausr.koncert.ui.compose.theme.KoncertColors
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
@@ -27,12 +26,20 @@ fun ConcertCard(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(16.dp)
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .padding(
+                horizontal = KoncertTheme.dimensions.padding16,
+                vertical = KoncertTheme.dimensions.padding8
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        KoncertText(text = artistName, modifier = Modifier.weight(1.0f))
-        KoncertText(text = venueName, style = KoncertTheme.typography.Small)
+        KoncertText(
+            text = artistName,
+            modifier = Modifier
+                .weight(1.0f)
+                .padding(end = KoncertTheme.dimensions.padding4)
+        )
+        KoncertText(text = "@$venueName", style = KoncertTheme.typography.Small)
     }
 }
 

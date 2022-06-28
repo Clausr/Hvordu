@@ -3,7 +3,7 @@ package dk.clausr.koncert.ui.compose.theme
 import androidx.compose.ui.graphics.Color
 
 val ColorPaletteLight = KoncertColors(
-    backgroundPrimary = Color(0xFFFFFFFF),
+    backgroundPrimary = Color(0xFFF7F7F7),
     backgroundSecondary = Color(0xFFFFFFFF),
     surfacePrimary = Color(0xFF000000),
     surfaceSecondary = Color(0xFFE9E9ED),

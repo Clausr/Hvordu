@@ -15,31 +15,10 @@ import timber.log.Timber
 fun AllConcerts(
     concertList: List<Concert>
 ) {
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                backgroundColor = MaterialTheme.colors.primary,
-//                title = { Text(text = stringResource(id = R.string.app_name)) }
-//            )
-//        }) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
-//            item {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .wrapContentHeight()
-//                        .padding(vertical = 25.dp),
-//                    horizontalArrangement = Arrangement.Start,
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Text(
-//                        text = "Hej med dig",
-//                        style = MaterialTheme.typography.h3
-//                    )
-//                }
-//            }
+
         items(concertList) { concert ->
             ConcertCard(
                 artistName = concert.artist.name,
@@ -47,8 +26,8 @@ fun AllConcerts(
                 onClick = { Timber.d("Clicked on ${concert}") }
             )
         }
-        }
-//    }
+    }
+
 }
 
 @Preview(name = "AllConcerts preview")
