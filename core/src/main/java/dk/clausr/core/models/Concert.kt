@@ -8,4 +8,6 @@ data class Concert(
     val date: Instant?,
     val review: String?,
 
-    )
+    ) {
+
+}

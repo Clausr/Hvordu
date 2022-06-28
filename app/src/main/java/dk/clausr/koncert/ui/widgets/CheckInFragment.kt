@@ -32,10 +32,10 @@ class CheckInFragment : Fragment() {
 
         binding.composeView.setContent {
             KoncertTheme {
-                val textState = vm.testFlow.collectAsState(initial = "")
-                Scaffold(modifier = Modifier.padding(16.dp)) {
-                    ArtistName(textState.value)
-                }
+//                val textState = vm.testFlow.collectAsState(initial = "")
+//                Scaffold(modifier = Modifier.padding(16.dp)) {
+//                    ArtistName(textState.value)
+//                }
             }
         }
 

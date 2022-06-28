@@ -10,6 +10,7 @@ enum class MusicGenre {
     Grunge,
     HipHop,
     Jazz,
+    MathCore,
     Metal,
     NewAge,
     Oldies,

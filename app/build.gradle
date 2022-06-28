@@ -24,7 +24,24 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+            applicationIdSuffix '.debug'
+        }
     }
+
+//    flavorDimensions "app"
+//    productFlavors {
+//        internal {
+//            dimension "app"
+//            applicationId 'com.lunarway.app.internal'
+//        }
+//        production {
+//            dimension "app"
+//            applicationId "com.lunarway.app"
+//        }
+//    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

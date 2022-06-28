@@ -13,10 +13,9 @@ class TestViewModel @Inject constructor(
 ) : ViewModel() {
 
     init {
-        Timber.d("TestViewModel created ${repo.getTestString()}")
     }
 
-    val testFlow = flow<String> {
-        emit("TestViewModel created ${repo.getTestString()}")
-    }
+//    val testFlow = flow<String> {
+//        emit("TestViewModel created ${repo.getTestString()}")
+//    }
 }
