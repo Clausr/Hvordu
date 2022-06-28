@@ -60,7 +60,7 @@ android {
 
 dependencies {
     implementation project(path: ':repo')
-    implementation project(path: ':core')
+    implementation project(':core')
 
     //Hilt
     implementation "com.google.dagger:hilt-android:2.38.1"
@@ -89,6 +89,8 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.1.1")
     // Integration with observables
     implementation("androidx.compose.runtime:runtime-livedata:1.1.1")
+
+    implementation "androidx.compose.material3:material3:1.0.0-alpha13"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

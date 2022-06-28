@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import dk.clausr.koncert.ui.theme.KoncertTheme
+import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
