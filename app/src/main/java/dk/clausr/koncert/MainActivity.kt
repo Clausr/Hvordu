@@ -10,15 +10,19 @@ import androidx.compose.material.icons.filled.PlaylistAddCheck
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LibraryMusic
 import androidx.compose.material3.*
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.koncert.databinding.ActivityMainBinding
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import dk.clausr.koncert.ui.home.AllConcertsContainer
 import dk.clausr.koncert.utils.extensions.setKoncertContent
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -42,16 +46,37 @@ class MainActivity : AppCompatActivity() {
                     .fillMaxHeight(),
                 containerColor = KoncertTheme.colors.backgroundPrimary,
                 bottomBar = {
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentDestination = navBackStackEntry?.destination
                     BottomAppBar(
                         containerColor = KoncertTheme.colors.backgroundSecondary,
                         contentColor = KoncertTheme.colors.surfacePrimary,
                         icons = {
-                            IconButton(onClick = {
-                                navController.navigate("home")
-                            }) {
+                            //TODO Put these screens into a sealed class .. and reuse logic
+                            IconButton(
+                                onClick = {
+                                    navController.navigate("home") {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        // Restore state when reselecting a previously selected item
+                                        restoreState = true
+                                    }
+                                }) {
                                 Icon(Icons.Outlined.Home, contentDescription = null)
                             }
-                            IconButton(onClick = { navController.navigate("fisk") }) {
+
+                            IconButton(onClick = {
+                                navController.navigate("fisk") {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    // Restore state when reselecting a previously selected item
+                                    restoreState = true
+                                }
+                            }) {
                                 Icon(
                                     Icons.Outlined.LibraryMusic,
                                     contentDescription = "Localized description",
@@ -70,7 +95,6 @@ class MainActivity : AppCompatActivity() {
                         }
                     )
                 },
-                floatingActionButtonPosition = FabPosition.End,
                 content = {
                     NavHost(navController = navController, modifier = Modifier.padding(it), startDestination = "home") {
                         composable("home") {
