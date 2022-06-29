@@ -32,7 +32,7 @@ class HomeFragment : Fragment() {
 
         binding.composeView.setContent {
             KoncertTheme {
-                AllConcerts(concertList = homeViewModel.concerts)
+//                AllConcerts(concertList = homeViewModel.concerts)
             }
         }
 

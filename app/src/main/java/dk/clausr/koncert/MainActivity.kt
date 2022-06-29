@@ -4,16 +4,20 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PlaylistAddCheck
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.LibraryMusic
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.koncert.databinding.ActivityMainBinding
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import dk.clausr.koncert.ui.home.AllConcertsContainer
 import dk.clausr.koncert.utils.extensions.setKoncertContent
 
 @AndroidEntryPoint
@@ -29,19 +33,6 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-//        val navView: BottomNavigationView = binding.navView
-
-//        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-//        val appBarConfiguration = AppBarConfiguration(
-//            setOf(
-//                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
-//            )
-//        )
-//        setupActionBarWithNavController(navController, appBarConfiguration)
-//        navView.setupWithNavController(navController)
-
         binding.composeView.setKoncertContent {
             val navController = rememberNavController()
 
@@ -56,33 +47,47 @@ class MainActivity : AppCompatActivity() {
                         contentColor = KoncertTheme.colors.surfacePrimary,
                         icons = {
                             IconButton(onClick = {
-//                                navController.navigate(R.id.navigation_home)
+                                navController.navigate("home")
                             }) {
-                                Icon(Icons.Filled.Check, contentDescription = null)
+                                Icon(Icons.Outlined.Home, contentDescription = null)
                             }
-                            IconButton(onClick = { /* doSomething() */ }) {
+                            IconButton(onClick = { navController.navigate("fisk") }) {
                                 Icon(
-                                    Icons.Filled.Edit,
+                                    Icons.Outlined.LibraryMusic,
                                     contentDescription = "Localized description",
                                 )
                             }
                         },
                         floatingActionButton = {
-                            // TODO(b/228588827): Replace with Secondary FAB when available.
                             FloatingActionButton(
                                 containerColor = KoncertTheme.colors.accent,
                                 contentColor = KoncertTheme.colors.white,
                                 onClick = { /* do something */ },
-                                elevation = BottomAppBarDefaults.floatingActionButtonElevation()
+                                elevation = BottomAppBarDefaults.FloatingActionButtonElevation
                             ) {
-                                Icon(Icons.Filled.Add, "Localized description")
+                                Icon(Icons.Filled.PlaylistAddCheck, "Localized description")
                             }
                         }
                     )
                 },
-            ) {
-                // Actual content goes here
-            }
+                floatingActionButtonPosition = FabPosition.End,
+                content = {
+                    NavHost(navController = navController, modifier = Modifier.padding(it), startDestination = "home") {
+                        composable("home") {
+                            AllConcertsContainer()
+                        }
+                        composable("fisk") {
+                            Surface(
+                                color = KoncertTheme.colors.negative, modifier = Modifier
+                                    .fillMaxHeight()
+                                    .fillMaxWidth()
+                            ) {
+
+                            }
+                        }
+                    }
+                }
+            )
         }
 //                    {
 //                        val navBackStackEntry by navController.currentBackStackEntryAsState()
