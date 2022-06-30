@@ -1,21 +1,33 @@
 package dk.clausr.koncert.ui.compose.theme
 
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.darkColorScheme
 
-val ColorPaletteDark = KoncertColors(
-    backgroundPrimary = Color(0xFF0D0D0F),
-    backgroundSecondary = Color(0xFF1A1A1C),
-    surfacePrimary = Color(0xFFFFFFFF),
-    surfaceSecondary = Color(0xFF272729),
-    surfaceTertiary = Color(0xFF3A3A3C),
-    surfaceQuaternary = Color(0xFF636366),
-    surfacePrimaryContrast = Color(0xFF000000),
-    textPrimary = Color(0xFFFFFFFF),
-    textSecondary = Color(0xFFCACACF),
-    accent = Color(0xFF1790FF),
-    positive = Color(0xFF2EE778),
-    negative = Color(0xFFFF4D4D),
-    attention = Color(0xFFFAA35A),
-    black = Color(0xFF000000),
-    white = Color(0xFFFFFFFF),
+val DarkColors = darkColorScheme(
+    primary = md_theme_dark_primary,
+    onPrimary = md_theme_dark_onPrimary,
+    primaryContainer = md_theme_dark_primaryContainer,
+    onPrimaryContainer = md_theme_dark_onPrimaryContainer,
+    secondary = md_theme_dark_secondary,
+    onSecondary = md_theme_dark_onSecondary,
+    secondaryContainer = md_theme_dark_secondaryContainer,
+    onSecondaryContainer = md_theme_dark_onSecondaryContainer,
+    tertiary = md_theme_dark_tertiary,
+    onTertiary = md_theme_dark_onTertiary,
+    tertiaryContainer = md_theme_dark_tertiaryContainer,
+    onTertiaryContainer = md_theme_dark_onTertiaryContainer,
+    error = md_theme_dark_error,
+    errorContainer = md_theme_dark_errorContainer,
+    onError = md_theme_dark_onError,
+    onErrorContainer = md_theme_dark_onErrorContainer,
+    background = md_theme_dark_background,
+    onBackground = md_theme_dark_onBackground,
+    surface = md_theme_dark_surface,
+    onSurface = md_theme_dark_onSurface,
+    surfaceVariant = md_theme_dark_surfaceVariant,
+    onSurfaceVariant = md_theme_dark_onSurfaceVariant,
+    outline = md_theme_dark_outline,
+    inverseOnSurface = md_theme_dark_inverseOnSurface,
+    inverseSurface = md_theme_dark_inverseSurface,
+    inversePrimary = md_theme_dark_inversePrimary,
+    surfaceTint = md_theme_dark_surfaceTint
 )

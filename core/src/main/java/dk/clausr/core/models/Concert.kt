@@ -7,7 +7,7 @@ data class Concert(
     val venue: Venue,
     val date: Instant?,
     val review: String?,
-
+    val warmup: List<Artist>? = null
     ) {
 
 }

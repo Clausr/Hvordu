@@ -5,15 +5,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import dk.clausr.koncert.ui.compose.preview.PreviewColorPaletteProviderLightDark
-import dk.clausr.koncert.ui.compose.theme.KoncertColors
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
-import dk.clausr.koncert.ui.compose.typography.KoncertText
 
 
 @Composable
@@ -33,22 +31,26 @@ fun ConcertCard(
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        KoncertText(
+        Text(
             text = artistName,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .weight(1.0f)
                 .padding(end = KoncertTheme.dimensions.padding4)
         )
-        KoncertText(text = "@$venueName", style = KoncertTheme.typography.Small)
+        Text(
+            text = "@$venueName",
+            style = MaterialTheme.typography.labelSmall
+        )
     }
 }
 
 @Preview
 @Composable
 fun Preview(
-    @PreviewParameter(PreviewColorPaletteProviderLightDark::class) palette: KoncertColors
+//    @PreviewParameter(PreviewColorPaletteProviderLightDark::class) palette: KoncertColors
 ) {
-    KoncertTheme(colorPalette = palette) {
+    KoncertTheme() {
         ConcertCard(
             artistName = "The Dillinger Escape Plan",
             venueName = "Voxhall",

@@ -19,7 +19,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.koncert.databinding.ActivityMainBinding
-import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import dk.clausr.koncert.ui.home.AllConcertsContainer
 import dk.clausr.koncert.utils.extensions.setKoncertContent
 
@@ -44,13 +43,11 @@ class MainActivity : AppCompatActivity() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(),
-                containerColor = KoncertTheme.colors.backgroundPrimary,
+                containerColor = MaterialTheme.colorScheme.background,
                 bottomBar = {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentDestination = navBackStackEntry?.destination
                     BottomAppBar(
-                        containerColor = KoncertTheme.colors.backgroundSecondary,
-                        contentColor = KoncertTheme.colors.surfacePrimary,
                         icons = {
                             //TODO Put these screens into a sealed class .. and reuse logic
                             IconButton(
@@ -85,8 +82,6 @@ class MainActivity : AppCompatActivity() {
                         },
                         floatingActionButton = {
                             FloatingActionButton(
-                                containerColor = KoncertTheme.colors.accent,
-                                contentColor = KoncertTheme.colors.white,
                                 onClick = { /* do something */ },
                                 elevation = BottomAppBarDefaults.FloatingActionButtonElevation
                             ) {
@@ -102,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         composable("fisk") {
                             Surface(
-                                color = KoncertTheme.colors.negative, modifier = Modifier
+                                color = MaterialTheme.colorScheme.error, modifier = Modifier
                                     .fillMaxHeight()
                                     .fillMaxWidth()
                             ) {
