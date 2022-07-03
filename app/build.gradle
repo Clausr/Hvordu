@@ -115,7 +115,7 @@ dependencies {
     implementation "androidx.compose.material3:material3:1.0.0-alpha14"
 
     // Accompanist
-//    implementation "com.google.accompanist:accompanist-systemuicontroller:0.24.13-rc"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.24.13-rc"
 
 
     testImplementation 'junit:junit:4.13.2'

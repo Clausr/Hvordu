@@ -4,7 +4,6 @@ import dk.clausr.core.models.Artist
 import dk.clausr.core.models.Concert
 import dk.clausr.core.models.MusicGenre
 import dk.clausr.core.models.Venue
-import java.time.Instant
 
 object ConcertMocks {
     val concertsMock = listOf(
@@ -37,6 +36,396 @@ object ConcertMocks {
             ),
             date = null,
             review = null
-        )
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
+        Concert(
+            artist = Artist(
+                name = "Rammstein",
+                debutYear = 1994,
+                country = "Germany",
+                genre = MusicGenre.Metal
+            ),
+            venue = Venue(
+                name = "Ceres Park",
+                city = "Aarhus",
+                "Denmark"
+            ),
+            date = null,
+            review = null
+        ),
     )
 }

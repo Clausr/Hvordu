@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 /**
  * A [Composable] providing the properties of KoncertTheme to the [content] passed.
@@ -39,11 +41,17 @@ fun KoncertTheme(
     val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val colorScheme = when {
         overrideColorScheme != null -> overrideColorScheme
-        dynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
-        dynamicColor && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
+        dynamicColor -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
         darkTheme -> DarkColors
         else -> LightColors
     }
+
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setSystemBarsColor(color = colorScheme.surfaceColorAtElevation(3.0.dp))
+//    systemUiController.setStatusBarColor(color = colorScheme.background)
 
     val dimens = KoncertDimens()
 
