@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlaylistAddCheck
 import androidx.compose.material.icons.outlined.Home
@@ -20,6 +21,8 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.koncert.databinding.ActivityMainBinding
 import dk.clausr.koncert.ui.home.AllConcertsContainer
+import dk.clausr.koncert.ui.home.BottomBarButton
+import dk.clausr.koncert.ui.screens.Screens
 import dk.clausr.koncert.utils.extensions.setKoncertContent
 
 
@@ -49,34 +52,12 @@ class MainActivity : AppCompatActivity() {
                     val currentDestination = navBackStackEntry?.destination
                     BottomAppBar(
                         icons = {
-                            //TODO Put these screens into a sealed class .. and reuse logic
-                            IconButton(
-                                onClick = {
-                                    navController.navigate("home") {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        // Restore state when reselecting a previously selected item
-                                        restoreState = true
-                                    }
-                                }) {
-                                Icon(Icons.Outlined.Home, contentDescription = null)
-                            }
-
-                            IconButton(onClick = {
-                                navController.navigate("fisk") {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    // Restore state when reselecting a previously selected item
-                                    restoreState = true
-                                }
-                            }) {
-                                Icon(
-                                    Icons.Outlined.LibraryMusic,
-                                    contentDescription = "Localized description",
+                            Screens.mainBottomBarItems.forEach { mainScreen ->
+                                BottomBarButton(
+                                    navController = navController,
+                                    route = mainScreen.route,
+                                    icon = mainScreen.bottomBarImage,
+                                    contentDescription = null
                                 )
                             }
                         },
@@ -91,11 +72,11 @@ class MainActivity : AppCompatActivity() {
                     )
                 },
                 content = {
-                    NavHost(navController = navController, modifier = Modifier.padding(it), startDestination = "home") {
-                        composable("home") {
+                    NavHost(navController = navController, modifier = Modifier.padding(it), startDestination = Screens.Overview.route) {
+                        composable(Screens.Overview.route) {
                             AllConcertsContainer()
                         }
-                        composable("fisk") {
+                        composable(Screens.Artists.route) {
                             Surface(
                                 color = MaterialTheme.colorScheme.error, modifier = Modifier
                                     .fillMaxHeight()
