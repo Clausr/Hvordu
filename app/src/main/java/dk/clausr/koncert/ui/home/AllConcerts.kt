@@ -1,19 +1,24 @@
 package dk.clausr.koncert.ui.home
 
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dk.clausr.core.models.Concert
 import dk.clausr.koncert.R
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
@@ -34,18 +39,20 @@ fun AllConcertsContainer(
 fun AllConcerts(
     concertList: List<Concert>
 ) {
-//    val concertList = homeViewModel.concerts.collectAsState(initial = listOf())
     val lazyListState = rememberLazyListState()
+    val systemUiController = rememberSystemUiController()
 
     val hasScrolled by remember {
         derivedStateOf {
             lazyListState.firstVisibleItemScrollOffset > 0
         }
     }
-    val appBarElevation by animateDpAsState(if (hasScrolled) 3.dp else 0.dp)
 
+    val appBarElevation by animateDpAsState(targetValue = if (hasScrolled) 3.dp else 0.dp, animationSpec = spring(stiffness = Spring.StiffnessMedium))
+    systemUiController.setStatusBarColor(color = MaterialTheme.colorScheme.surfaceColorAtElevation(appBarElevation))
 
     Scaffold(
+        modifier = Modifier.fillMaxWidth(),
         topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(appBarElevation),
