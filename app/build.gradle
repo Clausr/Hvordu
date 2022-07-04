@@ -106,7 +106,7 @@ dependencies {
     // Integration with observables
     implementation("androidx.compose.runtime:runtime-livedata:$compose_version")
 
-    implementation "androidx.compose.foundation:foundation:$compose_ui_version"
+    implementation "androidx.compose.foundation:foundation:$compose_version"
     implementation "androidx.activity:activity-compose:1.6.0-alpha05"
 
 

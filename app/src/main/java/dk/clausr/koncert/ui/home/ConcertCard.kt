@@ -4,12 +4,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 
 
@@ -20,19 +23,18 @@ fun ConcertCard(
     onClick: () -> Unit
 ) {
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxWidth()
-
             .clickable { onClick() }
+            .fillMaxWidth()
             .padding(
-                horizontal = KoncertTheme.dimensions.padding16,
-                vertical = KoncertTheme.dimensions.padding8
-            ),
-        verticalAlignment = Alignment.CenterVertically
+                vertical = KoncertTheme.dimensions.padding8,
+                horizontal = KoncertTheme.dimensions.padding16
+            )
     ) {
         Text(
             text = artistName,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .weight(1.0f)
                 .padding(end = KoncertTheme.dimensions.padding4)
@@ -47,9 +49,9 @@ fun ConcertCard(
 @Preview
 @Composable
 fun Preview(
-//    @PreviewParameter(PreviewColorPaletteProviderLightDark::class) palette: KoncertColors
+    @PreviewParameter(ColorSchemeProvider::class) scheme: ColorScheme
 ) {
-    KoncertTheme() {
+    KoncertTheme(overrideColorScheme = scheme) {
         ConcertCard(
             artistName = "The Dillinger Escape Plan",
             venueName = "Voxhall",

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Koncert</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="tab_overview">Overview</string>
+    <string name="tab_artists">Artists</string>
 </resources>

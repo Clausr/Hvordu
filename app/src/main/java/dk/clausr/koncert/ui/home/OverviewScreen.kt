@@ -3,11 +3,11 @@ package dk.clausr.koncert.ui.home
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,11 +27,13 @@ import dk.clausr.repo.concerts.ConcertMocks
 import timber.log.Timber
 
 @Composable
-fun AllConcertsContainer(
+fun OverviewScreen(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val concertList = homeViewModel.concerts.collectAsState(initial = listOf())
-    AllConcerts(concertList = concertList.value)
+    AllConcerts(
+        concertList = concertList.value,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,18 +43,19 @@ fun AllConcerts(
 ) {
     val lazyListState = rememberLazyListState()
     val systemUiController = rememberSystemUiController()
-
     val hasScrolled by remember {
         derivedStateOf {
             lazyListState.firstVisibleItemScrollOffset > 0
         }
     }
 
-    val appBarElevation by animateDpAsState(targetValue = if (hasScrolled) 3.dp else 0.dp, animationSpec = spring(stiffness = Spring.StiffnessMedium))
+    val appBarElevation by animateDpAsState(
+        targetValue = if (hasScrolled) AppBarDefaults.TopAppBarElevation else 0.dp,
+        animationSpec = spring(stiffness = Spring.StiffnessMedium)
+    )
     systemUiController.setStatusBarColor(color = MaterialTheme.colorScheme.surfaceColorAtElevation(appBarElevation))
 
     Scaffold(
-        modifier = Modifier.fillMaxWidth(),
         topBar = {
             TopAppBar(
                 backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(appBarElevation),
@@ -67,11 +70,12 @@ fun AllConcerts(
         },
     ) { innerPadding ->
         LazyColumn(
+            Modifier
+                .fillMaxSize(),
             state = lazyListState,
             contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(KoncertTheme.dimensions.padding8)
         ) {
-            items(concertList) { concert ->
+            items(items = concertList) { concert ->
                 ConcertCard(
                     artistName = concert.artist.name,
                     venueName = concert.venue.name,
@@ -80,7 +84,6 @@ fun AllConcerts(
             }
         }
     }
-
 }
 
 @Preview(name = "AllConcerts preview")
