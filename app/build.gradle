@@ -116,6 +116,7 @@ dependencies {
 
     // Accompanist
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.24.13-rc"
+    implementation "com.google.accompanist:accompanist-navigation-material:0.24.13-rc"
 
 
     testImplementation 'junit:junit:4.13.2'

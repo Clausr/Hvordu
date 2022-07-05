@@ -6,7 +6,7 @@ import dk.clausr.core.models.MusicGenre
 import dk.clausr.core.models.Venue
 
 object ConcertMocks {
-    val concertsMock = listOf(
+    val concertsMock = mutableListOf(
         Concert(
             artist = Artist(
                 name = "The Dillinger Escape Plan",

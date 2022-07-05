@@ -48,7 +48,7 @@ fun ConcertCard(
 
 @Preview
 @Composable
-fun Preview(
+private fun Preview(
     @PreviewParameter(ColorSchemeProvider::class) scheme: ColorScheme
 ) {
     KoncertTheme(overrideColorScheme = scheme) {

@@ -4,28 +4,49 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import dk.clausr.koncert.ui.MainBottomAppBar
 import dk.clausr.koncert.ui.MainNavHost
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import dk.clausr.koncert.ui.screens.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialNavigationApi::class)
 @Composable
-fun MainScreen() {
-    val navController = rememberNavController()
+fun MainScreen(
+
+) {
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val navController = rememberNavController(bottomSheetNavigator)
+
+    val bottomViewModel: MainViewModel = hiltViewModel()
+    navController.addOnDestinationChangedListener { controller, destination, arguments ->
+        if (destination.route == "sheet") {
+            bottomViewModel.hideBottomNav()
+        } else {
+            bottomViewModel.showBottomNav()
+        }
+    }
+
+    val visibilityState = bottomViewModel.bottomNavigationVisibility.observeAsState()
     Scaffold(
         bottomBar = {
-            MainBottomAppBar(
-                navController = navController,
-                screens = Screen.mainBottomBarItems
-            )
+            if (visibilityState.value == true) {
+                MainBottomAppBar(
+                    navController = navController,
+                    screens = Screen.mainBottomBarItems
+                )
+            }
         },
         content = { innerPadding ->
             MainNavHost(
                 navController = navController,
+                bottomSheetNavigator = bottomSheetNavigator,
                 modifier = Modifier.padding(innerPadding)
             )
         }
@@ -34,7 +55,7 @@ fun MainScreen() {
 
 @Preview
 @Composable
-fun Preview() {
+private fun Preview() {
     KoncertTheme {
         MainScreen()
     }

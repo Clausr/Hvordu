@@ -61,7 +61,7 @@ fun BottomBarButton(
 
 @Preview
 @Composable
-fun Preview() {
+private fun Preview() {
     KoncertTheme {
         BottomBarButton(
             titleRes = R.string.tab_overview,

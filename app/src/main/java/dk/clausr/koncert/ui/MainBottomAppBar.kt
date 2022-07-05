@@ -53,7 +53,7 @@ fun MainBottomAppBar(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* do something */ },
+                onClick = { navController.navigate("sheet") },
                 elevation = BottomAppBarDefaults.FloatingActionButtonElevation
             ) {
                 Icon(Icons.Filled.PlaylistAddCheck, "Localized description")
@@ -64,7 +64,7 @@ fun MainBottomAppBar(
 
 @Preview
 @Composable
-fun Preview(
+private fun Preview(
     @PreviewParameter(ColorSchemeProvider::class) scheme: ColorScheme
 ) {
     KoncertTheme(overrideColorScheme = scheme) {
