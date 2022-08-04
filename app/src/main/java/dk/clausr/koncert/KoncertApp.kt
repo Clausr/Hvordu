@@ -1,0 +1,145 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
+package dk.clausr.koncert
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import dk.clausr.koncert.navigation.KoncertNavHost
+import dk.clausr.koncert.navigation.TopLevelDestination
+import dk.clausr.koncert.navigation.component.KoncertNavigationBar
+import dk.clausr.koncert.navigation.component.KoncertNavigationBarItem
+import dk.clausr.koncert.navigation.component.KoncertNavigationRail
+import dk.clausr.koncert.navigation.component.KoncertNavigationRailItem
+import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+
+@OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterialNavigationApi::class
+)
+@Composable
+fun KoncertApp(
+    windowSizeClass: WindowSizeClass,
+    appState: KoncertAppState = rememberKoncertAppState(windowSizeClass)
+) {
+    KoncertTheme {
+        Scaffold(
+            bottomBar = {
+                if (appState.shouldShowBottomBar) {
+                    KoncertBottomBar(
+                        destinations = appState.topLevelDestinations,
+                        onNavigateToDestination = appState::navigate,
+                        currentDestination = appState.currentDestination
+                    )
+                }
+            }) { padding ->
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing
+                            .only(WindowInsetsSides.Horizontal)
+                    )
+            ) {
+                if (appState.shouldShowNavRail) {
+                    KoncertNavRail(
+                        destinations = appState.topLevelDestinations,
+                        onNavigateToDestination = appState::navigate,
+                        currentDestination = appState.currentDestination,
+                        modifier = Modifier.safeDrawingPadding()
+                    )
+                }
+
+                KoncertNavHost(
+                    navController = appState.navController,
+                    onNavigateToDestination = appState::navigate,
+                    onBackClick = appState::onBackClick,
+                    windowSizeClass = appState.windowSizeClass,
+                    modifier = Modifier
+                        .padding(padding)
+                        .consumedWindowInsets(padding)
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun KoncertNavRail(
+    destinations: List<TopLevelDestination>,
+    onNavigateToDestination: (TopLevelDestination) -> Unit,
+    currentDestination: NavDestination?,
+    modifier: Modifier = Modifier,
+) {
+    KoncertNavigationRail(modifier = modifier) {
+        destinations.forEach { destination ->
+            val selected =
+                currentDestination?.hierarchy?.any { it.route == destination.route } == true
+            KoncertNavigationRailItem(
+                selected = selected,
+                onClick = { onNavigateToDestination(destination) },
+                icon = {
+                    val icon = if (selected) {
+                        destination.selectedIcon
+                    } else {
+                        destination.unselectedIcon
+                    }
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null
+                    )
+                },
+                label = { Text(stringResource(destination.iconTextId)) }
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun KoncertBottomBar(
+    destinations: List<TopLevelDestination>,
+    onNavigateToDestination: (TopLevelDestination) -> Unit,
+    currentDestination: NavDestination?
+) {
+    // Wrap the navigation bar in a surface so the color behind the system
+    // navigation is equal to the container color of the navigation bar.
+    Surface(color = MaterialTheme.colorScheme.surface) {
+        KoncertNavigationBar(
+            modifier = Modifier.windowInsetsPadding(
+                WindowInsets.safeDrawing.only(
+                    WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
+                )
+            )
+        ) {
+            destinations.forEach { destination ->
+                val selected =
+                    currentDestination?.hierarchy?.any { it.route == destination.route } == true
+                KoncertNavigationBarItem(
+                    selected = selected,
+                    onClick = { onNavigateToDestination(destination) },
+                    icon = {
+                        val icon = if (selected) {
+                            destination.selectedIcon
+                        } else {
+                            destination.unselectedIcon
+                        }
+
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null
+                        )
+                    },
+                    label = { Text(stringResource(destination.iconTextId)) }
+                )
+            }
+        }
+    }
+}

@@ -1,6 +1,21 @@
 <resources>
+
+    <!-- Allows us to override platform level specific attributes in their
+         respective values-vXX folder. -->
+    <style name="Platform.Theme.Koncert" parent="Theme.Material3.DayNight">
+        <!--        <item name="android:statusBarColor">@color/md_theme_light_error</item>-->
+        <item name="android:statusBarColor">@color/black30</item>
+    </style>
     <!-- Base application theme. -->
-    <style name="Theme.Koncert" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.Koncert" parent="Platform.Theme.Koncert">
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorAccent">@color/md_theme_light_tertiary</item>
+        <item name="colorPrimaryDark">@color/md_theme_light_onPrimary</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.Koncert.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 </resources>

@@ -1,15 +1,16 @@
 package dk.clausr.koncert
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
-    private val _bottomNavigationVisibility = MutableLiveData<Boolean>(true)
-    val bottomNavigationVisibility: LiveData<Boolean>
+
+    private val _bottomNavigationVisibility = mutableStateOf(true)
+    val bottomNavigationVisibility: State<Boolean>
         get() = _bottomNavigationVisibility
 
     init {
@@ -17,10 +18,10 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     fun showBottomNav() {
-        _bottomNavigationVisibility.postValue(true)
+        _bottomNavigationVisibility.value = true
     }
 
     fun hideBottomNav() {
-        _bottomNavigationVisibility.postValue(false)
+        _bottomNavigationVisibility.value = false
     }
 }

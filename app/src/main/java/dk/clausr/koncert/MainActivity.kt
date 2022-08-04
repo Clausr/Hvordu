@@ -2,11 +2,14 @@ package dk.clausr.koncert
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.koncert.databinding.ActivityMainBinding
 import dk.clausr.koncert.utils.extensions.setKoncertContent
 
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -20,7 +23,7 @@ class MainActivity : ComponentActivity() {
         setContentView(binding.root)
 
         binding.composeView.setKoncertContent {
-            MainScreen()
+            KoncertApp(calculateWindowSizeClass(activity = this))
         }
     }
 }

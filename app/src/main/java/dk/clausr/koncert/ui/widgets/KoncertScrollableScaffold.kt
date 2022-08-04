@@ -43,12 +43,14 @@ fun KoncertScrollableScaffold(
         targetValue = if (hasScrolled) AppBarDefaults.TopAppBarElevation else 0.dp,
         animationSpec = spring(stiffness = Spring.StiffnessMedium)
     )
-    systemUiController.setStatusBarColor(color = MaterialTheme.colorScheme.surfaceColorAtElevation(appBarElevation))
+    systemUiController.setStatusBarColor(color = MaterialTheme.colorScheme.surfaceColorAtElevation(0.dp))
+//    systemUiController.setStatusBarColor(color = MaterialTheme.colorScheme.surfaceColorAtElevation(appBarElevation))
 
     Scaffold(
         topBar = {
             TopAppBar(
-                backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(appBarElevation),
+                backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(0.dp),
+//                backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(appBarElevation),
                 elevation = appBarElevation,
                 title = {
                     Text(

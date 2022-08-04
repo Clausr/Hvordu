@@ -2,8 +2,10 @@ package dk.clausr.koncert.ui.home
 
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -17,7 +19,22 @@ import dk.clausr.repo.concerts.ConcertMocks
 import timber.log.Timber
 
 @Composable
-fun OverviewScreen(
+fun HomeRoute(
+    windowSizeClass: WindowSizeClass,
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    HomeScreen(
+        windowSizeClass = windowSizeClass,
+        homeViewModel = viewModel,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun HomeScreen(
+    windowSizeClass: WindowSizeClass,
+    modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val concertList = homeViewModel.concerts.collectAsState(initial = listOf())
