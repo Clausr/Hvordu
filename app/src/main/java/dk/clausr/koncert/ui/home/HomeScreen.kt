@@ -2,9 +2,11 @@
 
 package dk.clausr.koncert.ui.home
 
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
@@ -22,9 +24,7 @@ import dk.clausr.koncert.R
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import dk.clausr.koncert.ui.widgets.KoncertScrollableScaffold
-import dk.clausr.koncert.utils.extensions.repeatToSize
 import dk.clausr.repo.concerts.ConcertMocks
-import timber.log.Timber
 
 @Composable
 fun HomeRoute(
@@ -36,7 +36,6 @@ fun HomeRoute(
     HomeScreen(
         windowSizeClass = windowSizeClass,
         concertState = concertsState,
-
         modifier = modifier
     )
 }
@@ -48,7 +47,7 @@ fun HomeScreen(
     concertState: State<List<Concert>>
 ) {
     AllConcerts(
-        concertList = concertState.value.repeatToSize(100),
+        concertList = concertState.value,
     )
 }
 
@@ -57,12 +56,33 @@ fun AllConcerts(
     concertList: List<Concert>
 ) {
     KoncertScrollableScaffold(titleRes = R.string.app_name) {
+        item {
+//            MostRecentConcerts(concertList)
+            Spacer(modifier = Modifier.height(KoncertTheme.dimensions.padding8))
+
+        }
+
         items(items = concertList) { concert ->
-            ConcertCard(
-                artistName = concert.artist.name,
-                venueName = concert.venue.name,
-                onClick = { Timber.d("Clicked on ${concert}") }
+            MostRecentCard(
+                concert = concert,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = KoncertTheme.dimensions.padding16),
+                onClick = {}
             )
+            Spacer(modifier = Modifier.height(KoncertTheme.dimensions.padding8))
+        }
+
+        item {
+            Text(
+                text = "Bla bla",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = KoncertTheme.dimensions.padding16, vertical = KoncertTheme.dimensions.padding8)
+            )
+        }
+
+        item {
+            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
         }
     }
 }

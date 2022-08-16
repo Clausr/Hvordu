@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.flow
 
 class ConcertRepository(val context: Context) {
 
-    fun getConcerts(): Flow<List<Concert>> = flow {
-        emit(ConcertMocks.concertsMock)
+    fun getLatestConcerts(count: Int): Flow<List<Concert>> = flow {
+        emit(ConcertMocks.concertsMock.take(count))
     }
 }

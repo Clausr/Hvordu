@@ -15,7 +15,7 @@ class HomeViewModel @Inject constructor(
     repo: ConcertRepository
 ) : ViewModel() {
 
-    val concerts: StateFlow<List<Concert>> = repo.getConcerts()
+    val concerts: StateFlow<List<Concert>> = repo.getLatestConcerts(3)
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
