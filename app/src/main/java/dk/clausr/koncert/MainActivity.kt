@@ -6,6 +6,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.koncert.databinding.ActivityMainBinding
+import dk.clausr.koncert.ui.KoncertApp
 import dk.clausr.koncert.utils.extensions.setKoncertContent
 
 

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalLayoutApi::class)
 
-package dk.clausr.koncert
+package dk.clausr.koncert.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -11,12 +11,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import dk.clausr.koncert.KoncertAppState
 import dk.clausr.koncert.navigation.KoncertNavHost
 import dk.clausr.koncert.navigation.TopLevelDestination
 import dk.clausr.koncert.navigation.component.KoncertNavigationBar
 import dk.clausr.koncert.navigation.component.KoncertNavigationBarItem
 import dk.clausr.koncert.navigation.component.KoncertNavigationRail
 import dk.clausr.koncert.navigation.component.KoncertNavigationRailItem
+import dk.clausr.koncert.rememberKoncertAppState
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 
 @OptIn(
