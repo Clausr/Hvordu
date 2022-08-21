@@ -8,6 +8,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -113,7 +114,7 @@ private fun KoncertBottomBar(
 ) {
     // Wrap the navigation bar in a surface so the color behind the system
     // navigation is equal to the container color of the navigation bar.
-    Surface(color = MaterialTheme.colorScheme.surface) {
+    Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp)) {
         KoncertNavigationBar(
             modifier = Modifier.windowInsetsPadding(
                 WindowInsets.safeDrawing.only(

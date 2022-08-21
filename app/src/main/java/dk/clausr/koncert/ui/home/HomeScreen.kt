@@ -55,7 +55,16 @@ fun HomeScreen(
 fun AllConcerts(
     concertList: List<Concert>
 ) {
-    KoncertScrollableScaffold(titleRes = R.string.app_name) {
+
+    KoncertScrollableScaffold(
+        titleRes = R.string.app_name,
+        floatingActionButton = {
+//            ExtendableFloatingActionButton(extended = fabExtended, text = { /*TODO*/ }) {
+//
+//            }
+        }
+
+    ) {
         item {
 //            MostRecentConcerts(concertList)
             Spacer(modifier = Modifier.height(KoncertTheme.dimensions.padding8))
@@ -73,12 +82,15 @@ fun AllConcerts(
             Spacer(modifier = Modifier.height(KoncertTheme.dimensions.padding8))
         }
 
-        item {
-            Text(
-                text = "Bla bla",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(horizontal = KoncertTheme.dimensions.padding16, vertical = KoncertTheme.dimensions.padding8)
-            )
+        (1..100).map {
+
+            item {
+                Text(
+                    text = "Bla bla",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = KoncertTheme.dimensions.padding16, vertical = KoncertTheme.dimensions.padding8)
+                )
+            }
         }
 
         item {
