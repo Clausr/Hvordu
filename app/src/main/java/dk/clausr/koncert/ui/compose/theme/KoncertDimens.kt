@@ -13,6 +13,7 @@ data class KoncertDimens(
     var padding32: Dp = 32.dp,
     var padding40: Dp = 40.dp,
     var padding48: Dp = 48.dp,
+    var padding56: Dp = 56.dp,
     var padding64: Dp = 64.dp,
     var padding80: Dp = 80.dp,
 )

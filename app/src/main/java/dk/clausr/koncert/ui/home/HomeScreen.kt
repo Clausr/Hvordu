@@ -10,8 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -35,7 +33,7 @@ fun HomeRoute(
     val concertsState = viewModel.concerts.collectAsStateWithLifecycle()
     HomeScreen(
         windowSizeClass = windowSizeClass,
-        concertState = concertsState,
+        concertState = concertsState.value,
         modifier = modifier
     )
 }
@@ -44,10 +42,10 @@ fun HomeRoute(
 fun HomeScreen(
     windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier,
-    concertState: State<List<Concert>>
+    concertState: List<Concert>
 ) {
     AllConcerts(
-        concertList = concertState.value,
+        concertList = concertState,
     )
 }
 
@@ -55,7 +53,6 @@ fun HomeScreen(
 fun AllConcerts(
     concertList: List<Concert>
 ) {
-
     KoncertScrollableScaffold(
         titleRes = R.string.app_name,
         floatingActionButton = {
@@ -113,9 +110,8 @@ fun Preview0(
         KoncertTheme(overrideColorScheme = colorScheme) {
             HomeScreen(
                 windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
-                concertState = mutableStateOf(ConcertMocks.concertsMock),
+                concertState = ConcertMocks.concertsMock,
             )
         }
     }
-
 }

@@ -83,7 +83,6 @@ fun KoncertScrollableScaffold(
             contentPadding = innerPadding,
             content = content
         )
-//        }
     }
 }
 

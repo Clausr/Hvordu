@@ -11,7 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dk.clausr.koncert.KoncertAppState
 import dk.clausr.koncert.navigation.KoncertNavHost
 import dk.clausr.koncert.navigation.TopLevelDestination
@@ -23,8 +23,7 @@ import dk.clausr.koncert.rememberKoncertAppState
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 
 @OptIn(
-    ExperimentalMaterial3Api::class,
-    ExperimentalMaterialNavigationApi::class
+    ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class
 )
 @Composable
 fun KoncertApp(
@@ -112,6 +111,8 @@ private fun KoncertBottomBar(
     onNavigateToDestination: (TopLevelDestination) -> Unit,
     currentDestination: NavDestination?
 ) {
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setNavigationBarColor(color = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp))
     // Wrap the navigation bar in a surface so the color behind the system
     // navigation is equal to the container color of the navigation bar.
     Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp)) {
