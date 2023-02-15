@@ -3,8 +3,10 @@ package dk.clausr.koncert
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.PartyMode
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LibraryMusic
+import androidx.compose.material.icons.outlined.PartyMode
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -20,6 +22,7 @@ import dk.clausr.koncert.navigation.KoncertNavigationDestination
 import dk.clausr.koncert.navigation.TopLevelDestination
 import dk.clausr.koncert.ui.artists.navigation.ArtistsDestination
 import dk.clausr.koncert.ui.home.navigation.HomeDestination
+import dk.clausr.koncert.ui.parallax.navigation.ParallaxDestination
 
 @Composable
 fun rememberKoncertAppState(
@@ -64,6 +67,13 @@ class KoncertAppState(
             selectedIcon = Icons.Filled.LibraryMusic,
             unselectedIcon = Icons.Outlined.LibraryMusic,
             iconTextId = R.string.tab_artists
+        ),
+        TopLevelDestination(
+            route = ParallaxDestination.route,
+            destination = ParallaxDestination.destination,
+            selectedIcon = Icons.Filled.PartyMode,
+            unselectedIcon = Icons.Outlined.PartyMode,
+            iconTextId = R.string.tab_parallax
         )
     )
 

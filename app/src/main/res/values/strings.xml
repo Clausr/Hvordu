@@ -2,4 +2,5 @@
     <string name="app_name">Koncert</string>
     <string name="tab_overview">Overview</string>
     <string name="tab_artists">Artists</string>
+    <string name="tab_parallax">Parallax</string>
 </resources>

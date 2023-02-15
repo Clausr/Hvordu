@@ -1,7 +1,7 @@
-@file:OptIn(ExperimentalLifecycleComposeApi::class)
 
 package dk.clausr.koncert.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ColorScheme
@@ -15,11 +15,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpSize
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.core.models.Concert
 import dk.clausr.koncert.R
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
+import dk.clausr.koncert.ui.compose.preview.WindowWidthSizeClassPreview
+import dk.clausr.koncert.ui.compose.preview.WindowWidthSizePreviewParameterProvider
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import dk.clausr.koncert.ui.widgets.KoncertScrollableScaffold
 import dk.clausr.repo.concerts.ConcertMocks
@@ -79,15 +80,12 @@ fun AllConcerts(
             Spacer(modifier = Modifier.height(KoncertTheme.dimensions.padding8))
         }
 
-        (1..100).map {
-
-            item {
-                Text(
-                    text = "Bla bla",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = KoncertTheme.dimensions.padding16, vertical = KoncertTheme.dimensions.padding8)
-                )
-            }
+        items(100) {
+            Text(
+                text = "Bla bla $it",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = KoncertTheme.dimensions.padding16, vertical = KoncertTheme.dimensions.padding8)
+            )
         }
 
         item {
@@ -107,7 +105,7 @@ fun Preview0(
     @PreviewParameter(ColorSchemeProvider::class) colorScheme: ColorScheme
 ) {
     BoxWithConstraints {
-        KoncertTheme(overrideColorScheme = colorScheme) {
+        KoncertTheme {
             HomeScreen(
                 windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
                 concertState = ConcertMocks.concertsMock,

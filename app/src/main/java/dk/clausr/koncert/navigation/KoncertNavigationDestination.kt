@@ -2,7 +2,7 @@ package dk.clausr.koncert.navigation
 
 
 /**
- * Interface for describing the Now in Android navigation destinations
+ * Interface for describing the Koncert navigation destinations
  */
 
 interface KoncertNavigationDestination {

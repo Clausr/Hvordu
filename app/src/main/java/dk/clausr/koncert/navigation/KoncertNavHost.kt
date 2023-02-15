@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import dk.clausr.koncert.ui.artists.navigation.artistsGraph
 import dk.clausr.koncert.ui.home.navigation.HomeDestination
 import dk.clausr.koncert.ui.home.navigation.homeGraph
+import dk.clausr.koncert.ui.parallax.navigation.parallaxGraph
 
 @Composable
 fun KoncertNavHost(
@@ -25,5 +26,6 @@ fun KoncertNavHost(
     ) {
         homeGraph(windowSizeClass = windowSizeClass)
         artistsGraph(windowSizeClass = windowSizeClass)
+        parallaxGraph(windowSizeClass = windowSizeClass)
     }
 }

@@ -22,9 +22,7 @@ import dk.clausr.koncert.navigation.component.KoncertNavigationRailItem
 import dk.clausr.koncert.rememberKoncertAppState
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 
-@OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class
-)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun KoncertApp(
     windowSizeClass: WindowSizeClass,
