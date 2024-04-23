@@ -2,8 +2,24 @@
 
 package dk.clausr.koncert.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -63,7 +79,7 @@ fun KoncertApp(
                     windowSizeClass = appState.windowSizeClass,
                     modifier = Modifier
                         .padding(padding)
-                        .consumedWindowInsets(padding)
+                        .consumeWindowInsets(padding)
                 )
             }
         }
@@ -111,6 +127,7 @@ private fun KoncertBottomBar(
 ) {
     val systemUiController = rememberSystemUiController()
     systemUiController.setNavigationBarColor(color = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp))
+
     // Wrap the navigation bar in a surface so the color behind the system
     // navigation is equal to the container color of the navigation bar.
     Surface(color = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp)) {

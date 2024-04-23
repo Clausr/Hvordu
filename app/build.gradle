@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
 }
@@ -30,31 +29,19 @@ android {
         }
     }
 
-//    flavorDimensions "app"
-//    productFlavors {
-//        internal {
-//            dimension "app"
-//            applicationId 'com.lunarway.app.internal'
-//        }
-//        production {
-//            dimension "app"
-//            applicationId "com.lunarway.app"
-//        }
-//    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-//    kotlinOptions {
-//        jvmTarget = '1.8'
-//    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
     buildFeatures {
         viewBinding true
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.1"
+        kotlinCompilerExtensionVersion = "1.5.12"
     }
     namespace 'dk.clausr.koncert'
 }
@@ -62,69 +49,56 @@ android {
 dependencies {
     implementation project(path: ':repo')
     implementation project(':core')
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation libs.androidx.ktx
 
     //Hilt
-    def hilt_version = "2.44"
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-compiler:$hilt_version"
-    kapt 'androidx.hilt:hilt-compiler:1.0.0'
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
+    kapt libs.androidx.hilt
 
-    implementation 'com.jakewharton.timber:timber:5.0.1'
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintlayout
 
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation libs.androidx.hilt.navigation.compose
+    implementation libs.androidx.hilt.navigation.fragment
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.lifecycle.runtime.compose
 
+    implementation libs.androidx.navigation.fragment.ktx
+    implementation libs.androidx.navigation.ui.ktx
+    implementation libs.androidx.lifecycle.viewmodel.compose
 
-    def nav_version = "2.5.0"
-    def androidx_version = "2.5.1"
-    def androidx_navigation_version = "2.5.3"
-
-    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
-    implementation 'androidx.hilt:hilt-navigation-fragment:1.0.0'
-
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$androidx_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidx_version"
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha04"
-
-    implementation "androidx.navigation:navigation-fragment-ktx:$androidx_navigation_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$androidx_navigation_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$androidx_version"
-
-    def composeBom = platform('androidx.compose:compose-bom:2023.01.00')
+    def composeBom = libs.androidx.compose.bom
     implementation composeBom
-    implementation "androidx.compose.ui:ui"
+    implementation libs.androidx.ui
     // Tooling support (Previews, etc.)
-    implementation("androidx.compose.ui:ui-tooling")
-    implementation("androidx.compose.animation:animation")
+    implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.animation)
 
     // Material Design
-    implementation("androidx.compose.material:material")
+    implementation(libs.androidx.material)
 
     // Material design icons
-    implementation("androidx.compose.material:material-icons-core")
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.material.icons.core)
+    implementation(libs.androidx.material.icons.extended)
 
-    // Integration with observables
-    implementation("androidx.compose.runtime:runtime-livedata")
-
-    implementation "androidx.compose.foundation:foundation"
-    implementation "androidx.activity:activity-compose:1.6.1"
+    implementation libs.androidx.foundation
+    implementation libs.androidx.activity.compose
 
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation libs.kotlinx.coroutines.android
 
-    implementation "androidx.compose.material3:material3"
-    implementation "androidx.compose.material3:material3-window-size-class"
+    implementation libs.androidx.material3
+    implementation libs.androidx.material3.windowSizeClass
 
     // Accompanist
-    implementation "com.google.accompanist:accompanist-systemuicontroller:0.25.1"
-    implementation "com.google.accompanist:accompanist-navigation-material:0.24.13-rc"
+    implementation libs.accompanist.systemuicontroller
+    implementation libs.accompanist.navigation.material
 
+    implementation libs.timber
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
 }
