@@ -34,11 +34,11 @@ class SensorDataManager(context: Context): SensorEventListener{
         }
 
         if (gravity != null && geomagnetic != null) {
-            var r = FloatArray(9)
-            var i = FloatArray(9)
+            val r = FloatArray(9)
+            val i = FloatArray(9)
 
             if (SensorManager.getRotationMatrix(r, i, gravity, geomagnetic)) {
-                var orientation = FloatArray(3)
+                val orientation = FloatArray(3)
                 SensorManager.getOrientation(r, orientation)
 
                 data.trySend(

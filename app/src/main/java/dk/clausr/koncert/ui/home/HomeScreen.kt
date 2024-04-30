@@ -3,12 +3,9 @@ package dk.clausr.koncert.ui.home
 
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -85,15 +82,15 @@ fun AllConcerts(
 
         items(100) {
             Text(
-                text = "Bla bla $it",
+                text = "Bla bla ${it + 1}",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(horizontal = KoncertTheme.dimensions.padding16, vertical = KoncertTheme.dimensions.padding8)
             )
         }
 
-        item {
-            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-        }
+//        item {
+//            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+//        }
     }
 }
 

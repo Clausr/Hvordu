@@ -38,7 +38,6 @@ fun ParallaxScreen(
     windowSizeClass: WindowSizeClass,
     modifier: Modifier
 ) {
-
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -72,10 +71,4 @@ fun ParallaxScreen(
             data = data
         )
     }
-
-//    KoncertScrollableScaffold(titleRes = R.string.tab_parallax) {
-//        item {
-//
-//        }
-//    }
 }

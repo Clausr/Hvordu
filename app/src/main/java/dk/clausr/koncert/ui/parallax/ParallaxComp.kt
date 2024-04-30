@@ -1,13 +1,14 @@
 package dk.clausr.koncert.ui.parallax
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -18,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import dk.clausr.koncert.R
 import dk.clausr.koncert.utils.sensors.SensorData
+import timber.log.Timber
+import kotlin.math.abs
 
 // https://twitter.com/philipcdavis/status/1499436970556071949?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1529777425785073665%7Ctwgr%5E7240d45859f5dd3e4645a0bda6788a2bc6ce4ff0%7Ctwcon%5Es3_&ref_url=https%3A%2F%2Fcdn.embedly.com%2Fwidgets%2Fmedia.html%3Ftype%3Dtext2Fhtmlkey%3Da19fcc184b9711e1b4764040d3dc5c07schema%3Dtwitterurl%3Dhttps3A%2F%2Ftwitter.com%2F_sur4j_%2Fstatus%2F1529777425785073665image%3Dhttps3A%2F%2Fi.embed.ly%2F1%2Fimage3Furl3Dhttps253A252F252Fabs.twimg.com252Ferrors252Flogo46x38.png26key3Da19fcc184b9711e1b4764040d3dc5c07
 // https://proandroiddev.com/parallax-effect-with-sensormanager-using-jetpack-compose-a735a2f5811b
@@ -38,7 +40,20 @@ fun ParallaxComp(
     val roll by remember(data?.roll) { derivedStateOf { (data?.roll ?: 0f) * depthMultiplier } }
     val pitch by remember(data?.pitch) { derivedStateOf { (data?.pitch ?: 0f) * depthMultiplier } }
 
+    val bleh = 5f
+
+    val isLookingDown by remember(roll, pitch) {
+        derivedStateOf { (roll != 0f && pitch != 0f) && abs(roll) < bleh && abs(pitch) < bleh }
+    }
+
+
+    Timber.d("Roll: $roll :: $pitch")
     Box(modifier = modifier) {
+        if (isLookingDown) {
+            Surface(color = MaterialTheme.colorScheme.error, modifier = Modifier.size(100.dp)) {
+
+            }
+        }
         // Glow Shadow
         // Has quicker offset change and in opposite direction to the image card
         Image(

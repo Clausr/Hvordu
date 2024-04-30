@@ -2,7 +2,11 @@ package dk.clausr.koncert.ui.compose.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -11,7 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 /**
  * A [Composable] providing the properties of KoncertTheme to the [content] passed.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 private fun KoncertThemePropertiesProvider(
     dimens: KoncertDimens,
@@ -19,8 +23,6 @@ private fun KoncertThemePropertiesProvider(
 ) {
     CompositionLocalProvider(
         LocalKoncertDimens provides dimens,
-        LocalMinimumTouchTargetEnforcement provides false,
-
         content = content
     )
 }
