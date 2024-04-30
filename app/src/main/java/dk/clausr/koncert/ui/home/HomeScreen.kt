@@ -1,8 +1,14 @@
 
 package dk.clausr.koncert.ui.home
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -19,8 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.core.models.Concert
 import dk.clausr.koncert.R
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
-import dk.clausr.koncert.ui.compose.preview.WindowWidthSizeClassPreview
-import dk.clausr.koncert.ui.compose.preview.WindowWidthSizePreviewParameterProvider
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import dk.clausr.koncert.ui.widgets.KoncertScrollableScaffold
 import dk.clausr.repo.concerts.ConcertMocks
@@ -66,7 +70,6 @@ fun AllConcerts(
         item {
 //            MostRecentConcerts(concertList)
             Spacer(modifier = Modifier.height(KoncertTheme.dimensions.padding8))
-
         }
 
         items(items = concertList) { concert ->
@@ -98,7 +101,6 @@ fun AllConcerts(
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview(name = "phone", device = "spec:shape=Normal,width=360,height=640,unit=dp,dpi=480")
 @Preview(name = "landscape", device = "spec:shape=Normal,width=640,height=360,unit=dp,dpi=480")
-//@Preview(name = "foldable", device = "spec:shape=Normal,width=673,height=841,unit=dp,dpi=480")
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 @Composable
 fun Preview0(

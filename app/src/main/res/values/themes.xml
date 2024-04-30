@@ -11,9 +11,6 @@
         <item name="colorPrimary">@color/md_theme_light_primary</item>
         <item name="colorAccent">@color/md_theme_light_tertiary</item>
         <item name="colorPrimaryDark">@color/md_theme_light_onPrimary</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="Theme.Koncert.NoActionBar">
