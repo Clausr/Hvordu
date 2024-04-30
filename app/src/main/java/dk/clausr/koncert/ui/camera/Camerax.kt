@@ -10,10 +10,14 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,10 +26,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import timber.log.Timber
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -54,24 +66,56 @@ fun CameraPreviewScreen(
     var takePictureInProgress by remember {
         mutableStateOf(false)
     }
-    Box(contentAlignment = Alignment.BottomCenter, modifier = Modifier.fillMaxSize()) {
-        AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
-        Button(
-            enabled = enableTakeImageButton,
-            onClick = {
-                takePictureInProgress = true
-                captureImage(
-                    imageCapture = imageCapture,
-                    context = context,
-                    pictureResult = {
-                        takePictureInProgress = false
+    val colors = MaterialTheme.colorScheme
+    val takePictureEnabled = !takePictureInProgress && enableTakeImageButton
+    val buttonColor by remember(takePictureEnabled) {
+        mutableStateOf(
+            if (takePictureEnabled) {
+                colors.surface
+            } else {
+                colors.surface.copy(alpha = 0.38f)
+            }
+        )
+    }
 
-                        Timber.d("${it.getOrNull()?.savedUri}")
+    val buttonColorAnim by animateColorAsState(targetValue = buttonColor)
+    Box(
+        contentAlignment = Alignment.BottomCenter,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
+
+        Box(
+            modifier = Modifier
+                .padding(bottom = KoncertTheme.dimensions.padding16)
+                .clip(CircleShape)
+                .size(80.dp)
+                .drawWithCache {
+                    onDrawBehind {
+                        drawCircle(buttonColorAnim)
+
+                        drawOval(
+                            color = Color.Black,
+                            topLeft = Offset(x = size.width / 10, y = size.height / 10),
+                            size = size.times(0.8f),
+                            style = Stroke(width = 10f),
+                            blendMode = BlendMode.Clear,
+                        )
                     }
-                )
-            }) {
-            Text(text = "Capture Image")
-        }
+                }
+                .clickable(enabled = takePictureEnabled) {
+                    takePictureInProgress = true
+                    captureImage(
+                        imageCapture = imageCapture,
+                        context = context,
+                        pictureResult = {
+                            takePictureInProgress = false
+
+                            Timber.d("${it.getOrNull()?.savedUri}")
+                        }
+                    )
+                },
+        )
     }
 }
 
