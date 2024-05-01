@@ -1,8 +1,10 @@
 package dk.clausr.koncert.ui.widgets
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -26,11 +28,13 @@ import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import dk.clausr.koncert.utils.extensions.isScrollingUp
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KoncertScrollableScaffold(
+fun KoncertLazyColumnScaffold(
     @StringRes titleRes: Int,
     floatingActionButton: @Composable () -> Unit = {},
+    lazyColumnContentPadding: PaddingValues = PaddingValues(),
     content: LazyListScope.() -> Unit
 ) {
     val lazyListState = rememberLazyListState()
@@ -53,7 +57,6 @@ fun KoncertScrollableScaffold(
             TopAppBar(
                 windowInsets = WindowInsets.statusBars,
                 colors = TopAppBarDefaults.topAppBarColors(),
-//                scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(state = rememberTopAppBarState()),
                 title = {
                     Text(
                         text = stringResource(id = titleRes),
@@ -64,9 +67,10 @@ fun KoncertScrollableScaffold(
     ) { innerPadding ->
         LazyColumn(
             Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(innerPadding),
             state = lazyListState,
-            contentPadding = innerPadding,
+            contentPadding = lazyColumnContentPadding,
             content = content
         )
     }
@@ -78,7 +82,7 @@ private fun Preview(
     @PreviewParameter(ColorSchemeProvider::class) colorScheme: ColorScheme
 ) {
     KoncertTheme(overrideColorScheme = colorScheme) {
-        KoncertScrollableScaffold(
+        KoncertLazyColumnScaffold(
             titleRes = R.string.app_name
         ) {
 

@@ -15,7 +15,6 @@ fun NavGraphBuilder.artistsGraph(
     windowSizeClass: WindowSizeClass,
 ) {
     composable(route = ArtistsDestination.route) {
-//        ArtistsRoute(windowSizeClass = windowSizeClass)
         AnnoyingCameraRoute()
     }
 }

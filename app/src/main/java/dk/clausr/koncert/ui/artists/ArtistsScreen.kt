@@ -6,7 +6,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dk.clausr.koncert.R
-import dk.clausr.koncert.ui.widgets.KoncertScrollableScaffold
+import dk.clausr.koncert.ui.widgets.KoncertLazyColumnScaffold
 
 @Composable
 fun ArtistsRoute(
@@ -24,7 +24,7 @@ fun ArtistsScreen(
     windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier,
 ) {
-    KoncertScrollableScaffold(
+    KoncertLazyColumnScaffold(
         titleRes = R.string.tab_artists,
         content = {
             item {

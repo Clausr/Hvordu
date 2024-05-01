@@ -1,12 +1,16 @@
 package dk.clausr.koncert.ui.camera
 
 import android.Manifest
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -18,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -116,8 +121,8 @@ fun AnnoyingCameraScreen(
         }
     }
 
-    val roll by remember(data?.roll) { derivedStateOf { (data?.roll ?: 0f) * 20f } }
-    val pitch by remember(data?.pitch) { derivedStateOf { (data?.pitch ?: 0f) * 20f } }
+    val roll by remember(data?.roll) { derivedStateOf { (data?.roll ?: 0f) * 10f } }
+    val pitch by remember(data?.pitch) { derivedStateOf { (data?.pitch ?: 0f) * 10f } }
 
     val fuzzyRange = 5f
 
@@ -125,9 +130,30 @@ fun AnnoyingCameraScreen(
         derivedStateOf { (roll != 0f && pitch != 0f) && abs(roll) < fuzzyRange && abs(pitch) < fuzzyRange }
     }
 
-    CameraPreviewScreen(
-        modifier = modifier,
-        enableTakeImageButton = isLookingDown
+    val overlayColor by animateColorAsState(
+        targetValue = if (isLookingDown) Color.Transparent else MaterialTheme.colorScheme.onBackground,
     )
+
+    Box(modifier) {
+        CameraPreviewScreen(
+            modifier = modifier,
+            enableTakeImageButton = isLookingDown
+        )
+
+        if (!isLookingDown) {
+            // Either make the color depend on how close to the wanted value we have or create a graphic element
+            Box(
+                Modifier
+                    .background(overlayColor)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Roll: $roll - Pitch: $pitch",
+                    color = MaterialTheme.colorScheme.background
+                )
+            }
+        }
+    }
 }
 

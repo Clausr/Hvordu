@@ -10,7 +10,6 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -69,17 +68,7 @@ fun CameraPreviewScreen(
     }
     val colors = MaterialTheme.colorScheme
     val takePictureEnabled = !takePictureInProgress && enableTakeImageButton
-    val buttonColor by remember(takePictureEnabled) {
-        mutableStateOf(
-            if (takePictureEnabled) {
-                colors.surface
-            } else {
-                colors.surface.copy(alpha = 0.38f)
-            }
-        )
-    }
 
-    val buttonColorAnim by animateColorAsState(targetValue = buttonColor)
     Box(
         contentAlignment = Alignment.BottomCenter,
         modifier = modifier.fillMaxSize()
@@ -93,7 +82,7 @@ fun CameraPreviewScreen(
                 .size(80.dp)
                 .drawWithCache {
                     onDrawBehind {
-                        drawCircle(buttonColorAnim)
+                        drawCircle(colors.surface)
 
                         drawOval(
                             color = Color.Black,

@@ -1,30 +1,40 @@
-
 package dk.clausr.koncert.ui.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.material3.Button
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dk.clausr.core.models.Concert
+import dk.clausr.core.models.UserData
 import dk.clausr.koncert.R
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
-import dk.clausr.koncert.ui.widgets.KoncertScrollableScaffold
-import dk.clausr.repo.concerts.ConcertMocks
 
 @Composable
 fun HomeRoute(
@@ -32,65 +42,82 @@ fun HomeRoute(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val concertsState = viewModel.concerts.collectAsStateWithLifecycle()
-    HomeScreen(
-        windowSizeClass = windowSizeClass,
-        concertState = concertsState.value,
-        modifier = modifier
-    )
+    val userData by viewModel.userData.collectAsStateWithLifecycle()
+
+    if (userData == null) {
+        CreateUserScreen(
+            windowSizeClass = windowSizeClass,
+            userData = userData,
+            modifier = modifier,
+            onCreateClicked = { viewModel.setData(it.username, it.group) }
+        )
+    } else {
+        //Chat screen
+    }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(
+fun CreateUserScreen(
     windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier,
-    concertState: List<Concert>
+    userData: UserData?,
+    onCreateClicked: (UserData) -> Unit,
 ) {
-    AllConcerts(
-        concertList = concertState,
-    )
-}
+    var username by remember(userData) {
+        mutableStateOf(userData?.username ?: "")
+    }
+    var group by remember(userData) {
+        mutableStateOf(userData?.group ?: "")
+    }
 
-@Composable
-fun AllConcerts(
-    concertList: List<Concert>
-) {
-    KoncertScrollableScaffold(
-        titleRes = R.string.app_name,
-        floatingActionButton = {
-//            ExtendableFloatingActionButton(extended = fabExtended, text = { /*TODO*/ }) {
-//
-//            }
-        }
-
-    ) {
-        item {
-//            MostRecentConcerts(concertList)
-            Spacer(modifier = Modifier.height(KoncertTheme.dimensions.padding8))
-        }
-
-        items(items = concertList) { concert ->
-            MostRecentCard(
-                concert = concert,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = KoncertTheme.dimensions.padding16),
-                onClick = {}
+    Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        topBar = {
+            TopAppBar(
+                windowInsets = WindowInsets.statusBars,
+                colors = TopAppBarDefaults.topAppBarColors(),
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.tab_overview),
+                    )
+                },
             )
-            Spacer(modifier = Modifier.height(KoncertTheme.dimensions.padding8))
-        }
-
-        items(100) {
-            Text(
-                text = "Bla bla ${it + 1}",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(horizontal = KoncertTheme.dimensions.padding16, vertical = KoncertTheme.dimensions.padding8)
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = username,
+                onValueChange = {
+                    username = it
+                },
+                supportingText = { Text("Should be unique") },
+                placeholder = { Text("Username") }
             )
-        }
 
-//        item {
-//            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-//        }
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = group,
+                onValueChange = {
+                    group = it
+                },
+                supportingText = { Text("Create or join group of this name") },
+                placeholder = { Text("Groupname") }
+            )
+
+            Button(onClick = {
+                onCreateClicked(UserData(username, group))
+            }) {
+                Text("Start")
+            }
+        }
     }
 }
 
@@ -105,9 +132,10 @@ fun Preview0(
 ) {
     BoxWithConstraints {
         KoncertTheme {
-            HomeScreen(
+            CreateUserScreen(
                 windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
-                concertState = ConcertMocks.concertsMock,
+                userData = UserData("Name", "Group"),
+                onCreateClicked = {},
             )
         }
     }

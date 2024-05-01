@@ -3,8 +3,8 @@ package dk.clausr.koncert.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dk.clausr.core.models.Concert
-import dk.clausr.repo.concerts.ConcertRepository
+import dk.clausr.core.models.UserData
+import dk.clausr.repo.userdata.UserRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -12,13 +12,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    repo: ConcertRepository
+    private val userRepository: UserRepository,
 ) : ViewModel() {
 
-    val concerts: StateFlow<List<Concert>> = repo.getLatestConcerts(3)
-        .stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = listOf()
-        )
+    val userData: StateFlow<UserData?> = userRepository.getUserData().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = null
+    )
+
+    fun setData(username: String, group: String) {
+        userRepository.setUserData(UserData(username, group))
+    }
 }
