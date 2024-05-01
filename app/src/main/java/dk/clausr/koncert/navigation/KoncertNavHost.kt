@@ -25,7 +25,9 @@ fun KoncertNavHost(
         modifier = modifier
     ) {
         homeGraph(windowSizeClass = windowSizeClass)
-        artistsGraph(windowSizeClass = windowSizeClass)
+        artistsGraph(
+            windowSizeClass = windowSizeClass
+        )
         parallaxGraph(windowSizeClass = windowSizeClass)
     }
 }

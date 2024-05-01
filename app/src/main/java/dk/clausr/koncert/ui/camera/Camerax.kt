@@ -45,6 +45,7 @@ import kotlin.coroutines.suspendCoroutine
 @Composable
 fun CameraPreviewScreen(
     enableTakeImageButton: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val lensFacing = CameraSelector.LENS_FACING_BACK
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -81,7 +82,7 @@ fun CameraPreviewScreen(
     val buttonColorAnim by animateColorAsState(targetValue = buttonColor)
     Box(
         contentAlignment = Alignment.BottomCenter,
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 

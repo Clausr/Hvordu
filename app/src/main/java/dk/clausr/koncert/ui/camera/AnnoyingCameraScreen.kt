@@ -1,8 +1,11 @@
-package dk.clausr.koncert.ui.parallax
+package dk.clausr.koncert.ui.camera
 
 import android.Manifest
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,14 +16,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
-import dk.clausr.koncert.ui.camera.CameraPreviewScreen
+import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import dk.clausr.koncert.utils.sensors.SensorData
 import dk.clausr.koncert.utils.sensors.SensorDataManager
 import kotlinx.coroutines.flow.collect
@@ -34,8 +39,6 @@ import kotlin.math.abs
 fun AnnoyingCameraRoute(
     modifier: Modifier = Modifier
 ) {
-    // Get permission
-// Camera permission state
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
@@ -56,7 +59,11 @@ fun CameraPermissionScreen(
     modifier: Modifier = Modifier,
     cameraPermissionState: PermissionState,
 ) {
-    Column {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         val textToShow = if (cameraPermissionState.status.shouldShowRationale) {
             // If the user has denied the permission but the rationale can be shown,
             // then gently explain why the app requires this permission
@@ -68,7 +75,13 @@ fun CameraPermissionScreen(
             "Camera permission required for this feature to be available. " +
                     "Please grant the permission"
         }
-        Text(textToShow)
+        Text(
+            text = textToShow,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(KoncertTheme.dimensions.padding16),
+            textAlign = TextAlign.Center
+        )
         Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
             Text("Request permission")
         }
@@ -112,8 +125,9 @@ fun AnnoyingCameraScreen(
         derivedStateOf { (roll != 0f && pitch != 0f) && abs(roll) < fuzzyRange && abs(pitch) < fuzzyRange }
     }
 
-    Box(modifier = modifier) {
-        CameraPreviewScreen(enableTakeImageButton = isLookingDown)
-    }
+    CameraPreviewScreen(
+        modifier = modifier,
+        enableTakeImageButton = isLookingDown
+    )
 }
 
