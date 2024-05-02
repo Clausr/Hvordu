@@ -1,11 +1,14 @@
 package dk.clausr.koncert.ui.home.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,72 +20,120 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import timber.log.Timber
 
 @Composable
-fun ExpandableFolder(
-    data: FolderData,
+fun NowComp(
+    item: NowData,
     modifier: Modifier = Modifier,
+    onClick: (LayoutCoordinates?) -> Unit = {},
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceVariant) {
-            LazyVerticalStaggeredGrid(
-                modifier = Modifier.size(160.dp),
-                columns = StaggeredGridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
-                verticalItemSpacing = 10.dp,
-                contentPadding = PaddingValues(20.dp),
-                userScrollEnabled = false,
-            ) {
-                itemsIndexed(data.items) { index, item ->
-                    val size = 60.dp - (index * 10.dp)
-                    Box(
-                        Modifier
-                            .requiredSize(size)
-                            .clip(CircleShape)
-                            .background(item.color),
-                        contentAlignment = Alignment.Center,
+    val interactionSource = remember { MutableInteractionSource() }
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        when (item) {
+            is NowData.Element -> {
+                Box(
+                    Modifier
+                        .size(80.dp)
+                        .clip(CircleShape)
+                        .clickable(onClick = { onClick(null) })
+                        .background(item.color)
+                )
+            }
+
+            is NowData.Folder -> {
+                var layoutCoords: LayoutCoordinates? by remember { mutableStateOf(null) }
+                Surface(
+                    modifier = Modifier.onGloballyPositioned {
+                        layoutCoords = it
+                        Timber.d("Folder positioned at: ${it.positionInWindow()}  ${it.size}")
+                    },
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    interactionSource = interactionSource,
+                    onClick = { onClick(layoutCoords) },
+                ) {
+                    LazyVerticalStaggeredGrid(
+                        modifier = Modifier.size(80.dp),
+                        columns = StaggeredGridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(
+                            16.dp,
+                            Alignment.CenterHorizontally
+                        ),
+                        verticalItemSpacing = 8.dp,
+                        contentPadding = PaddingValues(16.dp),
+                        userScrollEnabled = false,
                     ) {
-                        Text(
-                            modifier = Modifier,
-                            text = item.name,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            textAlign = TextAlign.Center
-                        )
+                        itemsIndexed(item.items) { index, item ->
+                            val size = 30.dp - (index * 5.dp)
+                            Box(
+                                Modifier
+                                    .requiredSize(size)
+                                    .clip(CircleShape)
+                                    .background(item.color),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    modifier = Modifier,
+                                    text = item.name,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
 
         Text(
-            text = data.name,
+            text = item.name,
             modifier = Modifier.width(IntrinsicSize.Max),
             color = MaterialTheme.colorScheme.primary
         )
     }
-
 }
 
 @Preview
 @Composable
 fun PreviewExpandableFolder() {
     KoncertTheme {
-        Surface(color = MaterialTheme.colorScheme.background) {
-            ExpandableFolder(
-                data = FolderData(
+        Row(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+            NowComp(
+                item = NowData.Folder(
                     items = listOf(
-                        FolderItem(name = "ABC", Color.Red),
-                        FolderItem(name = "QWERTY", Color.Green),
-                        FolderItem(name = "Topkek", Color.Blue),
-                    ), name = "Upcoming things"
+                        NowData.Element(name = "ABC", Color.Red),
+                        NowData.Element(name = "QWERTY", Color.Green),
+                        NowData.Element(name = "Topkek", Color.Blue),
+                    ),
+                    name = "Upcoming things"
+                )
+            )
+
+            NowComp(
+                item = NowData.Element(
+                    name = "Upcoming things",
+                    color = Color.Magenta,
                 )
             )
         }

@@ -1,14 +1,11 @@
 package dk.clausr.koncert.ui
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -37,31 +34,32 @@ fun KoncertApp(
     KoncertTheme {
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            bottomBar = {
-                if (appState.shouldShowBottomBar) {
-                    KoncertBottomBar(
-                        destinations = appState.topLevelDestinations,
-                        onNavigateToDestination = appState::navigate,
-                        currentDestination = appState.currentDestination
-                    )
-                }
-            }) { padding ->
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .windowInsetsPadding(
-                        WindowInsets.safeDrawing
-                            .only(WindowInsetsSides.Horizontal)
-                    )
-            ) {
-                if (appState.shouldShowNavRail) {
-                    KoncertNavRail(
-                        destinations = appState.topLevelDestinations,
-                        onNavigateToDestination = appState::navigate,
-                        currentDestination = appState.currentDestination,
-                        modifier = Modifier.safeDrawingPadding()
-                    )
-                }
+//            bottomBar = {
+//                if (appState.shouldShowBottomBar) {
+//                    KoncertBottomBar(
+//                        destinations = appState.topLevelDestinations,
+//                        onNavigateToDestination = appState::navigate,
+//                        currentDestination = appState.currentDestination
+//                    )
+//                }
+//            },
+        ) { padding ->
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .windowInsetsPadding(
+//                        WindowInsets.safeDrawing
+//                            .only(WindowInsetsSides.Horizontal)
+//                    )
+//            ) {
+//                if (appState.shouldShowNavRail) {
+//                    KoncertNavRail(
+//                        destinations = appState.topLevelDestinations,
+//                        onNavigateToDestination = appState::navigate,
+//                        currentDestination = appState.currentDestination,
+//                        modifier = Modifier.safeDrawingPadding()
+//                    )
+//                }
 
                 KoncertNavHost(
                     navController = appState.navController,
@@ -73,7 +71,7 @@ fun KoncertApp(
                         .consumeWindowInsets(padding)
                 )
             }
-        }
+//        }
     }
 }
 
