@@ -13,5 +13,9 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Koncert"
-include(':app', ':repo', ':api', ':core')
-include ':datastore'
+include(":app")
+include(":repo")
+include(":api")
+include(":core:datastore")
+include(":core:datastore-proto")
+include(":core:common")

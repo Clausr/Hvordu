@@ -1,36 +1,19 @@
 package dk.clausr.repo.userdata
 
-import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
+import dk.clausr.core.models.UserData
 import dk.clausr.koncert.data.UserPreferencesDataSource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    @ApplicationContext val context: Context,
     private val userSettingDataSource: UserPreferencesDataSource,
 ) {
-//
-//    // Use datastore instead, this is rubbish
-//    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-//    fun getUserData(): Flow<UserData?> = flow {
-//        val prefUserName = sharedPreferences.getString(USERNAME, null)
-//        val prefGroup = sharedPreferences.getString(GROUP, null)
-//        if (prefUserName != null && prefGroup != null) {
-//            emit(UserData(prefUserName, prefGroup))
-//        } else {
-//            emit(null)
-//        }
-//    }
-//
-//    fun setUserData(userData: UserData) {
-//        sharedPreferences.edit {
-//            putString(USERNAME, userData.username)
-//            putString(GROUP, userData.group)
-//        }
-//    }
+    fun getUserData(): Flow<UserData?> = userSettingDataSource.userData
 
-    private val USERNAME = "username"
-    private val GROUP = "group"
+    suspend fun setUserData(userData: UserData) {
+        userSettingDataSource.setUserPreferences(userData)
+    }
+
 }

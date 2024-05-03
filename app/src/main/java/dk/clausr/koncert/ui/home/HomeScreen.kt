@@ -48,6 +48,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.core.models.UserData
 import dk.clausr.koncert.R
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
@@ -62,16 +63,15 @@ fun HomeRoute(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-//    val userData by viewModel.userData.collectAsStateWithLifecycle()
+    val userData by viewModel.userData.collectAsStateWithLifecycle()
 
-    val userData = UserData("lel", "lul")
     if (userData == null) {
         CreateUserScreen(
             windowSizeClass = windowSizeClass,
             userData = userData,
             modifier = modifier,
             onCreateClicked = {
-//                viewModel.setData(it.username, it.group)
+                viewModel.setData(it.username, it.group)
             }
         )
     } else {

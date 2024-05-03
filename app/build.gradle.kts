@@ -49,7 +49,7 @@ android {
 
 dependencies {
     implementation(project(":repo"))
-    implementation(project(":core"))
+    implementation(project(":core:common"))
     implementation(libs.androidx.ktx)
 
     //Hilt
@@ -70,7 +70,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    implementation(libs.androidx.compose.bom)
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     // Tooling support (Previews, etc.)
     implementation(libs.androidx.ui.tooling)

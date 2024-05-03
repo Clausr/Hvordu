@@ -27,6 +27,8 @@ protobufPlugin = "0.9.4"
 protobuf = "3.25.1"
 aap = "8.3.2"
 ksp = "1.9.23-1.0.20"
+compileSdk = "34"
+minSdk = "24"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }

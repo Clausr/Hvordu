@@ -34,8 +34,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":core"))
-    implementation(project(":datastore"))
+    implementation(project(":core:common"))
+    implementation(project(":core:datastore"))
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.ktx)

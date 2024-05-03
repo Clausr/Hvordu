@@ -3,15 +3,14 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.protobuf)
 }
 
 android {
-    namespace = "dk.clausr.koncert.data"
-    compileSdk = 34
+    namespace = "dk.clausr.koncert.core.datastore"
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 24
+        minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -20,10 +19,6 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
         }
     }
     compileOptions {
@@ -35,35 +30,21 @@ android {
     }
 }
 
-protobuf {
-    protoc {
-        artifact = libs.protobuf.protoc.get().toString()
-    }
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                register("java") {
-                    option("lite")
-                }
-                register("kotlin") {
-                    option("lite")
-                }
-            }
-        }
-    }
-}
 
 
 dependencies {
+    api(project(":core:datastore-proto"))
+    implementation(project(":core:common"))
     implementation(libs.androidx.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.datastore)
-    implementation(libs.protobuf.protoc)
-    implementation(libs.protobuf.kotlin.lite)
+
 
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.android)
+
+    implementation(libs.protobuf.kotlin.lite)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
