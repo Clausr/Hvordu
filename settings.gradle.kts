@@ -3,6 +3,8 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+
+
     }
 }
 dependencyResolutionManagement {
@@ -10,6 +12,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 rootProject.name = "Koncert"
@@ -19,3 +22,4 @@ include(":api")
 include(":core:datastore")
 include(":core:datastore-proto")
 include(":core:common")
+include(":core:supabase")

@@ -38,11 +38,17 @@ import androidx.compose.ui.unit.times
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import timber.log.Timber
 
+
+data class FolderLayout(
+    val folderData: LayoutCoordinates,
+    val itemsData: List<LayoutCoordinates>,
+)
+
 @Composable
 fun NowComp(
     item: NowData,
     modifier: Modifier = Modifier,
-    onClick: (LayoutCoordinates?) -> Unit = {},
+    onClick: (FolderLayout?) -> Unit = {},
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Column(
@@ -63,15 +69,25 @@ fun NowComp(
 
             is NowData.Folder -> {
                 var layoutCoords: LayoutCoordinates? by remember { mutableStateOf(null) }
+                val itemLayoutCoordinates = remember { mutableMapOf<Int, LayoutCoordinates>() }
+
                 Surface(
                     modifier = Modifier.onGloballyPositioned {
                         layoutCoords = it
-                        Timber.d("Folder positioned at: ${it.positionInWindow()}  ${it.size}")
+//                        Timber.d("Folder positioned at: ${it.positionInWindow()}  ${it.size}")
                     },
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     interactionSource = interactionSource,
-                    onClick = { onClick(layoutCoords) },
+                    onClick = {
+                        layoutCoords?.let {
+                            onClick(
+                                FolderLayout(
+                                    folderData = it,
+                                    itemsData = itemLayoutCoordinates.mapNotNull { it.value })
+                            )
+                        }
+                    },
                 ) {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier.size(80.dp),
@@ -88,6 +104,10 @@ fun NowComp(
                             val size = 30.dp - (index * 5.dp)
                             Box(
                                 Modifier
+                                    .onGloballyPositioned {
+                                        itemLayoutCoordinates[index] = it
+                                        Timber.d("${item.name} placed at ${it.positionInWindow()} with size: ${it.size}")
+                                    }
                                     .requiredSize(size)
                                     .clip(CircleShape)
                                     .background(item.color),

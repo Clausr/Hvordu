@@ -10,7 +10,6 @@ android {
 
     defaultConfig {
         minSdk = 24
-        targetSdk = 34
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 //        consumerProguardFiles += "consumer-rules.pro"
@@ -34,7 +33,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.timber)
+    api(libs.timber)
     implementation(libs.androidx.ktx)
     testImplementation(libs.junit)
 

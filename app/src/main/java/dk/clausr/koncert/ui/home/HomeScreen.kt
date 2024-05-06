@@ -29,6 +29,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,7 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -53,8 +53,10 @@ import dk.clausr.core.models.UserData
 import dk.clausr.koncert.R
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import dk.clausr.koncert.ui.home.components.FolderLayout
 import dk.clausr.koncert.ui.home.components.NowComp
 import dk.clausr.koncert.ui.home.components.NowData
+import dk.clausr.repo.domain.Message
 import timber.log.Timber
 
 @Composable
@@ -64,7 +66,16 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val userData by viewModel.userData.collectAsStateWithLifecycle()
+    val messages by viewModel.messages.collectAsStateWithLifecycle()
 
+    LaunchedEffect(key1 = Unit) {
+        viewModel.getMessages()
+        viewModel.connectToRealtime()
+    }
+//    val someMessages by viewModel.someMessages.collectAsStateWithLifecycle()
+
+    Timber.d("Messages: $messages")
+//    Timber.d("Some Messages: $someMessages")
     if (userData == null) {
         CreateUserScreen(
             windowSizeClass = windowSizeClass,
@@ -76,7 +87,14 @@ fun HomeRoute(
         )
     } else {
         //Chat screen
-        UserScreen(userData = userData!!)
+        UserScreen(
+            userData = userData!!,
+            onClick = {
+//                viewModel.getMessages()
+                viewModel.sendMessage()
+            },
+            messages = messages
+        )
     }
 }
 
@@ -84,6 +102,8 @@ fun HomeRoute(
 @Composable
 fun UserScreen(
     userData: UserData,
+    onClick: () -> Unit,
+    messages: List<Message>,
     modifier: Modifier = Modifier,
 ) {
     var showScrim by remember { mutableStateOf(false) }
@@ -100,7 +120,7 @@ fun UserScreen(
         )
     )
 
-    var popupCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
+    var popupCoordinates: FolderLayout? by remember { mutableStateOf(null) }
 
     Box(Modifier.fillMaxSize()) {
         Scaffold(
@@ -115,6 +135,13 @@ fun UserScreen(
                 Text(text = "Username: ${userData.username}")
                 Text(text = "Group: ${userData.group}")
 
+                Button(onClick = onClick) {
+                    Text(text = "Click me")
+                }
+
+                messages.forEach {
+                    Text(it.toString())
+                }
                 LazyVerticalGrid(
                     modifier = Modifier.fillMaxWidth(),
                     columns = GridCells.Fixed(3),
@@ -125,8 +152,6 @@ fun UserScreen(
                             when (data) {
                                 is NowData.Element -> Unit
                                 is NowData.Folder -> {
-//                                    val layoutCoordinates = it
-
                                     popupCoordinates = it
 
                                     showScrim = true
@@ -144,12 +169,20 @@ fun UserScreen(
                 onDismissRequest = { showScrim = false },
                 visible = showScrim
             )
-            Timber.d("showScrim && popupCoordinates != null ${showScrim} - ${popupCoordinates != null} - ${popupCoordinates?.positionInWindow()}")
-            if (showScrim && popupCoordinates != null) {
+            Timber.d("showScrim && popupCoordinates != null ${showScrim} - ${popupCoordinates != null}")
+            val folderData = popupCoordinates ?: return
+            if (showScrim) {
+                // Get original positions
+
+                // Find where to put items
+
+                // Start animating ?
+
+
                 NowComp(
                     modifier = Modifier
                         .graphicsLayer {
-                            popupCoordinates?.positionInWindow()?.let {
+                            folderData.folderData.positionInWindow().let {
                                 translationX = it.x
                                 translationY = it.y
                             }
@@ -263,8 +296,7 @@ fun CreateUserScreen(
 @Composable
 fun UserScreenPreview() {
     KoncertTheme {
-
-        UserScreen(userData = UserData("Name", "group"))
+        UserScreen(userData = UserData("Name", "group"), {}, emptyList())
     }
 }
 

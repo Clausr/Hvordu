@@ -1,7 +1,9 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-//    alias(libs.plugins.kotlin.annotation.processor)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
@@ -16,7 +18,18 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // Set value part
+        val properties = Properties()
+
+        val localPropertiesFile = rootProject.file("local.properties")
+        properties.load(FileInputStream(localPropertiesFile))
+        buildConfigField(
+            "String",
+            "SUPABASE_ANON_KEY",
+            "\"${properties.getProperty("SUPABASE_ANON_KEY")}\""
+        )
+        buildConfigField("String", "SECRET", "\"${properties.getProperty("SECRET")}\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${properties.getProperty("SUPABASE_URL")}\"")
     }
 
     buildTypes {
@@ -50,6 +63,7 @@ android {
 dependencies {
     implementation(project(":repo"))
     implementation(project(":core:common"))
+    implementation(project(":core:supabase"))
     implementation(libs.androidx.ktx)
 
     //Hilt
@@ -69,6 +83,8 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.activity.compose)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -78,24 +94,24 @@ dependencies {
 
     // Material Design
     implementation(libs.androidx.material)
-
-    // Material design icons
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
-
-    implementation(libs.androidx.foundation)
-    implementation(libs.androidx.activity.compose)
-
-
-    implementation(libs.kotlinx.coroutines.android)
-
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.windowSizeClass)
 
-    implementation(libs.timber)
+    // Supabase
+//    implementation(platform(libs.supabase.bom))
+//    implementation(libs.supabase.realtime)
+//    implementation(libs.supabase.postgrest)
+//    implementation(libs.supabase.storage)
 
+    implementation(libs.kotlinx.coroutines.android)
+
+
+    implementation(libs.timber)
     implementation(libs.accompanist.permissions)
 
+    // Camera
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.view)

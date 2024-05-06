@@ -10,16 +10,11 @@ android {
 
     defaultConfig {
         minSdk = 24
-        targetSdk = 34
-
-//        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-//        consumerProguardFiles = "consumer-rules.pro"
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-//            proguardFiles += getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -30,13 +25,14 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    namespace = "dk.clausr.repo"
+    namespace = "dk.clausr.koncert.repo"
 }
 
 dependencies {
+    implementation(project(":api"))
     implementation(project(":core:common"))
     implementation(project(":core:datastore"))
-
+    implementation(project(":core:supabase"))
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.ktx)
 
