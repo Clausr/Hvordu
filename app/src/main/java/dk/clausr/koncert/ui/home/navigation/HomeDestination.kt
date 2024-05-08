@@ -1,9 +1,11 @@
 package dk.clausr.koncert.ui.home.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import dk.clausr.koncert.navigation.KoncertNavigationDestination
+import dk.clausr.koncert.ui.chat.navigation.ChatDestination
 import dk.clausr.koncert.ui.home.HomeRoute
 
 object HomeDestination : KoncertNavigationDestination {
@@ -12,9 +14,15 @@ object HomeDestination : KoncertNavigationDestination {
 }
 
 fun NavGraphBuilder.homeGraph(
-    windowSizeClass: WindowSizeClass
+    windowSizeClass: WindowSizeClass,
+    navController: NavController,
 ) {
     composable(route = HomeDestination.route) {
-        HomeRoute(windowSizeClass = windowSizeClass)
+        HomeRoute(
+            windowSizeClass = windowSizeClass,
+            onGoToChat = {
+                navController.navigate(ChatDestination.route)
+            }
+        )
     }
 }

@@ -63,6 +63,6 @@ object SupabaseModule {
     @Provides
     @Singleton
     fun provideSupabaseRealtimeChannel(realtime: Realtime): RealtimeChannel {
-        return realtime.channel("rartis")
+        return realtime.channel("test-chat")
     }
 }

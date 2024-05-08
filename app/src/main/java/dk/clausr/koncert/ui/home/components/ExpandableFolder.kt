@@ -1,5 +1,11 @@
 package dk.clausr.koncert.ui.home.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -9,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -16,6 +23,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,13 +38,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import androidx.compose.ui.window.Popup
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
-import timber.log.Timber
 
 
 data class FolderLayout(
@@ -47,10 +54,12 @@ data class FolderLayout(
 @Composable
 fun NowComp(
     item: NowData,
+    expanded: Boolean,
     modifier: Modifier = Modifier,
-    onClick: (FolderLayout?) -> Unit = {},
+    onClick: (Boolean) -> Unit = {},
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+    var isExpanded by remember(expanded) { mutableStateOf(expanded) }
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -62,7 +71,7 @@ fun NowComp(
                     Modifier
                         .size(80.dp)
                         .clip(CircleShape)
-                        .clickable(onClick = { onClick(null) })
+                        .clickable(onClick = { onClick(false) })
                         .background(item.color)
                 )
             }
@@ -71,54 +80,97 @@ fun NowComp(
                 var layoutCoords: LayoutCoordinates? by remember { mutableStateOf(null) }
                 val itemLayoutCoordinates = remember { mutableMapOf<Int, LayoutCoordinates>() }
 
+                val someShape by remember(expanded) {
+                    mutableStateOf(
+                        if (expanded) RoundedCornerShape(
+                            10.dp
+                        ) else {
+                            CircleShape
+                        }
+                    )
+                }
                 Surface(
-                    modifier = Modifier.onGloballyPositioned {
-                        layoutCoords = it
-//                        Timber.d("Folder positioned at: ${it.positionInWindow()}  ${it.size}")
-                    },
-                    shape = CircleShape,
+                    shape = someShape,
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     interactionSource = interactionSource,
                     onClick = {
-                        layoutCoords?.let {
-                            onClick(
-                                FolderLayout(
-                                    folderData = it,
-                                    itemsData = itemLayoutCoordinates.mapNotNull { it.value })
-                            )
-                        }
-                    },
+                        onClick(!isExpanded)
+                        isExpanded = !isExpanded
+                    }
                 ) {
-                    LazyVerticalStaggeredGrid(
-                        modifier = Modifier.size(80.dp),
-                        columns = StaggeredGridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(
-                            16.dp,
-                            Alignment.CenterHorizontally
-                        ),
-                        verticalItemSpacing = 8.dp,
-                        contentPadding = PaddingValues(16.dp),
-                        userScrollEnabled = false,
-                    ) {
-                        itemsIndexed(item.items) { index, item ->
-                            val size = 30.dp - (index * 5.dp)
-                            Box(
-                                Modifier
-                                    .onGloballyPositioned {
-                                        itemLayoutCoordinates[index] = it
-                                        Timber.d("${item.name} placed at ${it.positionInWindow()} with size: ${it.size}")
+                    AnimatedContent(targetState = isExpanded, transitionSpec = {
+                        // Fade in with a delay so that it starts after fade out
+                        fadeIn(animationSpec = tween(150))
+                            .togetherWith(fadeOut(animationSpec = tween(150)))
+                            .using(
+                                SizeTransform()
+                            )
+                    }) {
+                        if (it) {
+                            Popup(onDismissRequest = { isExpanded = false }) {
+//                            Dialog(onDismissRequest = { isExpanded = false }) {
+                                Surface(
+                                    shape = someShape,
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                    ) {
+                                        item.items.forEach { item ->
+                                            Box(
+                                                Modifier
+                                                    .requiredSize(80.dp)
+                                                    .clip(CircleShape)
+                                                    .background(item.color),
+                                                contentAlignment = Alignment.Center,
+                                            ) {
+                                                Text(
+                                                    modifier = Modifier,
+                                                    text = item.name,
+                                                    color = MaterialTheme.colorScheme.onBackground,
+                                                    textAlign = TextAlign.Center
+                                                )
+                                            }
+                                        }
                                     }
-                                    .requiredSize(size)
-                                    .clip(CircleShape)
-                                    .background(item.color),
-                                contentAlignment = Alignment.Center,
+                                }
+                            }
+                        } else {
+                            LazyVerticalStaggeredGrid(
+                                modifier = Modifier.size(80.dp),
+                                columns = StaggeredGridCells.Fixed(2),
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    16.dp,
+                                    Alignment.CenterHorizontally
+                                ),
+                                verticalItemSpacing = 8.dp,
+                                contentPadding = PaddingValues(16.dp),
+                                userScrollEnabled = false,
                             ) {
-                                Text(
-                                    modifier = Modifier,
-                                    text = item.name,
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    textAlign = TextAlign.Center
-                                )
+                                itemsIndexed(item.items) { index, item ->
+                                    val size = 30.dp - (index * 5.dp)
+                                    Box(
+                                        Modifier
+                                            .onGloballyPositioned {
+                                                itemLayoutCoordinates[index] = it
+//                                        Timber.d("${item.name} placed at ${it.positionInWindow()} with size: ${it.size}")
+                                            }
+                                            .requiredSize(size)
+                                            .clip(CircleShape)
+                                            .background(item.color),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        Text(
+                                            modifier = Modifier,
+                                            text = item.name,
+                                            color = MaterialTheme.colorScheme.onBackground,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
+//                                }
                             }
                         }
                     }
@@ -140,6 +192,7 @@ fun PreviewExpandableFolder() {
     KoncertTheme {
         Row(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
             NowComp(
+                expanded = false,
                 item = NowData.Folder(
                     items = listOf(
                         NowData.Element(name = "ABC", Color.Red),
@@ -151,6 +204,7 @@ fun PreviewExpandableFolder() {
             )
 
             NowComp(
+                expanded = false,
                 item = NowData.Element(
                     name = "Upcoming things",
                     color = Color.Magenta,

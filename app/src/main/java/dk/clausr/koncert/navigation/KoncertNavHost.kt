@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import dk.clausr.koncert.ui.artists.navigation.artistsGraph
+import dk.clausr.koncert.ui.chat.navigation.chatGraph
 import dk.clausr.koncert.ui.home.navigation.HomeDestination
 import dk.clausr.koncert.ui.home.navigation.homeGraph
 import dk.clausr.koncert.ui.parallax.navigation.parallaxGraph
@@ -24,10 +25,14 @@ fun KoncertNavHost(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        homeGraph(windowSizeClass = windowSizeClass)
+        homeGraph(
+            windowSizeClass = windowSizeClass,
+            navController = navController,
+        )
         artistsGraph(
             windowSizeClass = windowSizeClass
         )
         parallaxGraph(windowSizeClass = windowSizeClass)
+        chatGraph(navController)
     }
 }

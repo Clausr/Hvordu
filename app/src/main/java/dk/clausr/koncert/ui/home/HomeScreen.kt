@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +28,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,16 +35,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.core.models.UserData
@@ -56,26 +53,16 @@ import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import dk.clausr.koncert.ui.home.components.FolderLayout
 import dk.clausr.koncert.ui.home.components.NowComp
 import dk.clausr.koncert.ui.home.components.NowData
-import dk.clausr.repo.domain.Message
-import timber.log.Timber
 
 @Composable
 fun HomeRoute(
     windowSizeClass: WindowSizeClass,
+    onGoToChat: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val userData by viewModel.userData.collectAsStateWithLifecycle()
-    val messages by viewModel.messages.collectAsStateWithLifecycle()
 
-    LaunchedEffect(key1 = Unit) {
-        viewModel.getMessages()
-        viewModel.connectToRealtime()
-    }
-//    val someMessages by viewModel.someMessages.collectAsStateWithLifecycle()
-
-    Timber.d("Messages: $messages")
-//    Timber.d("Some Messages: $someMessages")
     if (userData == null) {
         CreateUserScreen(
             windowSizeClass = windowSizeClass,
@@ -90,10 +77,8 @@ fun HomeRoute(
         UserScreen(
             userData = userData!!,
             onClick = {
-//                viewModel.getMessages()
-                viewModel.sendMessage()
+                onGoToChat()
             },
-            messages = messages
         )
     }
 }
@@ -103,7 +88,6 @@ fun HomeRoute(
 fun UserScreen(
     userData: UserData,
     onClick: () -> Unit,
-    messages: List<Message>,
     modifier: Modifier = Modifier,
 ) {
     var showScrim by remember { mutableStateOf(false) }
@@ -139,22 +123,22 @@ fun UserScreen(
                     Text(text = "Click me")
                 }
 
-                messages.forEach {
-                    Text(it.toString())
-                }
                 LazyVerticalGrid(
                     modifier = Modifier.fillMaxWidth(),
                     columns = GridCells.Fixed(3),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(nowData) { data ->
-                        NowComp(item = data, onClick = {
+                        NowComp(
+                            item = data,
+                            expanded = showScrim,
+                            onClick = {
                             when (data) {
                                 is NowData.Element -> Unit
                                 is NowData.Folder -> {
-                                    popupCoordinates = it
+//                                    popupCoordinates = it
 
-                                    showScrim = true
+                                    showScrim = it
                                 }
                             }
                         })
@@ -162,41 +146,11 @@ fun UserScreen(
                 }
             }
         }
-
-        Box(Modifier.fillMaxSize()) {
-            Scrim(
-                color = BottomSheetDefaults.ScrimColor,
-                onDismissRequest = { showScrim = false },
-                visible = showScrim
-            )
-            Timber.d("showScrim && popupCoordinates != null ${showScrim} - ${popupCoordinates != null}")
-            val folderData = popupCoordinates ?: return
-            if (showScrim) {
-                // Get original positions
-
-                // Find where to put items
-
-                // Start animating ?
-
-
-                NowComp(
-                    modifier = Modifier
-                        .graphicsLayer {
-                            folderData.folderData.positionInWindow().let {
-                                translationX = it.x
-                                translationY = it.y
-                            }
-                        },
-                    item = NowData.Element("Popped up", Color.Magenta)
-                )
-            }
-        }
     }
-
 }
 
 @Composable
-private fun Scrim(
+fun Scrim(
     color: Color,
     onDismissRequest: () -> Unit,
     visible: Boolean
@@ -219,6 +173,7 @@ private fun Scrim(
         }
         Canvas(
             Modifier
+                .zIndex(500F)
                 .fillMaxSize()
                 .then(dismissSheet)
         ) {
@@ -296,7 +251,7 @@ fun CreateUserScreen(
 @Composable
 fun UserScreenPreview() {
     KoncertTheme {
-        UserScreen(userData = UserData("Name", "group"), {}, emptyList())
+        UserScreen(userData = UserData("Name", "group"), {})
     }
 }
 
