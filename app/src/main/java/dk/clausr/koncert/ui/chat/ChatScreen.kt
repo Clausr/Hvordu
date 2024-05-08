@@ -3,6 +3,7 @@ package dk.clausr.koncert.ui.chat
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -81,7 +82,8 @@ fun ChatScreen(
         }
     }
     Scaffold(
-        modifier = modifier,
+        contentWindowInsets = WindowInsets(0),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { Text("Chad") },
@@ -110,9 +112,8 @@ fun ChatScreen(
         LazyColumn(
             state = lazyState,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
+                .padding(innerPadding),
+//                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             reverseLayout = true,
         ) {

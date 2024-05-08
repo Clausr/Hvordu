@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+
         setContentView(ComposeView(context = this).apply {
             setKoncertContent {
                 KoncertApp(calculateWindowSizeClass(activity = this@MainActivity))
