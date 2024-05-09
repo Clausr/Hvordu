@@ -9,7 +9,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,19 +46,25 @@ import kotlin.math.abs
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AnnoyingCameraRoute(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCloseClicked: () -> Unit,
 ) {
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
     )
 
-    if (cameraPermissionState.status.isGranted) {
-        AnnoyingCameraScreen(modifier)
-    } else {
-        CameraPermissionScreen(
-            modifier = modifier,
-            cameraPermissionState = cameraPermissionState
-        )
+    Column(modifier) {
+        IconButton(onClick = onCloseClicked) {
+            Icon(Icons.Default.Close, contentDescription = null)
+        }
+
+        if (cameraPermissionState.status.isGranted) {
+            AnnoyingCameraScreen()
+        } else {
+            CameraPermissionScreen(
+                cameraPermissionState = cameraPermissionState
+            )
+        }
     }
 }
 
@@ -65,7 +75,7 @@ fun CameraPermissionScreen(
     cameraPermissionState: PermissionState,
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -136,7 +146,7 @@ fun AnnoyingCameraScreen(
 
     Box(modifier) {
         CameraPreviewScreen(
-            modifier = modifier,
+            modifier = Modifier,
             enableTakeImageButton = isLookingDown
         )
 
@@ -144,8 +154,8 @@ fun AnnoyingCameraScreen(
             // Either make the color depend on how close to the wanted value we have or create a graphic element
             Box(
                 Modifier
-                    .background(overlayColor)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .background(overlayColor),
                 contentAlignment = Alignment.Center
             ) {
                 Text(

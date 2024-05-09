@@ -12,7 +12,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -71,13 +71,14 @@ fun CameraPreviewScreen(
 
     Box(
         contentAlignment = Alignment.BottomCenter,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
     ) {
-        AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
+        AndroidView({ previewView })
 
         Box(
             modifier = Modifier
                 .padding(bottom = KoncertTheme.dimensions.padding16)
+                .navigationBarsPadding()
                 .clip(CircleShape)
                 .size(80.dp)
                 .drawWithCache {
