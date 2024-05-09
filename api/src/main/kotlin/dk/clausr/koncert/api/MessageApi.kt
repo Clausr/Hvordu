@@ -14,10 +14,10 @@ class MessageApi @Inject constructor(
 
     suspend fun retrieveMessages(): List<MessageDto> = table.select().decodeList()
 
-    suspend fun createMessage(content: String): MessageDto {
+    suspend fun createMessage(username: String, content: String): MessageDto {
         return table.insert(buildJsonObject {
             put("content", content)
-            put("creator_id", "Clausr")
+            put("creator_id", username)
         }) {
             select()
         }.decodeSingle()

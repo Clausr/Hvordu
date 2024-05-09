@@ -1,8 +1,8 @@
 package dk.clausr.koncert.ui.chat
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,10 +22,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.clausr.koncert.ui.chat.mapper.mapToChatItem
+import dk.clausr.koncert.ui.chat.ui.ChatItem
 import dk.clausr.repo.domain.Message
 import io.github.jan.supabase.realtime.RealtimeChannel
 
@@ -65,7 +65,7 @@ fun ChatRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatScreen(
     messages: List<Message>,
@@ -83,7 +83,8 @@ fun ChatScreen(
     }
     Scaffold(
         contentWindowInsets = WindowInsets(0),
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { Text("Chad") },
@@ -112,23 +113,20 @@ fun ChatScreen(
         LazyColumn(
             state = lazyState,
             modifier = Modifier
-                .padding(innerPadding),
-//                .padding(horizontal = 16.dp),
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             reverseLayout = true,
         ) {
             items(messages) { message ->
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Card {
-                        Column(Modifier.padding(8.dp)) {
-                            Text(text = message.creatorId, fontWeight = FontWeight.Bold)
-                            Text(message.content)
-                        }
-                    }
-                    Text(message.createdAt)
-                }
+                val chatItem = message.mapToChatItem()
+
+                ChatItem(
+                    modifier = Modifier.animateItemPlacement(),
+                    item = chatItem,
+                    timestamp = message.createdAt,
+                )
             }
         }
     }

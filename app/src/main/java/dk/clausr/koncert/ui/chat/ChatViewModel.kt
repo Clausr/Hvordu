@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.repo.chat.ChatRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.realtime.RealtimeChannel
-import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -25,11 +24,6 @@ class ChatViewModel @Inject constructor(
             initialValue = emptyList()
         )
 
-    override fun onCleared() {
-        super.onCleared()
-        disconnectFromRealtime()
-    }
-
     val connectionStatus = realtimeChannel.status
 
     fun connectToRealtime() = viewModelScope.launch {
@@ -37,7 +31,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun disconnectFromRealtime() = viewModelScope.launch {
-        supabase.realtime.disconnect()
+        chatRepository.disconnectFromRealtime()
     }
 
     fun getMessages() = viewModelScope.launch {
