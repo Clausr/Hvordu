@@ -35,6 +35,8 @@ class ChatRepository @Inject constructor(
 ) {
     var username: String = ""
 
+    val userData = userRepository.getUserData()
+
     init {
         CoroutineScope(ioDispatcher).launch {
             userRepository.getUserData().collectLatest {

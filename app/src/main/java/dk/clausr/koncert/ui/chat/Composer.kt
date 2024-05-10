@@ -1,14 +1,16 @@
 package dk.clausr.koncert.ui.chat
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeAnimationTarget
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,39 +37,95 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.koncert.ui.camera.AnnoyingCameraRoute
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import timber.log.Timber
 
+// TODO Give this its own ViewModel with keyboard things
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChatComposer(
     onChatSent: (String) -> Unit,
-    cameraOpened: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ComposerViewModel = hiltViewModel()
 ) {
+    val savedKeyboardHeight by viewModel.keyboardHeight.collectAsStateWithLifecycle()
+
+    // Keyboard thingy
+    var lastKeyboardHeight by remember(savedKeyboardHeight) {
+        mutableStateOf(
+            savedKeyboardHeight?.dp ?: 300.dp
+        )
+    }
+    val keyboardVisible = WindowInsets.isImeVisible
+    val keyboardHeight = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding()
+
+    LaunchedEffect(keyboardVisible) {
+        if (keyboardVisible && lastKeyboardHeight == 300.dp) {
+            lastKeyboardHeight = keyboardHeight
+            viewModel.setKeyboardHeight(keyboardHeight.value)
+        }
+    }
+
+    ChatComposer(
+        modifier = modifier,
+        onChatSent = onChatSent,
+        keyboardHeight = lastKeyboardHeight,
+    )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ChatComposer(
+    onChatSent: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    keyboardHeight: Dp = 300.dp,
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     var textField by remember { mutableStateOf(TextFieldValue()) }
     var initialSize by remember { mutableStateOf(IntSize.Zero) }
+    var cameraOpen by remember { mutableStateOf(false) }
+    val keyboardVisible = WindowInsets.isImeVisible
 
-    var openCamera by remember { mutableStateOf(false) }
+    LaunchedEffect(keyboardVisible) {
+        if (keyboardVisible && cameraOpen) {
+            cameraOpen = false
+        }
+    }
 
     fun onSend() {
         onChatSent(textField.text)
         textField = TextFieldValue()
     }
 
+    fun toggleCamera() {
+        cameraOpen = !cameraOpen
+
+        if (cameraOpen) {
+            keyboardController?.hide()
+        } else {
+            keyboardController?.show()
+        }
+    }
+
+    Timber.d("Keyboard height: $keyboardHeight")
+
     Surface(
-        modifier
-            .fillMaxWidth()
-            .imePadding()
+        modifier.fillMaxWidth()
     ) {
         Column {
             Row(
                 modifier = Modifier
-                    .navigationBarsPadding()
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -99,8 +158,7 @@ fun ChatComposer(
                         IconButton(
                             modifier = Modifier.padding(end = 8.dp),
                             onClick = {
-                                openCamera = !openCamera
-                                cameraOpened()
+                                toggleCamera()
                             },
                         ) {
                             Icon(Icons.Default.PhotoCamera, contentDescription = null)
@@ -120,19 +178,18 @@ fun ChatComposer(
                 }
             }
 
-            AnimatedVisibility(
-                visible = openCamera,
-                enter = expandVertically(),
-                exit = shrinkVertically()
-            ) {
-//            if (openCamera) {
-//                Box(Modifier.height(400.dp))
+            if (cameraOpen) {
                 AnnoyingCameraRoute(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .height(keyboardHeight)
                         .clipToBounds(),
-                    onCloseClicked = { openCamera = !openCamera })
-
+                    onCloseClicked = {
+                        toggleCamera()
+                    })
+            } else if (keyboardVisible) {
+                Box(Modifier.height(keyboardHeight))
+            } else {
+                Box(Modifier.navigationBarsPadding())
             }
         }
     }
@@ -142,6 +199,9 @@ fun ChatComposer(
 @Composable
 private fun ComposerPreview() {
     KoncertTheme {
-        ChatComposer(onChatSent = {}, cameraOpened = {})
+        ChatComposer(
+            onChatSent = {},
+            keyboardHeight = 300.dp
+        )
     }
 }

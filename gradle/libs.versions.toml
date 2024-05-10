@@ -30,7 +30,8 @@ protobuf = "3.25.1"
 aap = "8.4.0"
 ksp = "1.9.23-1.0.20"
 compileSdk = "34"
-minSdk = "24"
+minSdk = "26"
+targetSdk = "34"
 
 
 [libraries]

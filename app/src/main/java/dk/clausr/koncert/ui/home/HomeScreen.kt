@@ -239,7 +239,7 @@ fun CreateUserScreen(
             )
 
             Button(onClick = {
-                onCreateClicked(UserData(username, group))
+                onCreateClicked(UserData(username = username, group = group, keyboardHeight = null))
             }) {
                 Text("Start")
             }
@@ -251,7 +251,7 @@ fun CreateUserScreen(
 @Composable
 fun UserScreenPreview() {
     KoncertTheme {
-        UserScreen(userData = UserData("Name", "group"), {})
+        UserScreen(userData = UserData("Name", "group", null), {})
     }
 }
 
@@ -267,7 +267,7 @@ fun Preview0(
         KoncertTheme {
             CreateUserScreen(
                 windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
-                userData = UserData("Name", "Group"),
+                userData = UserData("Name", "Group", null),
                 onCreateClicked = {},
             )
         }

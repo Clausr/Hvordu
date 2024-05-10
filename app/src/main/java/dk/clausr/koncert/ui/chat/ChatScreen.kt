@@ -5,13 +5,12 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -45,8 +43,6 @@ fun ChatRoute(
     val messages by chatViewModel.messages.collectAsStateWithLifecycle()
     val status by chatViewModel.connectionStatus.collectAsStateWithLifecycle()
 
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     LaunchedEffect(Unit) {
         chatViewModel.getMessages()
         chatViewModel.connectToRealtime()
@@ -54,6 +50,7 @@ fun ChatRoute(
 
     ChatScreen(
         modifier = modifier,
+        chatName = chatViewModel.topic,
         messages = messages,
         connectionStatus = status,
         onBack = {
@@ -62,7 +59,6 @@ fun ChatRoute(
         },
         onSendChat = {
             chatViewModel.sendMessage(it)
-            keyboardController?.hide()
         },
     )
 }
@@ -70,6 +66,7 @@ fun ChatRoute(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatScreen(
+    chatName: String,
     messages: List<Message>,
     connectionStatus: RealtimeChannel.Status,
     onSendChat: (String) -> Unit,
@@ -77,23 +74,23 @@ fun ChatScreen(
     modifier: Modifier = Modifier,
 ) {
     val lazyState = rememberLazyListState()
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(messages.lastOrNull()?.id) {
         if (messages.isNotEmpty() && !lazyState.isScrollInProgress) {
             lazyState.scrollToItem(0)
         }
     }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         modifier = modifier
             .fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Chad") },
+                title = { Text(chatName) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Go back")
                     }
                 },
                 actions = {
@@ -110,8 +107,6 @@ fun ChatScreen(
         bottomBar = {
             ChatComposer(
                 onChatSent = onSendChat,
-                modifier = Modifier.heightIn(max = 400.dp),
-                cameraOpened = { keyboardController?.hide() }
             )
         },
         containerColor = MaterialTheme.colorScheme.background,

@@ -53,17 +53,17 @@ fun AnnoyingCameraRoute(
         Manifest.permission.CAMERA
     )
 
-    Column(modifier) {
-        IconButton(onClick = onCloseClicked) {
-            Icon(Icons.Default.Close, contentDescription = null)
-        }
-
+    Box(modifier) {
         if (cameraPermissionState.status.isGranted) {
             AnnoyingCameraScreen()
         } else {
             CameraPermissionScreen(
                 cameraPermissionState = cameraPermissionState
             )
+        }
+
+        IconButton(onClick = onCloseClicked) {
+            Icon(Icons.Default.Close, contentDescription = null)
         }
     }
 }
@@ -75,7 +75,7 @@ fun CameraPermissionScreen(
     cameraPermissionState: PermissionState,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

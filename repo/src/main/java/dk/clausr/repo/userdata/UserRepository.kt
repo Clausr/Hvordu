@@ -23,4 +23,8 @@ class UserRepository @Inject constructor(
         userSettingDataSource.setUserPreferences(userData)
     }
 
+    suspend fun setKeyboardHeight(height: Float) {
+        userSettingDataSource.setKeyboardHeight(height)
+    }
+
 }

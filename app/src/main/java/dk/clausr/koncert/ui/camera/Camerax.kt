@@ -83,7 +83,7 @@ fun CameraPreviewScreen(
                 .size(80.dp)
                 .drawWithCache {
                     onDrawBehind {
-                        drawCircle(colors.surface)
+                        drawCircle(Color.White)
 
                         drawOval(
                             color = Color.Black,
