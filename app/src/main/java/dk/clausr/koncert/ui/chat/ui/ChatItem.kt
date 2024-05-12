@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,16 +33,18 @@ fun ChatItem(
             ChatItemDirection.Sent -> Arrangement.End
         },
     ) {
-        if (item.direction is ChatItemDirection.Received) {
-            // Profile image
-            Surface(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .size(20.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primary
-            ) {}
-        }
+//        if (item.direction is ChatItemDirection.Received) {
+//            // Profile image
+//            Surface(
+//                modifier = Modifier
+//                    .padding(end = 8.dp)
+//                    .size(20.dp),
+//                shape = CircleShape,
+//                color = MaterialTheme.colorScheme.primary
+//            ) {
+//                Text(item.direction.senderName.first().toString())
+//            }
+//        }
 
         Column(
             horizontalAlignment = when (item.direction) {
@@ -55,7 +54,9 @@ fun ChatItem(
         ) {
             when (item) {
                 ChatItemData.Empty -> {}
-                is ChatItemData.Message -> ChatMessage(item)
+                is ChatItemData.Message -> {
+                    ChatMessage(item)
+                }
             }
 
             Text(

@@ -4,6 +4,7 @@ sealed class ChatItemDirection {
     data object Sent : ChatItemDirection()
     data class Received(
         val avatar: String?,
+        val senderName: String,
     ) : ChatItemDirection()
 }
 
@@ -25,9 +26,11 @@ sealed class ChatItemData(val direction: ChatItemDirection) {
         data class TextReceived(
             val messageText: String,
             val senderAvatar: String?,
+            val senderName: String,
         ) : Message(
             direction = ChatItemDirection.Received(
                 avatar = senderAvatar,
+                senderName = senderName,
             ),
             message = messageText,
         )
@@ -35,9 +38,11 @@ sealed class ChatItemData(val direction: ChatItemDirection) {
         data class EmojiReceived(
             val messageText: String,
             val senderAvatar: String?,
+            val senderName: String,
         ) : Message(
             direction = ChatItemDirection.Received(
                 avatar = senderAvatar,
+                senderName = senderName,
             ),
             message = messageText,
         )

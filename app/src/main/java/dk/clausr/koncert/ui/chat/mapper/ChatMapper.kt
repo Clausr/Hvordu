@@ -7,7 +7,7 @@ import dk.clausr.repo.domain.Message
 
 fun Message.mapToChatItem(): ChatItemData {
     val chatDirection = when (direction) {
-        Message.Direction.In -> ChatItemDirection.Received(null)
+        Message.Direction.In -> ChatItemDirection.Received(avatar = null, senderName = senderName)
         Message.Direction.Out -> ChatItemDirection.Sent
     }
 
@@ -21,12 +21,14 @@ fun Message.mapToChatItem(): ChatItemData {
         is ChatItemDirection.Received -> if (content.isOnlyEmoji()) {
             ChatItemData.Message.EmojiReceived(
                 messageText = content,
-                senderAvatar = null
+                senderAvatar = null,
+                senderName = senderName,
             )
         } else {
             ChatItemData.Message.TextReceived(
                 messageText = content,
-                senderAvatar = null
+                senderAvatar = null,
+                senderName = senderName,
             )
         }
     }

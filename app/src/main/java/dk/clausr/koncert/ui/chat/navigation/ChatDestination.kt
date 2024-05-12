@@ -17,9 +17,6 @@ fun NavGraphBuilder.chatGraph(navController: NavController) {
     composable(route = ChatDestination.route) {
         ChatRoute(
             modifier = Modifier.fillMaxSize(),
-            onBack = {
-                navController.navigateUp()
-            },
         )
     }
 }

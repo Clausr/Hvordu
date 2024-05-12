@@ -6,6 +6,7 @@ import dk.clausr.koncert.api.GroupsApi
 import dk.clausr.koncert.api.MessageApi
 import dk.clausr.koncert.api.ProfileApi
 import dk.clausr.repo.domain.Message
+import dk.clausr.repo.domain.toGroup
 import dk.clausr.repo.domain.toMessage
 import dk.clausr.repo.userdata.UserRepository
 import io.github.jan.supabase.realtime.PostgresAction
@@ -116,7 +117,8 @@ class ChatRepository @Inject constructor(
 
     suspend fun retrieveMessages() = withContext(ioDispatcher) {
         kotlin.runCatching {
-            messageApi.retrieveMessages()
+            val groupId = getGroup()?.id ?: throw IllegalStateException("No group id")
+            messageApi.retrieveMessages(groupId)
                 .map { it.toMessage(Message.Direction.map(username == it.senderUsername)) }
         }.onSuccess {
             _messages.value = it
@@ -125,8 +127,8 @@ class ChatRepository @Inject constructor(
         }
     }
 
-    suspend fun getGroups() = withContext(ioDispatcher) {
-
+    suspend fun getGroup(groupName: String = groupname) = withContext(ioDispatcher) {
+        groupApi.getGroup(groupName)?.toGroup()
     }
 }
 

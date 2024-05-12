@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.repo.chat.ChatRepository
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,6 +24,15 @@ class ChatViewModel @Inject constructor(
         )
 
     val topic: String = realtimeChannel.topic.substringAfter(":")
+
+    val chatName = flow<String?> {
+        val friendlyName = chatRepository.getGroup()?.friendlyName
+        emit(friendlyName)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = null,
+    )
 
     val connectionStatus = realtimeChannel.status
 

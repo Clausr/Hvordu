@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -30,16 +31,11 @@ import io.github.jan.supabase.realtime.RealtimeChannel
 @Composable
 fun ChatRoute(
     modifier: Modifier = Modifier,
-    onBack: () -> Unit,
     chatViewModel: ChatViewModel = hiltViewModel(),
 ) {
-//    BackHandler {
-//        onBack()
-//        chatViewModel.disconnectFromRealtime()
-//    }
     val messages by chatViewModel.messages.collectAsStateWithLifecycle()
     val status by chatViewModel.connectionStatus.collectAsStateWithLifecycle()
-
+    val chatName by chatViewModel.chatName.collectAsState()
     LaunchedEffect(Unit) {
         chatViewModel.getMessages()
         chatViewModel.connectToRealtime()
@@ -47,7 +43,7 @@ fun ChatRoute(
 
     ChatScreen(
         modifier = modifier,
-        chatName = chatViewModel.topic,
+        chatName = chatName ?: "",
         messages = messages,
         connectionStatus = status,
         onSendChat = {
@@ -63,7 +59,6 @@ fun ChatScreen(
     messages: List<Message>,
     connectionStatus: RealtimeChannel.Status,
     onSendChat: (String) -> Unit,
-//    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val lazyState = rememberLazyListState()
@@ -72,16 +67,6 @@ fun ChatScreen(
         if (messages.isNotEmpty() && !lazyState.isScrollInProgress) {
             lazyState.scrollToItem(0)
         }
-    }
-
-    LaunchedEffect(connectionStatus) {
-//        snackbarHost.showSnackbar(connectionStatus.name)
-//        when (connectionStatus) {
-//            RealtimeChannel.Status.UNSUBSCRIBED -> snackbarHost.showSnackbar("Unsubscribed")
-//            RealtimeChannel.Status.SUBSCRIBING -> snackbarHost.showSnackbar("Unsubscribed")
-//            RealtimeChannel.Status.SUBSCRIBED -> TODO()
-//            RealtimeChannel.Status.UNSUBSCRIBING -> TODO()
-//        }
     }
 
     Scaffold(
@@ -94,11 +79,6 @@ fun ChatScreen(
         topBar = {
             TopAppBar(
                 title = { Text(chatName) },
-//                navigationIcon = {
-//                    IconButton(onClick = onBack) {
-//                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Go back")
-//                    }
-//                },
                 actions = {
                     val statusEmoji = when (connectionStatus) {
                         RealtimeChannel.Status.UNSUBSCRIBED -> "🔴"
@@ -128,9 +108,7 @@ fun ChatScreen(
         ) {
             items(messages) { message ->
                 val chatItem = message.mapToChatItem()
-
                 ChatItem(
-//                    modifier = Modifier.animateItemPlacement(),
                     item = chatItem,
                     timestamp = message.createdAt,
                 )

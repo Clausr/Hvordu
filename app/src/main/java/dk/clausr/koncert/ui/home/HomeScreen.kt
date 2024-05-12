@@ -71,7 +71,7 @@ fun HomeRoute(
         )
     } else {
         //Chat screen
-        ChatRoute(onBack = onBack)
+        ChatRoute()
     }
 }
 

@@ -35,6 +35,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -99,12 +101,7 @@ private fun ChatComposer(
     var initialSize by remember { mutableStateOf(IntSize.Zero) }
     var cameraOpen by remember { mutableStateOf(false) }
     val keyboardVisible = WindowInsets.isImeVisible
-
-    LaunchedEffect(keyboardVisible) {
-        if (keyboardVisible && cameraOpen) {
-            cameraOpen = false
-        }
-    }
+    val focusRequester = remember { FocusRequester() }
 
     fun onSend() {
         onChatSent(textField.text)
@@ -120,8 +117,6 @@ private fun ChatComposer(
         }
     }
 
-    Timber.d("priv Keyboard height: $keyboardHeight")
-
     Surface(
         modifier.fillMaxWidth()
     ) {
@@ -136,6 +131,7 @@ private fun ChatComposer(
                     shape = RoundedCornerShape(size = initialSize.height / 2f),
                     modifier = Modifier
                         .weight(1f)
+                        .focusRequester(focusRequester)
                         .onGloballyPositioned {
                             if (initialSize == IntSize.Zero) {
                                 initialSize = it.size

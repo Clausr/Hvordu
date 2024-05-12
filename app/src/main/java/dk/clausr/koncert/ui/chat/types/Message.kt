@@ -1,5 +1,7 @@
 package dk.clausr.koncert.ui.chat.types
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.MaterialTheme
@@ -7,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dk.clausr.koncert.ui.chat.ui.ChatSurface
@@ -23,15 +26,27 @@ internal fun ChatMessage(
             textColor = MaterialTheme.colorScheme.onPrimaryContainer,
         )
 
-        is ChatItemData.Message.TextReceived -> TextMessage(
-            message = item.message,
-            surfaceColor = MaterialTheme.colorScheme.surfaceVariant,
-            textColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        is ChatItemData.Message.TextReceived -> {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = item.senderName,
+                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                )
+                TextMessage(
+                    message = item.message,
+                    surfaceColor = MaterialTheme.colorScheme.surfaceVariant,
+                    textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
 
-        is ChatItemData.Message.EmojiSent,
-        is ChatItemData.Message.EmojiReceived,
-        -> EmojiMessage(item.message)
+        is ChatItemData.Message.EmojiSent -> EmojiMessage(emojis = item.message)
+        is ChatItemData.Message.EmojiReceived -> {
+            Column {
+                Text(text = item.senderName, style = MaterialTheme.typography.labelLarge)
+                EmojiMessage(item.message)
+            }
+        }
     }
 }
 
@@ -48,13 +63,11 @@ private fun TextMessage(
         minWidth = 0.dp,
         maxWidth = 240.dp,
     ) {
-//        SelectionContainer {
         Text(
             text = message,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
         )
-//        }
     }
 }
 

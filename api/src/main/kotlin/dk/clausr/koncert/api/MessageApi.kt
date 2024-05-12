@@ -13,9 +13,11 @@ class MessageApi @Inject constructor(
 ) {
     private val table = client.postgrest["messages"]
 
-    suspend fun retrieveMessages(): List<MessageDto> =
+    suspend fun retrieveMessages(groupId: String): List<MessageDto> =
         table
-            .select(columns = Columns.raw("*, ...profiles(sender_username:username)"))
+            .select(columns = Columns.raw("*, ...profiles(sender_username:username)")) {
+                filter { this.eq("group_id", groupId) }
+            }
             .decodeList()
 
     suspend fun createMessage(
