@@ -22,7 +22,12 @@ class HomeViewModel @Inject constructor(
     )
 
     fun setData(username: String, group: String) = viewModelScope.launch {
-        userRepository.setUserData(UserData(username, group, null))
+        userRepository.setUserData(
+            UserData(
+                username = username,
+                group = group,
+                keyboardHeight = null
+            )
+        )
     }
-
 }

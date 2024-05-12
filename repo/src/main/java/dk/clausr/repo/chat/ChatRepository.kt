@@ -2,14 +2,14 @@ package dk.clausr.repo.chat
 
 import dk.clausr.core.dispatchers.Dispatcher
 import dk.clausr.core.dispatchers.Dispatchers
+import dk.clausr.koncert.api.GroupsApi
 import dk.clausr.koncert.api.MessageApi
-import dk.clausr.koncert.api.models.MessageDto
+import dk.clausr.koncert.api.ProfileApi
 import dk.clausr.repo.domain.Message
 import dk.clausr.repo.domain.toMessage
 import dk.clausr.repo.userdata.UserRepository
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.RealtimeChannel
-import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
 import timber.log.Timber
 import javax.inject.Inject
@@ -29,18 +28,30 @@ import javax.inject.Singleton
 @Singleton
 class ChatRepository @Inject constructor(
     private val messageApi: MessageApi,
+    private val groupApi: GroupsApi,
+    private val profileApi: ProfileApi,
     private val realtimeChannel: RealtimeChannel,
     private val userRepository: UserRepository,
     @Dispatcher(Dispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
-    var username: String = ""
-
-    val userData = userRepository.getUserData()
+    private var username: String = ""
+    private var groupname: String = "empty"
+//    val actualGroup = userRepository.getUserData().map {
+//        val group = it?.group?.let { groupApi.getGroup(it) }
+//
+//        group
+//    }
+//        .stateIn(
+//            scope = CoroutineScope(ioDispatcher),
+//            started = SharingStarted.WhileSubscribed(5_000),
+//            initialValue = null
+//        )
 
     init {
         CoroutineScope(ioDispatcher).launch {
             userRepository.getUserData().collectLatest {
-                username = it?.username ?: "NoUsername"
+                username = it?.username ?: throw IllegalStateException("NoUsername")
+                groupname = it.group
             }
         }
     }
@@ -52,16 +63,23 @@ class ChatRepository @Inject constructor(
     suspend fun connectToRealtime() {
         if (realtimeChannel.status.value != RealtimeChannel.Status.SUBSCRIBED) {
             realtimeChannel.postgresChangeFlow<PostgresAction>("public") {
-                table = "rartis"
+                table = "messages"
             }.onEach {
                 when (it) {
                     is PostgresAction.Delete -> _messages.value =
-                        _messages.value.filter { message -> message.id != it.oldRecord["id"]!!.jsonPrimitive.int }
+                        _messages.value.filter { message -> message.id != it.oldRecord["id"]!!.jsonPrimitive.content }
 
                     is PostgresAction.Insert -> {
-                        val newInsert = it.decodeRecord<MessageDto>()
-                        _messages.value += newInsert
-                            .toMessage(Message.Direction.map(username == newInsert.creatorId))
+                        // Currently no join on realtime, so just get everything again
+                        retrieveMessages()
+                        // TODO Maybe just query the messages matched by the new insert?
+//                        try {
+//                            val newInsert = it.decodeRecord<MessageDto>()
+//                            _messages.value += newInsert
+//                                .toMessage(Message.Direction.map(username == newInsert.senderUsername))
+//                        } catch (e: Exception) {
+//                            Timber.e(e, "error decoding")
+//                        }
                     }
 
                     is PostgresAction.Select -> error("Select should not be possible")
@@ -78,7 +96,11 @@ class ChatRepository @Inject constructor(
 
     suspend fun createMessage(message: String) = withContext(ioDispatcher) {
         kotlin.runCatching {
-            messageApi.createMessage(username = username, content = message)
+            messageApi.createMessage(
+                id = profileApi.getProfile(username)?.id ?: "noprofileid",
+                content = message,
+                groupId = groupApi.getGroup(groupname)?.id ?: "nogroup",
+            )
         }.onFailure {
             Timber.e(it, "Error while creating message")
         }
@@ -95,12 +117,16 @@ class ChatRepository @Inject constructor(
     suspend fun retrieveMessages() = withContext(ioDispatcher) {
         kotlin.runCatching {
             messageApi.retrieveMessages()
-                .map { it.toMessage(Message.Direction.map(username == it.creatorId)) }
+                .map { it.toMessage(Message.Direction.map(username == it.senderUsername)) }
         }.onSuccess {
             _messages.value = it
         }.onFailure {
             Timber.e(it, "Error while retrieving messages")
         }
+    }
+
+    suspend fun getGroups() = withContext(ioDispatcher) {
+
     }
 }
 

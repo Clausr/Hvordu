@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,13 +58,17 @@ fun AnnoyingCameraRoute(
         if (cameraPermissionState.status.isGranted) {
             AnnoyingCameraScreen()
         } else {
-            CameraPermissionScreen(
-                cameraPermissionState = cameraPermissionState
-            )
-        }
-
-        IconButton(onClick = onCloseClicked) {
-            Icon(Icons.Default.Close, contentDescription = null)
+            Box {
+                CameraPermissionScreen(
+                    cameraPermissionState = cameraPermissionState
+                )
+                IconButton(
+                    onClick = onCloseClicked,
+                    colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White)
+                ) {
+                    Icon(Icons.Default.Close, contentDescription = null)
+                }
+            }
         }
     }
 }

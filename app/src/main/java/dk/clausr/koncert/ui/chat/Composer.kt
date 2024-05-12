@@ -70,8 +70,11 @@ fun ChatComposer(
     val keyboardVisible = WindowInsets.isImeVisible
     val keyboardHeight = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding()
 
+    Timber.d("Keyboard height: $keyboardHeight - last $lastKeyboardHeight")
     LaunchedEffect(keyboardVisible) {
-        if (keyboardVisible && lastKeyboardHeight == 300.dp) {
+        if (keyboardVisible &&
+            (lastKeyboardHeight == 300.dp)
+        ) {
             lastKeyboardHeight = keyboardHeight
             viewModel.setKeyboardHeight(keyboardHeight.value)
         }
@@ -110,7 +113,6 @@ private fun ChatComposer(
 
     fun toggleCamera() {
         cameraOpen = !cameraOpen
-
         if (cameraOpen) {
             keyboardController?.hide()
         } else {
@@ -118,7 +120,7 @@ private fun ChatComposer(
         }
     }
 
-    Timber.d("Keyboard height: $keyboardHeight")
+    Timber.d("priv Keyboard height: $keyboardHeight")
 
     Surface(
         modifier.fillMaxWidth()

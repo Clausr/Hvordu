@@ -5,7 +5,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import dk.clausr.koncert.navigation.KoncertNavigationDestination
-import dk.clausr.koncert.ui.chat.navigation.ChatDestination
 import dk.clausr.koncert.ui.home.HomeRoute
 
 object HomeDestination : KoncertNavigationDestination {
@@ -20,8 +19,8 @@ fun NavGraphBuilder.homeGraph(
     composable(route = HomeDestination.route) {
         HomeRoute(
             windowSizeClass = windowSizeClass,
-            onGoToChat = {
-                navController.navigate(ChatDestination.route)
+            onBack = {
+                navController.navigateUp()
             }
         )
     }

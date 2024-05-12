@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,16 +45,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.core.models.UserData
 import dk.clausr.koncert.R
+import dk.clausr.koncert.ui.chat.ChatRoute
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
-import dk.clausr.koncert.ui.home.components.FolderLayout
-import dk.clausr.koncert.ui.home.components.NowComp
-import dk.clausr.koncert.ui.home.components.NowData
+import timber.log.Timber
 
 @Composable
 fun HomeRoute(
     windowSizeClass: WindowSizeClass,
-    onGoToChat: () -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -66,46 +62,25 @@ fun HomeRoute(
     if (userData == null) {
         CreateUserScreen(
             windowSizeClass = windowSizeClass,
-            userData = userData,
+            userData = null,
             modifier = modifier,
             onCreateClicked = {
+                Timber.d("Set data: $it")
                 viewModel.setData(it.username, it.group)
             }
         )
     } else {
         //Chat screen
-        UserScreen(
-            userData = userData!!,
-            onClick = {
-                onGoToChat()
-            },
-        )
+        ChatRoute(onBack = onBack)
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserScreen(
     userData: UserData,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var showScrim by remember { mutableStateOf(false) }
-
-    val nowData = listOf(
-        NowData.Element(name = "Martin", color = Color.DarkGray),
-        NowData.Element(name = "Pernille", color = Color.Yellow),
-        NowData.Folder(
-            name = "Folder", items = listOf(
-                NowData.Element("Name", Color.Red),
-                NowData.Element("Green", Color.Green),
-                NowData.Element("Blue", Color.Blue),
-            )
-        )
-    )
-
-    var popupCoordinates: FolderLayout? by remember { mutableStateOf(null) }
-
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -121,28 +96,6 @@ fun UserScreen(
 
                 Button(onClick = onClick) {
                     Text(text = "Click me")
-                }
-
-                LazyVerticalGrid(
-                    modifier = Modifier.fillMaxWidth(),
-                    columns = GridCells.Fixed(3),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(nowData) { data ->
-                        NowComp(
-                            item = data,
-                            expanded = showScrim,
-                            onClick = {
-                            when (data) {
-                                is NowData.Element -> Unit
-                                is NowData.Folder -> {
-//                                    popupCoordinates = it
-
-                                    showScrim = it
-                                }
-                            }
-                        })
-                    }
                 }
             }
         }
@@ -198,7 +151,7 @@ fun CreateUserScreen(
     }
 
     Scaffold(
-//        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets.statusBars,
@@ -247,24 +200,22 @@ fun CreateUserScreen(
     }
 }
 
-@Preview
-@Composable
-fun UserScreenPreview() {
-    KoncertTheme {
-        UserScreen(userData = UserData("Name", "group", null), {})
-    }
-}
+//@Preview
+//@Composable
+//fun UserScreenPreview() {
+//    KoncertTheme {
+//        UserScreen(userData = UserData("Name", "group", null), {})
+//    }
+//}
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview(name = "phone", device = "spec:shape=Normal,width=360,height=640,unit=dp,dpi=480")
-@Preview(name = "landscape", device = "spec:shape=Normal,width=640,height=360,unit=dp,dpi=480")
-@Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 @Composable
 fun Preview0(
     @PreviewParameter(ColorSchemeProvider::class) colorScheme: ColorScheme
 ) {
     BoxWithConstraints {
-        KoncertTheme {
+        KoncertTheme(overrideColorScheme = colorScheme) {
             CreateUserScreen(
                 windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
                 userData = UserData("Name", "Group", null),
