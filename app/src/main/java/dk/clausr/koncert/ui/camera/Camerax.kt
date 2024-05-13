@@ -37,6 +37,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import timber.log.Timber
+import java.util.UUID
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -116,7 +117,7 @@ private fun captureImage(
     context: Context,
     pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
 ) {
-    val name = "CameraxImage.jpeg"
+    val name = "${UUID.randomUUID()}.jpeg"
     val contentValues = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, name)
         put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")

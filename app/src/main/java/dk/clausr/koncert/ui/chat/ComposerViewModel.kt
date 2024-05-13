@@ -14,6 +14,17 @@ import javax.inject.Inject
 class ComposerViewModel @Inject constructor(
     private val userRepository: UserRepository,
 ) : ViewModel() {
+//    private val _imageCapturedUri = MutableStateFlow<Uri?>(null)
+//    val imageUri: Flow<Uri?> = _imageCapturedUri
+//
+//    fun onImageUri(uri: Uri) {
+//        _imageCapturedUri.value = uri
+//    }
+//
+//    fun removeImage() {
+//        _imageCapturedUri.value = null
+//    }
+
     val keyboardHeight = userRepository.getUserData().map { it?.keyboardHeight }
         .stateIn(
             scope = viewModelScope,

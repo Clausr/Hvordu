@@ -1,5 +1,6 @@
 package dk.clausr.koncert.ui.chat
 
+import android.net.Uri
 import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
@@ -37,6 +38,7 @@ fun ChatRoute(
     val messages by chatViewModel.messages.collectAsStateWithLifecycle()
     val status by chatViewModel.connectionStatus.collectAsStateWithLifecycle()
     val chatName by chatViewModel.chatName.collectAsState()
+    val imageUri by chatViewModel.imageUri.collectAsStateWithLifecycle(null)
     LaunchedEffect(Unit) {
         chatViewModel.getMessages()
         chatViewModel.connectToRealtime()
@@ -51,8 +53,10 @@ fun ChatRoute(
             chatViewModel.sendMessage(it)
         },
         pictureResult = {
-            chatViewModel.sendImage(it)
-        }
+            chatViewModel.setImageUri(it)
+        },
+        imageUri = imageUri,
+        removeImage = { chatViewModel.deleteImage() }
     )
 }
 
@@ -64,6 +68,8 @@ fun ChatScreen(
     connectionStatus: RealtimeChannel.Status,
     onSendChat: (String) -> Unit,
     pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
+    imageUri: Uri?,
+    removeImage: (Uri) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val lazyState = rememberLazyListState()
@@ -99,6 +105,8 @@ fun ChatScreen(
             ChatComposer(
                 onChatSent = onSendChat,
                 pictureResult = pictureResult,
+                imageUri = imageUri,
+                removeImage = { removeImage(it) },
             )
         },
         containerColor = MaterialTheme.colorScheme.background,

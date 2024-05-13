@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -60,7 +61,7 @@ fun AnnoyingCameraRoute(
         if (cameraPermissionState.status.isGranted) {
             AnnoyingCameraScreen(pictureResult = pictureResult)
         } else {
-            Box {
+            Box(Modifier.navigationBarsPadding()) {
                 CameraPermissionScreen(
                     cameraPermissionState = cameraPermissionState
                 )

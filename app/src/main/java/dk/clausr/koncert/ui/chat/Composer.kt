@@ -1,5 +1,6 @@
 package dk.clausr.koncert.ui.chat
 
+import android.net.Uri
 import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -49,6 +52,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import dk.clausr.koncert.ui.camera.AnnoyingCameraRoute
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import timber.log.Timber
@@ -61,9 +65,12 @@ fun ChatComposer(
     onChatSent: (String) -> Unit,
     modifier: Modifier = Modifier,
     pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
+    imageUri: Uri?,
+    removeImage: (Uri) -> Unit,
     viewModel: ComposerViewModel = hiltViewModel()
 ) {
     val savedKeyboardHeight by viewModel.keyboardHeight.collectAsStateWithLifecycle()
+//    val imageUri by viewModel.imageUri.collectAsState(null)
 
     // Keyboard thingy
     var lastKeyboardHeight by remember(savedKeyboardHeight) {
@@ -86,9 +93,21 @@ fun ChatComposer(
 
     ChatComposer(
         modifier = modifier,
-        onChatSent = onChatSent,
+        onChatSent = {
+            onChatSent(it)
+//            viewModel.removeImage()
+        },
         keyboardHeight = lastKeyboardHeight,
-        pictureResult = pictureResult,
+        pictureResult = {
+//            it.getOrNull()?.savedUri?.let {
+//                viewModel.onImageUri(it)
+//            }
+            pictureResult(it)
+        },
+        imageTakenUri = imageUri,
+        onRemoveImage = {
+            removeImage(it)
+        }
     )
 }
 
@@ -99,6 +118,8 @@ private fun ChatComposer(
     modifier: Modifier = Modifier,
     keyboardHeight: Dp = 300.dp,
     pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
+    imageTakenUri: Uri? = null,
+    onRemoveImage: (Uri) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var textField by remember { mutableStateOf(TextFieldValue()) }
@@ -106,7 +127,6 @@ private fun ChatComposer(
     var cameraOpen by remember { mutableStateOf(false) }
     val keyboardVisible = WindowInsets.isImeVisible
     val focusRequester = remember { FocusRequester() }
-
     fun onSend() {
         onChatSent(textField.text)
         textField = TextFieldValue()
@@ -125,6 +145,25 @@ private fun ChatComposer(
         modifier.fillMaxWidth()
     ) {
         Column {
+            if (imageTakenUri != null) {
+                Box(
+                    modifier = Modifier
+                        .height(140.dp)
+                        .clip(RoundedCornerShape(10.dp)),
+
+                    ) {
+                    AsyncImage(
+                        model = imageTakenUri,
+                        contentDescription = null,
+                    )
+                    IconButton(
+                        onClick = { onRemoveImage(imageTakenUri) },
+                        colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = null)
+                    }
+                }
+            }
             Row(
                 modifier = Modifier
                     .padding(8.dp),
@@ -159,6 +198,7 @@ private fun ChatComposer(
                     trailingIcon = {
                         IconButton(
                             modifier = Modifier.padding(end = 8.dp),
+                            enabled = imageTakenUri == null,
                             onClick = {
                                 toggleCamera()
                             },
@@ -181,7 +221,7 @@ private fun ChatComposer(
                 }
             }
 
-            if (cameraOpen) {
+            if (cameraOpen && imageTakenUri == null) {
                 AnnoyingCameraRoute(
                     modifier = Modifier
                         .height(keyboardHeight)
@@ -213,6 +253,7 @@ private fun ComposerPreview() {
             onChatSent = {},
             keyboardHeight = 300.dp,
             pictureResult = {},
+            onRemoveImage = {},
         )
     }
 }

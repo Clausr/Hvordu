@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonPrimitive
 import timber.log.Timber
+import java.time.OffsetDateTime
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -44,16 +45,6 @@ class ChatRepository @Inject constructor(
 ) {
     private var username: String = ""
     private var groupname: String = "empty"
-//    val actualGroup = userRepository.getUserData().map {
-//        val group = it?.group?.let { groupApi.getGroup(it) }
-//
-//        group
-//    }
-//        .stateIn(
-//            scope = CoroutineScope(ioDispatcher),
-//            started = SharingStarted.WhileSubscribed(5_000),
-//            initialValue = null
-//        )
 
     init {
         CoroutineScope(ioDispatcher).launch {
@@ -110,9 +101,21 @@ class ChatRepository @Inject constructor(
                 groupId = groupApi.getGroup(groupname)?.id ?: "nogroup",
                 imageUrl = imageUrl,
             )
-        }.onFailure {
-            Timber.e(it, "Error while creating message")
         }
+            .onSuccess {
+                _messages.value += Message(
+                    "temp",
+                    message,
+                    "me",
+                    OffsetDateTime.now(),
+                    senderName = username,
+                    Message.Direction.Out,
+                    imageUrl
+                )
+            }
+            .onFailure {
+                Timber.e(it, "Error while creating message")
+            }
     }
 
     suspend fun deleteMessage(id: Int) = withContext(ioDispatcher) {
@@ -127,7 +130,17 @@ class ChatRepository @Inject constructor(
         kotlin.runCatching {
             val groupId = getGroup()?.id ?: throw IllegalStateException("No group id")
             messageApi.retrieveMessages(groupId)
-                .map { it.toMessage(Message.Direction.map(username == it.senderUsername)) }
+                .map {
+                    val imageUrl = it.imageUrl?.let {
+                        val (bucket, url) = it.split(("/"))
+                        storage.from(bucket).publicUrl(url)
+                    }
+
+                    it.copy(imageUrl = imageUrl)
+                        .toMessage(Message.Direction.map(username == it.senderUsername))
+                }
+
+
         }.onSuccess {
             _messages.value = it
         }.onFailure {
@@ -145,8 +158,13 @@ class ChatRepository @Inject constructor(
             it.buffered().readBytes()
         } ?: return@withContext null
 
+
         storage.from("message_images")
             .upload("${UUID.randomUUID()}.jpg", inputStream, upsert = false)
+    }
+
+    suspend fun deleteImage(url: String) = withContext(ioDispatcher) {
+        storage.from("message_images").delete(url)
     }
 }
 

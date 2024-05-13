@@ -1,35 +1,29 @@
 package dk.clausr.koncert.ui.chat
 
-import android.content.Context
+import android.net.Uri
 import androidx.camera.core.ImageCapture
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.repo.chat.ChatRepository
 import io.github.jan.supabase.realtime.RealtimeChannel
-import io.github.jan.supabase.storage.Storage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val chatRepository: ChatRepository,
     realtimeChannel: RealtimeChannel,
-    @ApplicationContext private val context: Context,
-    private val storage: Storage,
 ) : ViewModel() {
 
     private val _imageUrl = MutableStateFlow<String?>(null)
-    val imageUrl: Flow<String?> = _imageUrl
-    // TODO use local Uri instead?
-
+    private val _imageUri = MutableStateFlow<Uri?>(null)
+    val imageUri: Flow<Uri?> = _imageUri
     val messages = chatRepository.messages
         .stateIn(
             scope = viewModelScope,
@@ -61,21 +55,34 @@ class ChatViewModel @Inject constructor(
     }
 
     fun sendMessage(message: String) = viewModelScope.launch {
+//        val imageUrl = sendImage()
         val result = chatRepository.createMessage(message, _imageUrl.value)
-
 
         if (result.isSuccess) {
             deleteImage()
         }
     }
 
-    fun sendImage(imageResult: Result<ImageCapture.OutputFileResults>) = viewModelScope.launch {
-        val imageUri = imageResult.getOrNull()?.savedUri ?: return@launch
-        _imageUrl.value = chatRepository.uploadImage(imageUri)
-        _imageUrl.value?.let { Timber.i("Image uploaded: $it") }
+    fun setImageUri(imageResult: Result<ImageCapture.OutputFileResults>) = viewModelScope.launch {
+        _imageUri.value = imageResult.getOrNull()?.savedUri
+
+        _imageUrl.value = sendImage()
+    }
+
+    // TODO Add some errorhandling..
+    private suspend fun sendImage(): String? {
+        return _imageUri.value?.let {
+            chatRepository.uploadImage(it)
+        }
     }
 
     fun deleteImage() = viewModelScope.launch {
+        val imageUrl = _imageUrl.value
+        if (imageUrl != null) {
+            chatRepository.deleteImage(imageUrl)
+        }
+
         _imageUrl.value = null
+        _imageUri.value = null
     }
 }

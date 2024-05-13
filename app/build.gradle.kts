@@ -99,11 +99,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.windowSizeClass)
 
-    // Supabase
-//    implementation(platform(libs.supabase.bom))
-//    implementation(libs.supabase.realtime)
-//    implementation(libs.supabase.postgrest)
-//    implementation(libs.supabase.storage)
+    implementation(libs.coil)
+    implementation(libs.coil.compose)
 
     implementation(libs.kotlinx.coroutines.android)
 
