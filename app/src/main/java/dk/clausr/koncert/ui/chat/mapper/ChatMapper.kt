@@ -15,7 +15,10 @@ fun Message.mapToChatItem(): ChatItemData {
         ChatItemDirection.Sent -> if (content.isOnlyEmoji()) {
             ChatItemData.Message.EmojiSent(messageText = content)
         } else {
-            ChatItemData.Message.TextSent(messageText = content)
+            ChatItemData.Message.TextSent(
+                messageText = content,
+                imageUrl = imageUrl,
+            )
         }
 
         is ChatItemDirection.Received -> if (content.isOnlyEmoji()) {
@@ -27,8 +30,9 @@ fun Message.mapToChatItem(): ChatItemData {
         } else {
             ChatItemData.Message.TextReceived(
                 messageText = content,
-                senderAvatar = null,
+                senderAvatar = null, // TODO Remove ?
                 senderName = senderName,
+                imageUrl = imageUrl,
             )
         }
     }

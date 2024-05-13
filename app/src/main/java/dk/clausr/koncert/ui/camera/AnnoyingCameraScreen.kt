@@ -1,6 +1,7 @@
 package dk.clausr.koncert.ui.camera
 
 import android.Manifest
+import androidx.camera.core.ImageCapture
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +50,7 @@ import kotlin.math.abs
 fun AnnoyingCameraRoute(
     modifier: Modifier = Modifier,
     onCloseClicked: () -> Unit,
+    pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
 ) {
     val cameraPermissionState = rememberPermissionState(
         Manifest.permission.CAMERA
@@ -56,7 +58,7 @@ fun AnnoyingCameraRoute(
 
     Box(modifier) {
         if (cameraPermissionState.status.isGranted) {
-            AnnoyingCameraScreen()
+            AnnoyingCameraScreen(pictureResult = pictureResult)
         } else {
             Box {
                 CameraPermissionScreen(
@@ -110,6 +112,7 @@ fun CameraPermissionScreen(
 
 @Composable
 fun AnnoyingCameraScreen(
+    pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -152,7 +155,8 @@ fun AnnoyingCameraScreen(
     Box(modifier) {
         CameraPreviewScreen(
             modifier = Modifier,
-            enableTakeImageButton = isLookingDown
+            enableTakeImageButton = isLookingDown,
+            pictureResult = pictureResult,
         )
 
         if (!isLookingDown) {

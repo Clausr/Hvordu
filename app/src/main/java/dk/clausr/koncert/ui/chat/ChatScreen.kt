@@ -1,5 +1,6 @@
 package dk.clausr.koncert.ui.chat
 
+import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,6 +50,9 @@ fun ChatRoute(
         onSendChat = {
             chatViewModel.sendMessage(it)
         },
+        pictureResult = {
+            chatViewModel.sendImage(it)
+        }
     )
 }
 
@@ -59,6 +63,7 @@ fun ChatScreen(
     messages: List<Message>,
     connectionStatus: RealtimeChannel.Status,
     onSendChat: (String) -> Unit,
+    pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val lazyState = rememberLazyListState()
@@ -93,6 +98,7 @@ fun ChatScreen(
         bottomBar = {
             ChatComposer(
                 onChatSent = onSendChat,
+                pictureResult = pictureResult,
             )
         },
         containerColor = MaterialTheme.colorScheme.background,

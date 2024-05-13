@@ -10,6 +10,7 @@ data class Message(
     val createdAt: OffsetDateTime,
     val senderName: String,
     val direction: Direction,
+    val imageUrl: String?,
 ) {
     enum class Direction {
         In, Out;
@@ -29,4 +30,5 @@ fun MessageDto.toMessage(direction: Message.Direction): Message =
         createdAt = OffsetDateTime.parse(createdAt),
         direction = direction,
         senderName = senderUsername,
+        imageUrl = imageUrl,
     )

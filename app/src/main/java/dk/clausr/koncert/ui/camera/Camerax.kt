@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,6 +43,7 @@ import kotlin.coroutines.suspendCoroutine
 @Composable
 fun CameraPreviewScreen(
     enableTakeImageButton: Boolean,
+    pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val lensFacing = CameraSelector.LENS_FACING_BACK
@@ -66,7 +66,6 @@ fun CameraPreviewScreen(
     var takePictureInProgress by remember {
         mutableStateOf(false)
     }
-    val colors = MaterialTheme.colorScheme
     val takePictureEnabled = !takePictureInProgress && enableTakeImageButton
 
     Box(
@@ -102,7 +101,9 @@ fun CameraPreviewScreen(
                         pictureResult = {
                             takePictureInProgress = false
 
-                            Timber.d("${it.getOrNull()?.savedUri}")
+                            pictureResult(it)
+
+                            Timber.d("image taken - ${it.getOrNull()?.savedUri}")
                         }
                     )
                 },
@@ -120,7 +121,7 @@ private fun captureImage(
         put(MediaStore.MediaColumns.DISPLAY_NAME, name)
         put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Hvordu")
         }
     }
     val outputOptions = ImageCapture.OutputFileOptions
@@ -135,13 +136,13 @@ private fun captureImage(
         ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                println("Successs")
+                Timber.d("Successs")
                 pictureResult(Result.success(outputFileResults))
             }
 
             override fun onError(exception: ImageCaptureException) {
                 pictureResult(Result.failure(exception))
-                println("Failed $exception")
+                Timber.e(exception, "Faileddd")
             }
 
         })

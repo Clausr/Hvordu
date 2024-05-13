@@ -24,11 +24,13 @@ class MessageApi @Inject constructor(
         id: String,
         content: String,
         groupId: String,
+        imageUrl: String?,
     ) {
         table.insert(buildJsonObject {
             put("content", content)
             put("profile_id", id)
             put("group_id", groupId)
+            put("image_url", imageUrl)
         }) {
             select()
         }

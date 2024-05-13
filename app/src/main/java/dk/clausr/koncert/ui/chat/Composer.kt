@@ -1,5 +1,6 @@
 package dk.clausr.koncert.ui.chat
 
+import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,6 +60,7 @@ import timber.log.Timber
 fun ChatComposer(
     onChatSent: (String) -> Unit,
     modifier: Modifier = Modifier,
+    pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
     viewModel: ComposerViewModel = hiltViewModel()
 ) {
     val savedKeyboardHeight by viewModel.keyboardHeight.collectAsStateWithLifecycle()
@@ -86,6 +88,7 @@ fun ChatComposer(
         modifier = modifier,
         onChatSent = onChatSent,
         keyboardHeight = lastKeyboardHeight,
+        pictureResult = pictureResult,
     )
 }
 
@@ -95,6 +98,7 @@ private fun ChatComposer(
     onChatSent: (String) -> Unit,
     modifier: Modifier = Modifier,
     keyboardHeight: Dp = 300.dp,
+    pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var textField by remember { mutableStateOf(TextFieldValue()) }
@@ -163,6 +167,7 @@ private fun ChatComposer(
                         }
                     }
                 )
+                // TODO Preview image?
                 IconButton(
                     enabled = textField.text.isNotBlank(),
                     onClick = {
@@ -183,7 +188,14 @@ private fun ChatComposer(
                         .clipToBounds(),
                     onCloseClicked = {
                         toggleCamera()
-                    })
+                    },
+                    pictureResult = {
+                        pictureResult(it)
+                        if (it.isSuccess) {
+                            toggleCamera()
+                        }
+                    },
+                )
             } else if (keyboardVisible) {
                 Box(Modifier.height(keyboardHeight))
             } else {
@@ -199,7 +211,8 @@ private fun ComposerPreview() {
     KoncertTheme {
         ChatComposer(
             onChatSent = {},
-            keyboardHeight = 300.dp
+            keyboardHeight = 300.dp,
+            pictureResult = {},
         )
     }
 }

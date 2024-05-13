@@ -1,5 +1,8 @@
 package dk.clausr.repo.chat
 
+import android.content.Context
+import android.net.Uri
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.core.dispatchers.Dispatcher
 import dk.clausr.core.dispatchers.Dispatchers
 import dk.clausr.koncert.api.GroupsApi
@@ -12,6 +15,7 @@ import dk.clausr.repo.userdata.UserRepository
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.postgresChangeFlow
+import io.github.jan.supabase.storage.Storage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonPrimitive
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,7 +37,9 @@ class ChatRepository @Inject constructor(
     private val groupApi: GroupsApi,
     private val profileApi: ProfileApi,
     private val realtimeChannel: RealtimeChannel,
+    private val storage: Storage,
     private val userRepository: UserRepository,
+    @ApplicationContext private val context: Context,
     @Dispatcher(Dispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     private var username: String = ""
@@ -95,12 +102,13 @@ class ChatRepository @Inject constructor(
         realtimeChannel.unsubscribe()
     }
 
-    suspend fun createMessage(message: String) = withContext(ioDispatcher) {
+    suspend fun createMessage(message: String, imageUrl: String?) = withContext(ioDispatcher) {
         kotlin.runCatching {
             messageApi.createMessage(
                 id = profileApi.getProfile(username)?.id ?: "noprofileid",
                 content = message,
                 groupId = groupApi.getGroup(groupname)?.id ?: "nogroup",
+                imageUrl = imageUrl,
             )
         }.onFailure {
             Timber.e(it, "Error while creating message")
@@ -129,6 +137,16 @@ class ChatRepository @Inject constructor(
 
     suspend fun getGroup(groupName: String = groupname) = withContext(ioDispatcher) {
         groupApi.getGroup(groupName)?.toGroup()
+    }
+
+    suspend fun uploadImage(imageUri: Uri): String? = withContext(ioDispatcher) {
+        Timber.d("Upload image $imageUri")
+        val inputStream = context.contentResolver.openInputStream(imageUri)?.use {
+            it.buffered().readBytes()
+        } ?: return@withContext null
+
+        storage.from("message_images")
+            .upload("${UUID.randomUUID()}.jpg", inputStream, upsert = false)
     }
 }
 

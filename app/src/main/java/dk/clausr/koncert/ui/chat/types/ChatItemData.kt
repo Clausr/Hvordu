@@ -12,10 +12,15 @@ sealed class ChatItemData(val direction: ChatItemDirection) {
     sealed class Message(
         direction: ChatItemDirection,
         val message: String,
+        val image: String? = null,
     ) : ChatItemData(direction) {
-        data class TextSent(val messageText: String) : Message(
+        data class TextSent(
+            val messageText: String,
+            val imageUrl: String?,
+        ) : Message(
             direction = ChatItemDirection.Sent,
             message = messageText,
+            image = imageUrl,
         )
 
         data class EmojiSent(val messageText: String) : Message(
@@ -27,12 +32,14 @@ sealed class ChatItemData(val direction: ChatItemDirection) {
             val messageText: String,
             val senderAvatar: String?,
             val senderName: String,
+            val imageUrl: String?,
         ) : Message(
             direction = ChatItemDirection.Received(
                 avatar = senderAvatar,
                 senderName = senderName,
             ),
             message = messageText,
+            image = imageUrl,
         )
 
         data class EmojiReceived(

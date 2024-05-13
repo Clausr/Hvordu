@@ -14,4 +14,6 @@ data class MessageDto(
     val createdAt: String,
     @SerialName("sender_username")
     val senderUsername: String,
+    @SerialName("image_url")
+    val imageUrl: String?,
 )
