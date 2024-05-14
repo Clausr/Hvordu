@@ -23,8 +23,6 @@ fun KoncertApp(
         ) { padding ->
                 KoncertNavHost(
                     navController = appState.navController,
-                    onNavigateToDestination = appState::navigate,
-                    onBackClick = appState::onBackClick,
                     windowSizeClass = appState.windowSizeClass,
                     modifier = Modifier
                         .padding(padding)

@@ -3,13 +3,16 @@ package dk.clausr.koncert.ui.chat
 import android.net.Uri
 import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -33,14 +36,16 @@ import io.github.jan.supabase.realtime.RealtimeChannel
 @Composable
 fun ChatRoute(
     modifier: Modifier = Modifier,
+    onBack: () -> Unit,
     chatViewModel: ChatViewModel = hiltViewModel(),
 ) {
     val messages by chatViewModel.messages.collectAsStateWithLifecycle()
     val status by chatViewModel.connectionStatus.collectAsStateWithLifecycle()
     val chatName by chatViewModel.chatName.collectAsState()
     val imageUri by chatViewModel.imageUri.collectAsStateWithLifecycle(null)
+
     LaunchedEffect(Unit) {
-        chatViewModel.getMessages()
+//        chatViewModel.getMessages()
         chatViewModel.connectToRealtime()
     }
 
@@ -56,7 +61,8 @@ fun ChatRoute(
             chatViewModel.setImageUri(it)
         },
         imageUri = imageUri,
-        removeImage = { chatViewModel.deleteImage() }
+        removeImage = { chatViewModel.deleteImage() },
+        onBack = onBack,
     )
 }
 
@@ -70,6 +76,7 @@ fun ChatScreen(
     pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
     imageUri: Uri?,
     removeImage: (Uri) -> Unit,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val lazyState = rememberLazyListState()
@@ -81,7 +88,6 @@ fun ChatScreen(
     }
 
     Scaffold(
-        contentWindowInsets = WindowInsets(0),
         modifier = modifier
             .fillMaxSize(),
         snackbarHost = {
@@ -98,6 +104,14 @@ fun ChatScreen(
                         RealtimeChannel.Status.UNSUBSCRIBING -> "🟣"
                     }
                     Text(statusEmoji)
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = null
+                        )
+                    }
                 }
             )
         },

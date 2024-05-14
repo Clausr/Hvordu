@@ -55,7 +55,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import dk.clausr.koncert.ui.camera.AnnoyingCameraRoute
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
-import timber.log.Timber
 
 // TODO Give this its own ViewModel with keyboard things
 
@@ -81,7 +80,7 @@ fun ChatComposer(
     val keyboardVisible = WindowInsets.isImeVisible
     val keyboardHeight = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding()
 
-    Timber.d("Keyboard height: $keyboardHeight - last $lastKeyboardHeight")
+//    Timber.d("Keyboard height: $keyboardHeight - last $lastKeyboardHeight")
     LaunchedEffect(keyboardVisible) {
         if (keyboardVisible &&
             (lastKeyboardHeight == 300.dp)

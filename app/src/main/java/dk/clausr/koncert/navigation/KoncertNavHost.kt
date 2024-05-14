@@ -5,17 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import dk.clausr.koncert.ui.artists.navigation.artistsGraph
 import dk.clausr.koncert.ui.chat.navigation.chatGraph
 import dk.clausr.koncert.ui.home.navigation.HomeDestination
 import dk.clausr.koncert.ui.home.navigation.homeGraph
-import dk.clausr.koncert.ui.parallax.navigation.parallaxGraph
 
 @Composable
 fun KoncertNavHost(
     navController: NavHostController,
-    onNavigateToDestination: (KoncertNavigationDestination, String) -> Unit,
-    onBackClick: () -> Unit,
     windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier,
     startDestination: String = HomeDestination.route
@@ -29,10 +25,6 @@ fun KoncertNavHost(
             windowSizeClass = windowSizeClass,
             navController = navController,
         )
-        artistsGraph(
-            windowSizeClass = windowSizeClass
-        )
-        parallaxGraph(windowSizeClass = windowSizeClass)
         chatGraph(navController)
     }
 }

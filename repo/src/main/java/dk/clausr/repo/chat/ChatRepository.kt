@@ -5,6 +5,7 @@ import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.core.dispatchers.Dispatcher
 import dk.clausr.core.dispatchers.Dispatchers
+import dk.clausr.core.models.UserData
 import dk.clausr.koncert.api.GroupsApi
 import dk.clausr.koncert.api.MessageApi
 import dk.clausr.koncert.api.ProfileApi
@@ -18,12 +19,14 @@ import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.github.jan.supabase.storage.Storage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonPrimitive
 import timber.log.Timber
@@ -44,20 +47,35 @@ class ChatRepository @Inject constructor(
     @Dispatcher(Dispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     private var username: String = ""
-    private var groupname: String = "empty"
+    private var _groupid: String = ""
 
-    init {
-        CoroutineScope(ioDispatcher).launch {
-            userRepository.getUserData().collectLatest {
-                username = it?.username ?: throw IllegalStateException("NoUsername")
-                groupname = it.group
-            }
+    private val userData: Flow<UserData> = userRepository.getUserData()
+        .mapNotNull {
+            // Shitty way
+            username = it?.username.orEmpty()
+
+            it
         }
-    }
+
+    private val groupId: Flow<String?> = userData
+        .map {
+            val group = getGroup(it.group)
+            // Shitty way
+            _groupid = group?.id.orEmpty()
+            group?.id
+        }
 
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
-    val messages = _messages
-        .map { messages -> messages.reversed() }
+    private val something = MutableStateFlow<String>("RandomString")
+
+    val messages = combine(groupId, something) { groupName, random ->
+        Timber.d("messages combine Groupid: $groupName -- $random")
+        if (groupName != null) {
+            retrieveMessages(groupName).getOrNull()?.reversed() ?: emptyList()
+        } else {
+            emptyList()
+        }
+    }.flowOn(ioDispatcher)
 
     suspend fun connectToRealtime() {
         if (realtimeChannel.status.value != RealtimeChannel.Status.SUBSCRIBED) {
@@ -70,7 +88,9 @@ class ChatRepository @Inject constructor(
 
                     is PostgresAction.Insert -> {
                         // Currently no join on realtime, so just get everything again
-                        retrieveMessages()
+                        Timber.d("Got new insertion - update entire messages")
+                        something.value = UUID.randomUUID().toString()
+//                        _messages.value = retrieveMessages(_groupid).getOrNull() ?: emptyList()
                         // TODO Maybe just query the messages matched by the new insert?
 //                        try {
 //                            val newInsert = it.decodeRecord<MessageDto>()
@@ -98,11 +118,12 @@ class ChatRepository @Inject constructor(
             messageApi.createMessage(
                 id = profileApi.getProfile(username)?.id ?: "noprofileid",
                 content = message,
-                groupId = groupApi.getGroup(groupname)?.id ?: "nogroup",
+                groupId = _groupid,
                 imageUrl = imageUrl,
             )
         }
             .onSuccess {
+                something.value = message
                 _messages.value += Message(
                     "temp",
                     message,
@@ -126,10 +147,9 @@ class ChatRepository @Inject constructor(
         }
     }
 
-    suspend fun retrieveMessages() = withContext(ioDispatcher) {
+    suspend fun retrieveMessages(chatRoomId: String) = withContext(ioDispatcher) {
         kotlin.runCatching {
-            val groupId = getGroup()?.id ?: throw IllegalStateException("No group id")
-            messageApi.retrieveMessages(groupId)
+            messageApi.retrieveMessages(chatRoomId)
                 .map {
                     val imageUrl = it.imageUrl?.let {
                         val (bucket, url) = it.split(("/"))
@@ -139,17 +159,15 @@ class ChatRepository @Inject constructor(
                     it.copy(imageUrl = imageUrl)
                         .toMessage(Message.Direction.map(username == it.senderUsername))
                 }
-
-
-        }.onSuccess {
-            _messages.value = it
         }.onFailure {
             Timber.e(it, "Error while retrieving messages")
         }
     }
 
-    suspend fun getGroup(groupName: String = groupname) = withContext(ioDispatcher) {
-        groupApi.getGroup(groupName)?.toGroup()
+    suspend fun getGroup(groupName: String) = withContext(ioDispatcher) {
+        val res = groupApi.getGroup(groupName)?.toGroup()
+        Timber.d("Got group $res")
+        res
     }
 
     suspend fun uploadImage(imageUri: Uri): String? = withContext(ioDispatcher) {
@@ -164,7 +182,7 @@ class ChatRepository @Inject constructor(
     }
 
     suspend fun deleteImage(url: String) = withContext(ioDispatcher) {
-        storage.from("message_images").delete(url)
+        storage.from("message_images").delete(url.split("/").last())
     }
 }
 

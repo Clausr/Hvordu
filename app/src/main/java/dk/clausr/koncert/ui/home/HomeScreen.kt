@@ -1,9 +1,6 @@
 package dk.clausr.koncert.ui.home
 
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,125 +11,84 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.isSpecified
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.core.models.UserData
 import dk.clausr.koncert.R
-import dk.clausr.koncert.ui.chat.ChatRoute
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
-import timber.log.Timber
+import dk.clausr.repo.domain.Group
 
 @Composable
 fun HomeRoute(
     windowSizeClass: WindowSizeClass,
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onNavigateToChat: (chatName: String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val userData by viewModel.userData.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsState()
 
-    if (userData == null) {
-        CreateUserScreen(
-            windowSizeClass = windowSizeClass,
-            userData = null,
-            modifier = modifier,
-            onCreateClicked = {
-                Timber.d("Set data: $it")
-                viewModel.setData(it.username, it.group)
-            }
-        )
-    } else {
-        //Chat screen
-        ChatRoute()
-    }
-}
+    val groups = emptyList<Group>()
 
-@Composable
-fun UserScreen(
-    userData: UserData,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(Modifier.fillMaxSize()) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            containerColor = MaterialTheme.colorScheme.background
-        ) { innerPadding ->
-            Column(
-                modifier = modifier
-                    .padding(innerPadding),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(text = "Username: ${userData.username}")
-                Text(text = "Group: ${userData.group}")
+    when (val state = uiState) {
+        HomeUiState.Loading -> Box(Modifier.fillMaxSize()) {
+            CircularProgressIndicator()
+        }
 
-                Button(onClick = onClick) {
-                    Text(text = "Click me")
-                }
-            }
+        is HomeUiState.Shown -> {
+//            if (state.userData == null) {
+            CreateUserScreen(
+                windowSizeClass = windowSizeClass,
+                userData = state.userData,
+                modifier = modifier,
+                onCreateClicked = {
+                    viewModel.setData(it.username, it.group)
+                    onNavigateToChat(it.group)
+                },
+                groups = groups,
+            )
+//            } else {
+//                onNavigateToChat(state.userData.group)
+//            }
         }
     }
-}
 
-@Composable
-fun Scrim(
-    color: Color,
-    onDismissRequest: () -> Unit,
-    visible: Boolean
-) {
-    if (color.isSpecified) {
-        val alpha by animateFloatAsState(
-            targetValue = if (visible) 1f else 0f,
-            animationSpec = TweenSpec()
-        )
-        val dismissSheet = if (visible) {
-            Modifier
-                .pointerInput(onDismissRequest) {
-                    detectTapGestures {
-                        onDismissRequest()
-                    }
-                }
-                .clearAndSetSemantics {}
-        } else {
-            Modifier
-        }
-        Canvas(
-            Modifier
-                .zIndex(500F)
-                .fillMaxSize()
-                .then(dismissSheet)
-        ) {
-            drawRect(color = color, alpha = alpha)
-        }
-    }
+//    if (userData == null) {
+//        CreateUserScreen(
+//            windowSizeClass = windowSizeClass,
+//            userData = null,
+//            modifier = modifier,
+//            onCreateClicked = {
+//                Timber.d("Set data: $it")
+//                viewModel.setData(it.username, it.group)
+//            },
+//            groups = groups,
+//        )
+//    } else {
+//        //Chat screen
+//        ChatRoute()
+//    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -141,6 +97,7 @@ fun CreateUserScreen(
     windowSizeClass: WindowSizeClass,
     modifier: Modifier = Modifier,
     userData: UserData?,
+    groups: List<Group>,
     onCreateClicked: (UserData) -> Unit,
 ) {
     var username by remember(userData) {
@@ -155,7 +112,6 @@ fun CreateUserScreen(
         topBar = {
             TopAppBar(
                 windowInsets = WindowInsets.statusBars,
-                colors = TopAppBarDefaults.topAppBarColors(),
                 title = {
                     Text(
                         text = stringResource(id = R.string.tab_overview),
@@ -194,19 +150,25 @@ fun CreateUserScreen(
             Button(onClick = {
                 onCreateClicked(UserData(username = username, group = group, keyboardHeight = null))
             }) {
-                Text("Start")
+                Text("Go to chatroom")
+            }
+
+            Column {
+                groups.forEach {
+                    Text(
+                        text = it.friendlyName,
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                group = it.friendlyName
+                            },
+                    )
+                }
             }
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun UserScreenPreview() {
-//    KoncertTheme {
-//        UserScreen(userData = UserData("Name", "group", null), {})
-//    }
-//}
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview(name = "phone", device = "spec:shape=Normal,width=360,height=640,unit=dp,dpi=480")
@@ -220,6 +182,10 @@ fun Preview0(
                 windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
                 userData = UserData("Name", "Group", null),
                 onCreateClicked = {},
+                groups = listOf(
+                    Group("", "Friendly name"),
+                    Group("", "Another friendly name"),
+                ),
             )
         }
     }
