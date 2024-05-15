@@ -31,7 +31,7 @@ class ChatViewModel @Inject constructor(
     private val _imageUri = MutableStateFlow<Uri?>(null)
     val imageUri: Flow<Uri?> = _imageUri
 
-    val messages = chatRepository.messages
+    val messages = chatRepository.getMessages(chatArgs.chatRoomId)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

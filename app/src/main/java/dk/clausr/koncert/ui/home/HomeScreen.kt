@@ -34,10 +34,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.clausr.core.models.KeyboardHeightState
 import dk.clausr.core.models.UserData
 import dk.clausr.koncert.R
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import dk.clausr.koncert.utils.extensions.collectWithLifecycle
 import dk.clausr.repo.domain.Group
 
 @Composable
@@ -48,8 +51,13 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    viewModel.viewEffects.collectWithLifecycle {
+        when (it) {
+            is HomeViewModel.HomeViewEffect.OpenChat -> onNavigateToChat(it.roomId)
+        }
+    }
 
-    val groups = emptyList<Group>()
+    val groups by viewModel.groups.collectAsStateWithLifecycle()
 
     when (val state = uiState) {
         HomeUiState.Loading -> Box(Modifier.fillMaxSize()) {
@@ -62,9 +70,8 @@ fun HomeRoute(
                 windowSizeClass = windowSizeClass,
                 userData = state.userData,
                 modifier = modifier,
-                onCreateClicked = {
-                    viewModel.setData(it.username, it.group)
-                    onNavigateToChat(it.group)
+                onCreateClicked = { username, chatRoomName ->
+                    viewModel.setData(username, chatRoomName)
                 },
                 groups = groups,
             )
@@ -73,22 +80,6 @@ fun HomeRoute(
 //            }
         }
     }
-
-//    if (userData == null) {
-//        CreateUserScreen(
-//            windowSizeClass = windowSizeClass,
-//            userData = null,
-//            modifier = modifier,
-//            onCreateClicked = {
-//                Timber.d("Set data: $it")
-//                viewModel.setData(it.username, it.group)
-//            },
-//            groups = groups,
-//        )
-//    } else {
-//        //Chat screen
-//        ChatRoute()
-//    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -98,14 +89,16 @@ fun CreateUserScreen(
     modifier: Modifier = Modifier,
     userData: UserData?,
     groups: List<Group>,
-    onCreateClicked: (UserData) -> Unit,
+    onCreateClicked: (username: String, chatRoomId: String) -> Unit,
 ) {
     var username by remember(userData) {
         mutableStateOf(userData?.username ?: "")
     }
     var group by remember(userData) {
-        mutableStateOf(userData?.group ?: "")
+        mutableStateOf(userData?.chatRoomIds?.lastOrNull() ?: "")
     }
+
+    // TODO Keyboard magic here, for the first time
 
     Scaffold(
         modifier = modifier,
@@ -148,7 +141,7 @@ fun CreateUserScreen(
             )
 
             Button(onClick = {
-                onCreateClicked(UserData(username = username, group = group, keyboardHeight = null))
+                onCreateClicked(username, group)
             }) {
                 Text("Go to chatroom")
             }
@@ -180,8 +173,8 @@ fun Preview0(
         KoncertTheme(overrideColorScheme = colorScheme) {
             CreateUserScreen(
                 windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(maxWidth, maxHeight)),
-                userData = UserData("Name", "Group", null),
-                onCreateClicked = {},
+                userData = UserData("Name", listOf("Group"), KeyboardHeightState.Unknown),
+                onCreateClicked = { _, _ -> },
                 groups = listOf(
                     Group("", "Friendly name"),
                     Group("", "Another friendly name"),

@@ -12,7 +12,6 @@ import dk.clausr.repo.domain.Group
 import dk.clausr.repo.domain.toGroup
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,29 +24,31 @@ class UserRepository @Inject constructor(
     @Dispatcher(Dispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 
     ) {
-    fun getUserData(): Flow<UserData?> = userSettingDataSource.userData.map {
-        if (it.username.isBlank() && it.group.isBlank()) {
-            null
-        } else {
-            it
-        }
+    fun getUserData(): Flow<UserData> = userSettingDataSource.userData
+
+    suspend fun setInitialData(username: String, chatRoomName: String) {
+        val profile = createUsername(username)
+        val chatRoom = checkForGroupName(chatRoomName)
+        userSettingDataSource.setInitialPreferences(profile.username, chatRoom.id)
+
     }
 
     suspend fun setUserData(userData: UserData) {
         val username = createUsername(userData.username)
-        val groupName = checkForGroupName(userData.group)
-        userSettingDataSource.setUserPreferences(userData)
+//        val groupName = checkForGroupName(userData.group)
+//        userSettingDataSource.setUserPreferences(userData)
     }
+
 
     suspend fun setKeyboardHeight(height: Float) {
         userSettingDataSource.setKeyboardHeight(height)
     }
 
-    suspend fun checkForGroupName(name: String): GroupDto {
-        return groupsApi.joinOrCreate(name)
+    suspend fun checkForGroupName(name: String): Group {
+        return groupsApi.joinOrCreate(name).toGroup()
     }
 
-    suspend fun createUsername(profileName: String): ProfileDto {
+    private suspend fun createUsername(profileName: String): ProfileDto {
         return profileApi.getOrCreateProfile(profileName)
     }
 

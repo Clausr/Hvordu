@@ -21,10 +21,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
@@ -56,26 +54,29 @@ class ChatRepository @Inject constructor(
 
             it
         }
-
-    private val groupId: Flow<String?> = userData
-        .map {
-            val group = getGroup(it.group)
-            // Shitty way
-            _groupid = group?.id.orEmpty()
-            group?.id
-        }
+//
+//    private val groupId: Flow<String?> = userData
+//        .map {
+//            val group = getGroup(it.group)
+//            // Shitty way
+//            _groupid = group?.id.orEmpty()
+//            group?.id
+//        }
 
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     private val something = MutableStateFlow<String>("RandomString")
 
-    val messages = combine(groupId, something) { groupName, random ->
-        Timber.d("messages combine Groupid: $groupName -- $random")
-        if (groupName != null) {
-            retrieveMessages(groupName).getOrNull()?.reversed() ?: emptyList()
-        } else {
-            emptyList()
-        }
-    }.flowOn(ioDispatcher)
+    fun getMessages(chatRoomId: String): Flow<List<Message>> = flow {
+        retrieveMessages(chatRoomId).getOrNull()?.reversed() ?: emptyList()
+    }
+//    val messages = combine(groupId, something) { groupName, random ->
+//        Timber.d("messages combine Groupid: $groupName -- $random")
+//        if (groupName != null) {
+//            retrieveMessages(groupName).getOrNull()?.reversed() ?: emptyList()
+//        } else {
+//            emptyList()
+//        }
+//    }.flowOn(ioDispatcher)
 
     suspend fun connectToRealtime() {
         if (realtimeChannel.status.value != RealtimeChannel.Status.SUBSCRIBED) {

@@ -53,8 +53,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import dk.clausr.core.models.KeyboardHeightState
 import dk.clausr.koncert.ui.camera.AnnoyingCameraRoute
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import timber.log.Timber
 
 // TODO Give this its own ViewModel with keyboard things
 
@@ -68,41 +70,47 @@ fun ChatComposer(
     removeImage: (Uri) -> Unit,
     viewModel: ComposerViewModel = hiltViewModel()
 ) {
-    val savedKeyboardHeight by viewModel.keyboardHeight.collectAsStateWithLifecycle()
-//    val imageUri by viewModel.imageUri.collectAsState(null)
+    val keyboardHeightState by viewModel.keyboardHeightState.collectAsStateWithLifecycle()
 
     // Keyboard thingy
-    var lastKeyboardHeight by remember(savedKeyboardHeight) {
+    val lastKeyboardHeight by remember(keyboardHeightState) {
         mutableStateOf(
-            savedKeyboardHeight?.dp ?: 300.dp
+            when (val state = keyboardHeightState) {
+                is KeyboardHeightState.Known -> state.height.dp
+                KeyboardHeightState.Unknown -> 300.dp
+            }
         )
     }
-    val keyboardVisible = WindowInsets.isImeVisible
+//    val keyboardVisible = WindowInsets.isImeVisible
     val keyboardHeight = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding()
 
-//    Timber.d("Keyboard height: $keyboardHeight - last $lastKeyboardHeight")
-    LaunchedEffect(keyboardVisible) {
-        if (keyboardVisible &&
-            (lastKeyboardHeight == 300.dp)
-        ) {
-            lastKeyboardHeight = keyboardHeight
-            viewModel.setKeyboardHeight(keyboardHeight.value)
+    LaunchedEffect(keyboardHeight) {
+        when (keyboardHeightState) {
+            is KeyboardHeightState.Known -> {
+                Timber.d("Keyboard changed size $keyboardHeight")
+            }
+
+            KeyboardHeightState.Unknown -> {
+                viewModel.setKeyboardHeight(keyboardHeight.value)
+            }
         }
     }
 
+    Timber.d("Keyboard height: $keyboardHeight - last $lastKeyboardHeight")
+//    LaunchedEffect(keyboardVisible) {
+//        if (keyboardVisible &&
+//            (lastKeyboardHeight == 300.dp)
+//        ) {
+//            lastKeyboardHeight = keyboardHeight
+//            viewModel.setKeyboardHeight(keyboardHeight.value)
+//        }
+//    }
+
     ChatComposer(
         modifier = modifier,
-        onChatSent = {
-            onChatSent(it)
-//            viewModel.removeImage()
-        },
+        onChatSent = onChatSent,
         keyboardHeight = lastKeyboardHeight,
-        pictureResult = {
-//            it.getOrNull()?.savedUri?.let {
-//                viewModel.onImageUri(it)
-//            }
-            pictureResult(it)
-        },
+        pictureResult = pictureResult,
         imageTakenUri = imageUri,
         onRemoveImage = {
             removeImage(it)

@@ -3,6 +3,7 @@ package dk.clausr.koncert.ui.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dk.clausr.core.models.KeyboardHeightState
 import dk.clausr.repo.userdata.UserRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -25,11 +26,11 @@ class ComposerViewModel @Inject constructor(
 //        _imageCapturedUri.value = null
 //    }
 
-    val keyboardHeight = userRepository.getUserData().map { it?.keyboardHeight }
+    val keyboardHeightState = userRepository.getUserData().map { it.keyboardHeightState }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null
+            initialValue = KeyboardHeightState.Unknown,
         )
 
     fun setKeyboardHeight(keyboardHeight: Float) = viewModelScope.launch {
