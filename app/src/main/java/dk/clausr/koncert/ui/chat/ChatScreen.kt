@@ -3,7 +3,12 @@ package dk.clausr.koncert.ui.chat
 import android.net.Uri
 import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,13 +28,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dk.clausr.koncert.ui.chat.mapper.mapToChatItem
 import dk.clausr.koncert.ui.chat.ui.ChatItem
+import dk.clausr.koncert.utils.extensions.toDp
+import dk.clausr.koncert.utils.extensions.toPx
 import dk.clausr.repo.domain.Message
 import io.github.jan.supabase.realtime.RealtimeChannel
 
@@ -45,7 +55,6 @@ fun ChatRoute(
     val imageUri by chatViewModel.imageUri.collectAsStateWithLifecycle(null)
 
     LaunchedEffect(Unit) {
-//        chatViewModel.getMessages()
         chatViewModel.connectToRealtime()
     }
 
@@ -81,11 +90,16 @@ fun ChatScreen(
 ) {
     val lazyState = rememberLazyListState()
     val snackbarHost = remember { SnackbarHostState() }
+
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty() && !lazyState.isScrollInProgress) {
             lazyState.scrollToItem(0)
         }
     }
+
+    val navigationInsetsHeight =
+        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding().toPx.toInt()
+    var bottomBarHeight by remember { mutableIntStateOf(navigationInsetsHeight) }
 
     Scaffold(
         modifier = modifier
@@ -117,6 +131,7 @@ fun ChatScreen(
         },
         bottomBar = {
             ChatComposer(
+                modifier = Modifier.onSizeChanged { bottomBarHeight = it.height },
                 onChatSent = onSendChat,
                 pictureResult = pictureResult,
                 imageUri = imageUri,
@@ -125,21 +140,27 @@ fun ChatScreen(
         },
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
-        LazyColumn(
-            state = lazyState,
-            modifier = Modifier
+        Box(
+            modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            reverseLayout = true,
+                .padding(top = innerPadding.calculateTopPadding()),
         ) {
-            items(messages) { message ->
-                val chatItem = message.mapToChatItem()
-                ChatItem(
-                    item = chatItem,
-                    timestamp = message.createdAt,
-                )
+            LazyColumn(
+                state = lazyState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                contentPadding = PaddingValues(bottom = bottomBarHeight.toDp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                reverseLayout = true,
+            ) {
+                items(messages) { message ->
+                    val chatItem = message.mapToChatItem()
+                    ChatItem(
+                        item = chatItem,
+                        timestamp = message.createdAt,
+                    )
+                }
             }
         }
     }

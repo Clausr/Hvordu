@@ -8,11 +8,14 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.koncert.ui.chat.navigation.ChatArgs
 import dk.clausr.repo.chat.ChatRepository
+import dk.clausr.repo.userdata.UserRepository
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -22,6 +25,7 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val chatRepository: ChatRepository,
+    userRepository: UserRepository,
     realtimeChannel: RealtimeChannel,
 ) : ViewModel() {
 
@@ -31,7 +35,18 @@ class ChatViewModel @Inject constructor(
     private val _imageUri = MutableStateFlow<Uri?>(null)
     val imageUri: Flow<Uri?> = _imageUri
 
-    val messages = chatRepository.getMessages(chatArgs.chatRoomId)
+    private val username = userRepository.getUserData().map { it.username }
+
+    init {
+        viewModelScope.launch {
+            username.collectLatest {
+//                chatRepository.getProfileId(it)
+                chatRepository.getMessages(chatArgs.chatRoomId, it)
+            }
+        }
+    }
+
+    val messages = chatRepository.chatMessages
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -39,7 +54,7 @@ class ChatViewModel @Inject constructor(
         )
 
     val chatName = flow {
-        val friendlyName = chatRepository.getGroup(chatArgs.chatRoomId)?.friendlyName
+        val friendlyName = chatRepository.getGroup(chatRoomid = chatArgs.chatRoomId)?.friendlyName
         Timber.d("ChatName flow.. $friendlyName")
         emit(friendlyName)
     }.stateIn(
@@ -59,7 +74,11 @@ class ChatViewModel @Inject constructor(
     }
 
     fun sendMessage(message: String) = viewModelScope.launch {
-        chatRepository.createMessage(message, _imageUrl.value)
+        chatRepository.createMessage(
+            chatRoomId = chatArgs.chatRoomId,
+            message = message,
+            imageUrl = _imageUrl.value
+        )
         _imageUri.value = null
         _imageUrl.value = null
     }

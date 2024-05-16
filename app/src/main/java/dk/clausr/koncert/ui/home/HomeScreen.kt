@@ -94,8 +94,8 @@ fun CreateUserScreen(
     var username by remember(userData) {
         mutableStateOf(userData?.username ?: "")
     }
-    var group by remember(userData) {
-        mutableStateOf(userData?.chatRoomIds?.lastOrNull() ?: "")
+    var group by remember {
+        mutableStateOf("")
     }
 
     // TODO Keyboard magic here, for the first time

@@ -28,6 +28,12 @@ class GroupsApi @Inject constructor(
         }
     }.decodeSingleOrNull()
 
+    suspend fun getChatRoom(chatRoomId: String): GroupDto? = table.select {
+        filter {
+            eq("id", chatRoomId)
+        }
+    }.decodeSingleOrNull()
+
     private suspend fun createGroup(friendlyName: String): GroupDto {
         return table.insert(buildJsonObject {
             put("friendly_name", friendlyName)

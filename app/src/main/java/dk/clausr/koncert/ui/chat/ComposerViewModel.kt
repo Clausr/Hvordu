@@ -15,17 +15,6 @@ import javax.inject.Inject
 class ComposerViewModel @Inject constructor(
     private val userRepository: UserRepository,
 ) : ViewModel() {
-//    private val _imageCapturedUri = MutableStateFlow<Uri?>(null)
-//    val imageUri: Flow<Uri?> = _imageCapturedUri
-//
-//    fun onImageUri(uri: Uri) {
-//        _imageCapturedUri.value = uri
-//    }
-//
-//    fun removeImage() {
-//        _imageCapturedUri.value = null
-//    }
-
     val keyboardHeightState = userRepository.getUserData().map { it.keyboardHeightState }
         .stateIn(
             scope = viewModelScope,
@@ -35,5 +24,13 @@ class ComposerViewModel @Inject constructor(
 
     fun setKeyboardHeight(keyboardHeight: Float) = viewModelScope.launch {
         userRepository.setKeyboardHeight(keyboardHeight)
+    }
+
+    sealed interface KeyboardState {
+        data object Shown : KeyboardState
+        data object Hidden : KeyboardState
+
+        //        data object InTransit : KeyboardState
+        data object KeyboardHeight : KeyboardState
     }
 }

@@ -12,17 +12,41 @@ class ProfileApi @Inject constructor(
 ) {
     private val table = client.postgrest["profiles"]
 
-    suspend fun getOrCreateProfile(profileName: String): ProfileDto = table.select {
-        filter {
-            eq("username", profileName)
-        }
-    }.decodeSingleOrNull<ProfileDto>() ?: createProfile(profileName)
+    var cachedProfileId: String? = null
 
-    suspend fun getProfile(username: String): ProfileDto? = table.select {
-        filter {
-            eq("username", username)
-        }
-    }.decodeSingleOrNull()
+    suspend fun getOrCreateProfile(profileName: String): ProfileDto {
+        val profile = table.select {
+            filter {
+                eq("username", profileName)
+            }
+        }.decodeSingleOrNull<ProfileDto>() ?: createProfile(profileName)
+
+        cachedProfileId = profile.id
+
+        return profile
+    }
+
+    suspend fun getProfileId(username: String): String? {
+        return cachedProfileId ?: (table.select {
+            filter {
+                eq("username", username)
+            }
+        }.decodeSingleOrNull() as ProfileDto?).apply {
+            cachedProfileId = this?.id
+        }?.id
+
+//        return if (cachedProfileId == null) {
+//            val profile: ProfileDto? = table.select {
+//                filter {
+//                    eq("username", username)
+//                }
+//            }.decodeSingleOrNull()
+//
+//            profile?.id
+//        } else {
+//            cachedProfileId
+//        }
+    }
 
     private suspend fun createProfile(username: String): ProfileDto {
         return table.insert(buildJsonObject {

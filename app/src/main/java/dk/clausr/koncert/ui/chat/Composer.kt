@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imeAnimationTarget
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -74,6 +73,7 @@ fun ChatComposer(
 
     // Keyboard thingy
     val lastKeyboardHeight by remember(keyboardHeightState) {
+        Timber.d("State height: $keyboardHeightState")
         mutableStateOf(
             when (val state = keyboardHeightState) {
                 is KeyboardHeightState.Known -> state.height.dp
@@ -81,30 +81,18 @@ fun ChatComposer(
             }
         )
     }
-//    val keyboardVisible = WindowInsets.isImeVisible
+
     val keyboardHeight = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding()
-
     LaunchedEffect(keyboardHeight) {
-        when (keyboardHeightState) {
-            is KeyboardHeightState.Known -> {
-                Timber.d("Keyboard changed size $keyboardHeight")
-            }
-
-            KeyboardHeightState.Unknown -> {
-                viewModel.setKeyboardHeight(keyboardHeight.value)
-            }
+        Timber.d("keyboardHeightState $keyboardHeight -- state: $keyboardHeightState")
+//        if (keyboardHeightState is KeyboardHeightState.Known) {
+        if (keyboardHeight.value != 0f) {
+            viewModel.setKeyboardHeight(keyboardHeight.value)
         }
+//        }
     }
 
     Timber.d("Keyboard height: $keyboardHeight - last $lastKeyboardHeight")
-//    LaunchedEffect(keyboardVisible) {
-//        if (keyboardVisible &&
-//            (lastKeyboardHeight == 300.dp)
-//        ) {
-//            lastKeyboardHeight = keyboardHeight
-//            viewModel.setKeyboardHeight(keyboardHeight.value)
-//        }
-//    }
 
     ChatComposer(
         modifier = modifier,
@@ -118,7 +106,6 @@ fun ChatComposer(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChatComposer(
     onChatSent: (String) -> Unit,
@@ -128,12 +115,26 @@ private fun ChatComposer(
     imageTakenUri: Uri? = null,
     onRemoveImage: (Uri) -> Unit,
 ) {
+    val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     var textField by remember { mutableStateOf(TextFieldValue()) }
     var initialSize by remember { mutableStateOf(IntSize.Zero) }
     var cameraOpen by remember { mutableStateOf(false) }
-    val keyboardVisible = WindowInsets.isImeVisible
-    val focusRequester = remember { FocusRequester() }
+    val keyboardShowing by keyboardAsState()
+
+    var keyboardState: ComposerViewModel.KeyboardState by remember {
+        mutableStateOf(ComposerViewModel.KeyboardState.Hidden)
+    }
+
+    LaunchedEffect(keyboardShowing) {
+        if (keyboardShowing) {
+            cameraOpen = false
+            keyboardState = ComposerViewModel.KeyboardState.Shown
+        } else {
+            keyboardState = ComposerViewModel.KeyboardState.Hidden
+        }
+    }
+
     fun onSend() {
         onChatSent(textField.text)
         textField = TextFieldValue()
@@ -145,11 +146,13 @@ private fun ChatComposer(
             keyboardController?.hide()
         } else {
             keyboardController?.show()
+            keyboardState = ComposerViewModel.KeyboardState.Shown
         }
     }
 
     Surface(
-        modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
     ) {
         Column {
             if (imageTakenUri != null) {
@@ -157,8 +160,7 @@ private fun ChatComposer(
                     modifier = Modifier
                         .height(140.dp)
                         .clip(RoundedCornerShape(10.dp)),
-
-                    ) {
+                ) {
                     AsyncImage(
                         model = imageTakenUri,
                         contentDescription = null,
@@ -228,25 +230,30 @@ private fun ChatComposer(
                 }
             }
 
-            if (cameraOpen && imageTakenUri == null) {
-                AnnoyingCameraRoute(
-                    modifier = Modifier
-                        .height(keyboardHeight)
-                        .clipToBounds(),
-                    onCloseClicked = {
-                        toggleCamera()
-                    },
-                    pictureResult = {
-                        pictureResult(it)
-                        if (it.isSuccess) {
+            val bottomHeightModifier = when {
+                cameraOpen -> Modifier.height(keyboardHeight)
+                keyboardState == ComposerViewModel.KeyboardState.Shown
+                -> Modifier.height(keyboardHeight)
+
+                else -> Modifier.navigationBarsPadding()
+            }
+
+            Box(bottomHeightModifier) {
+                if (cameraOpen && imageTakenUri == null) {
+                    AnnoyingCameraRoute(
+                        modifier = bottomHeightModifier
+                            .clipToBounds(),
+                        onCloseClicked = {
                             toggleCamera()
-                        }
-                    },
-                )
-            } else if (keyboardVisible) {
-                Box(Modifier.height(keyboardHeight))
-            } else {
-                Box(Modifier.navigationBarsPadding())
+                        },
+                        pictureResult = {
+                            pictureResult(it)
+                            if (it.isSuccess) {
+                                toggleCamera()
+                            }
+                        },
+                    )
+                }
             }
         }
     }

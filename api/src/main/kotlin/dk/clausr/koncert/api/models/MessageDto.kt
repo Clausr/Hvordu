@@ -13,7 +13,9 @@ data class MessageDto(
     @SerialName("created_at")
     val createdAt: String,
     @SerialName("sender_username")
-    val senderUsername: String,
+    val senderUsername: String? = null,
     @SerialName("image_url")
     val imageUrl: String?,
+    @SerialName("group_id")
+    val chatRoomId: String,
 )

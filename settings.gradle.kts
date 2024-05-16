@@ -15,7 +15,7 @@ dependencyResolutionManagement {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
-rootProject.name = "Koncert"
+rootProject.name = "Hvordu"
 include(":app")
 include(":repo")
 include(":api")

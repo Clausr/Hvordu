@@ -7,3 +7,7 @@ import androidx.compose.ui.unit.Dp
 val Int.toDp: Dp
     @Composable
     get() = with(LocalDensity.current) { this@toDp.toDp() }
+
+val Dp.toPx: Float
+    @Composable
+    get() = with(LocalDensity.current) { this@toPx.toPx() }

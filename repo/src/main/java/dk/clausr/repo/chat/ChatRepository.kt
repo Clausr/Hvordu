@@ -5,25 +5,25 @@ import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dk.clausr.core.dispatchers.Dispatcher
 import dk.clausr.core.dispatchers.Dispatchers
-import dk.clausr.core.models.UserData
 import dk.clausr.koncert.api.GroupsApi
 import dk.clausr.koncert.api.MessageApi
 import dk.clausr.koncert.api.ProfileApi
+import dk.clausr.koncert.api.models.MessageDto
 import dk.clausr.repo.domain.Message
 import dk.clausr.repo.domain.toGroup
 import dk.clausr.repo.domain.toMessage
 import dk.clausr.repo.userdata.UserRepository
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.RealtimeChannel
+import io.github.jan.supabase.realtime.decodeRecord
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.github.jan.supabase.storage.Storage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonPrimitive
@@ -44,39 +44,27 @@ class ChatRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     @Dispatcher(Dispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
-    private var username: String = ""
-    private var _groupid: String = ""
-
-    private val userData: Flow<UserData> = userRepository.getUserData()
-        .mapNotNull {
-            // Shitty way
-            username = it?.username.orEmpty()
-
-            it
-        }
-//
-//    private val groupId: Flow<String?> = userData
-//        .map {
-//            val group = getGroup(it.group)
-//            // Shitty way
-//            _groupid = group?.id.orEmpty()
-//            group?.id
-//        }
-
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
-    private val something = MutableStateFlow<String>("RandomString")
+    val chatMessages: Flow<List<Message>> = _messages
 
-    fun getMessages(chatRoomId: String): Flow<List<Message>> = flow {
-        retrieveMessages(chatRoomId).getOrNull()?.reversed() ?: emptyList()
+    //    private val _profileId = MutableStateFlow(profileApi.cachedProfileId)
+    suspend fun getProfileId(username: String) =
+        profileApi.cachedProfileId ?: profileApi.getProfileId(username)
+
+
+    suspend fun getMessages(chatRoomId: String, username: String): List<Message> =
+        withContext(ioDispatcher) {
+            // Get new messages
+            val remoteMessages =
+                retrieveMessages(
+                    chatRoomId = chatRoomId,
+                    profileId = getProfileId(username)
+                ).getOrNull()?.reversed()
+
+            _messages.value = remoteMessages ?: emptyList()
+
+            remoteMessages ?: emptyList()
     }
-//    val messages = combine(groupId, something) { groupName, random ->
-//        Timber.d("messages combine Groupid: $groupName -- $random")
-//        if (groupName != null) {
-//            retrieveMessages(groupName).getOrNull()?.reversed() ?: emptyList()
-//        } else {
-//            emptyList()
-//        }
-//    }.flowOn(ioDispatcher)
 
     suspend fun connectToRealtime() {
         if (realtimeChannel.status.value != RealtimeChannel.Status.SUBSCRIBED) {
@@ -89,12 +77,15 @@ class ChatRepository @Inject constructor(
 
                     is PostgresAction.Insert -> {
                         // Currently no join on realtime, so just get everything again
-                        Timber.d("Got new insertion - update entire messages")
-                        something.value = UUID.randomUUID().toString()
-//                        _messages.value = retrieveMessages(_groupid).getOrNull() ?: emptyList()
+                        Timber.d("Insert $it")
+                        val newInsert = it.decodeRecord<MessageDto>()
+                        getMessages(
+                            chatRoomId = newInsert.chatRoomId,
+                            username = newInsert.profileId
+                        )
                         // TODO Maybe just query the messages matched by the new insert?
 //                        try {
-//                            val newInsert = it.decodeRecord<MessageDto>()
+
 //                            _messages.value += newInsert
 //                                .toMessage(Message.Direction.map(username == newInsert.senderUsername))
 //                        } catch (e: Exception) {
@@ -114,17 +105,25 @@ class ChatRepository @Inject constructor(
         realtimeChannel.unsubscribe()
     }
 
-    suspend fun createMessage(message: String, imageUrl: String?) = withContext(ioDispatcher) {
-        kotlin.runCatching {
-            messageApi.createMessage(
-                id = profileApi.getProfile(username)?.id ?: "noprofileid",
-                content = message,
-                groupId = _groupid,
-                imageUrl = imageUrl,
-            )
-        }
-            .onSuccess {
-                something.value = message
+    suspend fun createMessage(
+        chatRoomId: String,
+        message: String,
+        imageUrl: String?
+    ) = withContext(ioDispatcher) {
+
+        // TODO Fix shittyness
+        userRepository.getUserData().collectLatest { userData ->
+            val username = userData.username
+            val profileId = profileApi.getProfileId(username)
+
+            kotlin.runCatching {
+                messageApi.createMessage(
+                    id = profileId ?: "",
+                    content = message,
+                    groupId = chatRoomId,
+                    imageUrl = imageUrl,
+                )
+            }.onSuccess {
                 _messages.value += Message(
                     "temp",
                     message,
@@ -132,12 +131,16 @@ class ChatRepository @Inject constructor(
                     OffsetDateTime.now(),
                     senderName = username,
                     Message.Direction.Out,
-                    imageUrl
+                    imageUrl,
+                    profileId = profileId ?: ""
                 )
             }
-            .onFailure {
-                Timber.e(it, "Error while creating message")
-            }
+                .onFailure {
+                    Timber.e(it, "Error while creating message")
+                }
+        }
+
+
     }
 
     suspend fun deleteMessage(id: Int) = withContext(ioDispatcher) {
@@ -148,7 +151,10 @@ class ChatRepository @Inject constructor(
         }
     }
 
-    suspend fun retrieveMessages(chatRoomId: String) = withContext(ioDispatcher) {
+    suspend fun retrieveMessages(
+        chatRoomId: String,
+        profileId: String?,
+    ) = withContext(ioDispatcher) {
         kotlin.runCatching {
             messageApi.retrieveMessages(chatRoomId)
                 .map {
@@ -158,16 +164,16 @@ class ChatRepository @Inject constructor(
                     }
 
                     it.copy(imageUrl = imageUrl)
-                        .toMessage(Message.Direction.map(username == it.senderUsername))
+                        .toMessage(Message.Direction.map(it.profileId == profileId))
                 }
         }.onFailure {
             Timber.e(it, "Error while retrieving messages")
         }
     }
 
-    suspend fun getGroup(groupName: String) = withContext(ioDispatcher) {
-        val res = groupApi.getGroup(groupName)?.toGroup()
-        Timber.d("Got group $res")
+    suspend fun getGroup(chatRoomid: String) = withContext(ioDispatcher) {
+        val res = groupApi.getChatRoom(chatRoomid)?.toGroup()
+        Timber.d("Got chat room $res")
         res
     }
 
