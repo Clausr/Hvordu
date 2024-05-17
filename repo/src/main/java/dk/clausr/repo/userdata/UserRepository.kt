@@ -22,29 +22,27 @@ class UserRepository @Inject constructor(
     private val groupsApi: GroupsApi,
     private val profileApi: ProfileApi,
     @Dispatcher(Dispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
-
-    ) {
+) {
     fun getUserData(): Flow<UserData> = userSettingDataSource.userData
 
-    suspend fun setInitialData(username: String, chatRoomName: String) {
+    suspend fun setInitialUsername(username: String) {
         val profile = createUsername(username)
-        val chatRoom = checkForGroupName(chatRoomName)
-        userSettingDataSource.setInitialPreferences(profile.username, chatRoom.id)
-
+        userSettingDataSource.setUsername(
+            username = profile.username,
+            profileId = profile.id
+        )
     }
 
-    suspend fun setUserData(userData: UserData) {
-        val username = createUsername(userData.username)
-//        val groupName = checkForGroupName(userData.group)
-//        userSettingDataSource.setUserPreferences(userData)
+    suspend fun setInitialChatRoom(chatRoomName: String) {
+        val chatRoom = checkForChatRoom(name = chatRoomName)
+        userSettingDataSource.setInitialChatRoom(chatRoom.id)
     }
-
 
     suspend fun setKeyboardHeight(height: Float) {
         userSettingDataSource.setKeyboardHeight(height)
     }
 
-    suspend fun checkForGroupName(name: String): Group {
+    suspend fun checkForChatRoom(name: String): Group {
         return groupsApi.joinOrCreate(name).toGroup()
     }
 
@@ -55,5 +53,14 @@ class UserRepository @Inject constructor(
     suspend fun getGroups(): List<Group> = withContext(ioDispatcher) {
         groupsApi.getGroups().map(GroupDto::toGroup)
     }
+
+    suspend fun setLastVisitedChatRoom(chatRoomId: String) = withContext(ioDispatcher) {
+        userSettingDataSource.setLastVisitedChatRoom(chatRoomId)
+    }
+
+    suspend fun setProfileId(profileId: String) = withContext(ioDispatcher) {
+        userSettingDataSource.setProfileId(profileId)
+    }
+
 
 }

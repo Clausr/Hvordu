@@ -15,4 +15,6 @@ message UserPreferences {
   optional float keyboardHeight = 3;
   KeyboardHeightStateProto keyboardHeightState = 4;
   repeated string chatRoomIds = 5;
+  optional string profile_id = 6;
+  optional string last_visited_chat_room_id = 7;
 }

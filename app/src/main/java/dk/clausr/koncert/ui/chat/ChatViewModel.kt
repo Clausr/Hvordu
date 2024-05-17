@@ -54,7 +54,7 @@ class ChatViewModel @Inject constructor(
         )
 
     val chatName = flow {
-        val friendlyName = chatRepository.getGroup(chatRoomid = chatArgs.chatRoomId)?.friendlyName
+        val friendlyName = chatRepository.getGroup(chatRoomId = chatArgs.chatRoomId)?.friendlyName
         Timber.d("ChatName flow.. $friendlyName")
         emit(friendlyName)
     }.stateIn(

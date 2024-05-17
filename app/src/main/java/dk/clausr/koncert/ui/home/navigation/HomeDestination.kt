@@ -19,7 +19,6 @@ fun NavGraphBuilder.homeGraph(
 ) {
     composable(route = HomeDestination.route) {
         HomeRoute(
-            windowSizeClass = windowSizeClass,
             onNavigateToChat = {
                 navController.navigateToChatRoom(it)
             },

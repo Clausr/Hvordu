@@ -64,7 +64,11 @@ dependencies {
     implementation(project(":repo"))
     implementation(project(":core:common"))
     implementation(project(":core:supabase"))
+
     implementation(libs.androidx.ktx)
+
+    implementation(libs.androidx.core.splashscreen)
+
 
     //Hilt
     implementation(libs.hilt.android)

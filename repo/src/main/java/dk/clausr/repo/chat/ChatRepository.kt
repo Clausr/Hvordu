@@ -171,10 +171,8 @@ class ChatRepository @Inject constructor(
         }
     }
 
-    suspend fun getGroup(chatRoomid: String) = withContext(ioDispatcher) {
-        val res = groupApi.getChatRoom(chatRoomid)?.toGroup()
-        Timber.d("Got chat room $res")
-        res
+    suspend fun getGroup(chatRoomId: String) = withContext(ioDispatcher) {
+        groupApi.getChatRoom(chatRoomId)?.toGroup()
     }
 
     suspend fun uploadImage(imageUri: Uri): String? = withContext(ioDispatcher) {

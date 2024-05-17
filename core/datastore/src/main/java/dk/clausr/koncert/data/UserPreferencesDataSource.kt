@@ -15,24 +15,26 @@ class UserPreferencesDataSource @Inject constructor(
     val userData = userPreferenceDataStore.data.map {
         UserData(
             username = it.userName,
+            profileId = it.profileId.ifBlank { null },
             chatRoomIds = it.chatRoomIdsList,
+            lastVisitedChatRoomId = null, // TODO Set this?
             keyboardHeightState = it.keyboardHeightState.toModel(it.keyboardHeight)
         )
     }
 
-    suspend fun setInitialPreferences(username: String, chatRoomId: String) {
+    suspend fun setUsername(username: String, profileId: String) {
         userPreferenceDataStore.updateData { currentData ->
             currentData.toBuilder()
                 .setUserName(username)
-                .addChatRoomIds(chatRoomId)
+                .setProfileId(profileId)
                 .build()
         }
     }
 
-    suspend fun setUsername(username: String) {
+    suspend fun setInitialChatRoom(chatRoomId: String) {
         userPreferenceDataStore.updateData { currentData ->
             currentData.toBuilder()
-                .setUserName(username)
+                .addChatRoomIds(chatRoomId)
                 .build()
         }
     }
@@ -73,7 +75,29 @@ class UserPreferencesDataSource @Inject constructor(
                 Timber.w("Chat rooms didn't contain $id")
                 it
             }
+        }
+    }
 
+
+    suspend fun setLastVisitedChatRoom(chatRoomId: String?) {
+        userPreferenceDataStore.updateData {
+            it.toBuilder()
+                .apply {
+                    if (chatRoomId == null) {
+                        clearLastVisitedChatRoomId()
+                    } else {
+                        setLastVisitedChatRoomId(chatRoomId)
+                    }
+                }
+                .build()
+        }
+    }
+
+    suspend fun setProfileId(profileId: String) {
+        userPreferenceDataStore.updateData {
+            it.toBuilder()
+                .setProfileId(profileId)
+                .build()
         }
     }
 }
