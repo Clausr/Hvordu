@@ -20,7 +20,7 @@ class GroupsApi @Inject constructor(
         }.decodeSingleOrNull<GroupDto>() ?: createGroup(groupName)
     }
 
-    suspend fun getGroups(): List<GroupDto> = table.select().decodeList()
+    suspend fun getAllChatRoomsGlobally(): List<GroupDto> = table.select().decodeList()
 
     suspend fun getGroup(groupName: String): GroupDto? = table.select {
         filter {
@@ -33,6 +33,12 @@ class GroupsApi @Inject constructor(
             eq("id", chatRoomId)
         }
     }.decodeSingleOrNull()
+
+    suspend fun getChatRooms(chatRoomIds: List<String>): List<GroupDto> = table.select {
+        filter {
+            isIn("id", chatRoomIds)
+        }
+    }.decodeList()
 
     private suspend fun createGroup(friendlyName: String): GroupDto {
         return table.insert(buildJsonObject {

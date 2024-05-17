@@ -34,7 +34,7 @@ class UserRepository @Inject constructor(
     }
 
     suspend fun setInitialChatRoom(chatRoomName: String) {
-        val chatRoom = checkForChatRoom(name = chatRoomName)
+        val chatRoom = joinOrCreateChatRoom(name = chatRoomName)
         userSettingDataSource.setInitialChatRoom(chatRoom.id)
     }
 
@@ -42,7 +42,7 @@ class UserRepository @Inject constructor(
         userSettingDataSource.setKeyboardHeight(height)
     }
 
-    suspend fun checkForChatRoom(name: String): Group {
+    suspend fun joinOrCreateChatRoom(name: String): Group {
         return groupsApi.joinOrCreate(name).toGroup()
     }
 
@@ -51,7 +51,7 @@ class UserRepository @Inject constructor(
     }
 
     suspend fun getGroups(): List<Group> = withContext(ioDispatcher) {
-        groupsApi.getGroups().map(GroupDto::toGroup)
+        groupsApi.getAllChatRoomsGlobally().map(GroupDto::toGroup)
     }
 
     suspend fun setLastVisitedChatRoom(chatRoomId: String) = withContext(ioDispatcher) {

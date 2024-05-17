@@ -8,6 +8,7 @@ import dk.clausr.core.dispatchers.Dispatchers
 import dk.clausr.koncert.api.GroupsApi
 import dk.clausr.koncert.api.MessageApi
 import dk.clausr.koncert.api.ProfileApi
+import dk.clausr.koncert.api.models.GroupDto
 import dk.clausr.koncert.api.models.MessageDto
 import dk.clausr.repo.domain.Message
 import dk.clausr.repo.domain.toGroup
@@ -173,6 +174,10 @@ class ChatRepository @Inject constructor(
 
     suspend fun getGroup(chatRoomId: String) = withContext(ioDispatcher) {
         groupApi.getChatRoom(chatRoomId)?.toGroup()
+    }
+
+    suspend fun getChatRooms(chatRoomIds: List<String>) = withContext(ioDispatcher) {
+        groupApi.getChatRooms(chatRoomIds).map(GroupDto::toGroup)
     }
 
     suspend fun uploadImage(imageUri: Uri): String? = withContext(ioDispatcher) {

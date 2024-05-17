@@ -21,9 +21,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dk.clausr.koncert.utils.extensions.collectWithLifecycle
+import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import dk.clausr.repo.domain.Group
 
 @Composable
@@ -33,11 +34,6 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    viewModel.viewEffects.collectWithLifecycle {
-        when (it) {
-            is HomeViewModel.HomeViewEffect.OpenChat -> onNavigateToChat(it.roomId)
-        }
-    }
 
     when (val state = uiState) {
         HomeUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -81,7 +77,7 @@ fun HomeScreen(
                             .fillMaxWidth()
                     ) {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(chatRoom.friendlyName, style = MaterialTheme.typography.labelLarge)
+                            Text(chatRoom.friendlyName, style = MaterialTheme.typography.titleLarge)
                             Text("Maybe the last text from the chatroom?")
                         }
                     }
@@ -90,5 +86,17 @@ fun HomeScreen(
                 item { Text("Empty state :(") }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun HomeScreenPreview() {
+    KoncertTheme {
+        val chatRooms = List(10) { Group(id = "", friendlyName = "Chat room ") }
+        HomeScreen(
+            chatRooms = chatRooms,
+            onChatRoomClicked = {},
+        )
     }
 }
