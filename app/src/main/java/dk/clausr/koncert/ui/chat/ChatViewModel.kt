@@ -13,7 +13,6 @@ import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -39,8 +38,7 @@ class ChatViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            username.collectLatest {
-//                chatRepository.getProfileId(it)
+            username.collect {
                 chatRepository.getMessages(chatArgs.chatRoomId, it)
             }
         }

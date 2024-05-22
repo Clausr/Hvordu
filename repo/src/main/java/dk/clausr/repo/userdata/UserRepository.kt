@@ -33,9 +33,10 @@ class UserRepository @Inject constructor(
         )
     }
 
-    suspend fun setInitialChatRoom(chatRoomName: String) {
+    suspend fun setInitialChatRoom(chatRoomName: String): Group = withContext(ioDispatcher) {
         val chatRoom = joinOrCreateChatRoom(name = chatRoomName)
         userSettingDataSource.setInitialChatRoom(chatRoom.id)
+        chatRoom
     }
 
     suspend fun setKeyboardHeight(height: Float) {

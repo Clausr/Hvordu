@@ -2,21 +2,23 @@ package dk.clausr.koncert
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.ComposeView
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.koncert.ui.KoncertApp
-import dk.clausr.koncert.utils.extensions.setKoncertContent
+import dk.clausr.koncert.ui.compose.theme.KoncertTheme
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -33,7 +35,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         super.onCreate(savedInstanceState)
-        var uiState: MainViewModel.MainViewState by mutableStateOf(MainViewModel.MainViewState.Loading)
+        var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)
 
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -45,17 +47,33 @@ class MainActivity : ComponentActivity() {
 
         splashScreen.setKeepOnScreenCondition {
             when (uiState) {
-                MainViewModel.MainViewState.Loading -> true
+                MainActivityUiState.Loading -> true
                 else -> false
             }
         }
 
-        setContentView(ComposeView(context = this).apply {
-            setKoncertContent {
-                KoncertApp(calculateWindowSizeClass(activity = this@MainActivity))
+        setContent {
+
+            val navHostController = rememberNavController()
+            val appState = rememberKoncertAppState(
+                windowSizeClass = calculateWindowSizeClass(
+                    activity = this@MainActivity
+                ),
+                navController = navHostController,
+            )
+
+            KoncertTheme {
+                KoncertApp(
+                    windowSizeClass = calculateWindowSizeClass(activity = this@MainActivity),
+                    showOnboarding = showOnboarding(uiState = uiState),
+                    appState = appState,
+                )
             }
-        })
-
-
+        }
     }
 }
+
+
+@Composable
+private fun showOnboarding(uiState: MainActivityUiState): Boolean =
+    uiState == MainActivityUiState.Onboarding

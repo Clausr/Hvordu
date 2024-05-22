@@ -10,8 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,6 +35,7 @@ import dk.clausr.repo.domain.Group
 fun HomeRoute(
     modifier: Modifier = Modifier,
     onNavigateToChat: (chatName: String) -> Unit,
+    addNewRoom: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -45,6 +50,7 @@ fun HomeRoute(
                 chatRooms = state.chatRooms,
                 modifier = modifier.fillMaxSize(),
                 onChatRoomClicked = onNavigateToChat,
+                addNewRoom = addNewRoom,
             )
         }
     }
@@ -55,12 +61,18 @@ fun HomeRoute(
 fun HomeScreen(
     chatRooms: List<Group>,
     onChatRoomClicked: (chatRoomId: String) -> Unit,
+    addNewRoom: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(title = { Text(text = "Chad") })
+            TopAppBar(title = { Text(text = "Hvordu?") })
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { addNewRoom() }) {
+                Icon(Icons.Outlined.Add, null)
+            }
         }
     ) { innerPadding ->
         LazyColumn(
@@ -97,6 +109,7 @@ private fun HomeScreenPreview() {
         HomeScreen(
             chatRooms = chatRooms,
             onChatRoomClicked = {},
+            addNewRoom = {},
         )
     }
 }

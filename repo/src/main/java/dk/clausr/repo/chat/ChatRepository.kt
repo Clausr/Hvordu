@@ -48,7 +48,6 @@ class ChatRepository @Inject constructor(
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val chatMessages: Flow<List<Message>> = _messages
 
-    //    private val _profileId = MutableStateFlow(profileApi.cachedProfileId)
     suspend fun getProfileId(username: String) =
         profileApi.cachedProfileId ?: profileApi.getProfileId(username)
 

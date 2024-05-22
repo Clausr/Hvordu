@@ -34,18 +34,6 @@ class ProfileApi @Inject constructor(
         }.decodeSingleOrNull() as ProfileDto?).apply {
             cachedProfileId = this?.id
         }?.id
-
-//        return if (cachedProfileId == null) {
-//            val profile: ProfileDto? = table.select {
-//                filter {
-//                    eq("username", username)
-//                }
-//            }.decodeSingleOrNull()
-//
-//            profile?.id
-//        } else {
-//            cachedProfileId
-//        }
     }
 
     private suspend fun createProfile(username: String): ProfileDto {

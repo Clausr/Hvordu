@@ -15,24 +15,24 @@ class MainViewModel @Inject constructor(userRepository: UserRepository) : ViewMo
     val uiState = userRepository.getUserData().map {
         val profileId = it.profileId
         val lastVisitedChatRoomId = it.lastVisitedChatRoomId
-        if (profileId != null) {
-            MainViewState.UserCreated(
+        if (profileId != null && it.chatRoomIds.isNotEmpty()) {
+            MainActivityUiState.UserCreated(
                 profileId = profileId,
                 lastVisitedChatRoomId = lastVisitedChatRoomId
             )
         } else {
-            MainViewState.NoUser
+            MainActivityUiState.Onboarding
         }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = MainViewState.Loading,
+        initialValue = MainActivityUiState.Loading,
     )
+}
 
-    sealed interface MainViewState {
-        data object Loading : MainViewState
-        data object NoUser : MainViewState
-        data class UserCreated(val profileId: String, val lastVisitedChatRoomId: String?) :
-            MainViewState
-    }
+sealed interface MainActivityUiState {
+    data object Loading : MainActivityUiState
+    data object Onboarding : MainActivityUiState
+    data class UserCreated(val profileId: String, val lastVisitedChatRoomId: String?) :
+        MainActivityUiState
 }

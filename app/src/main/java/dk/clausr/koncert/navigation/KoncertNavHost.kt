@@ -1,30 +1,31 @@
 package dk.clausr.koncert.navigation
 
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import dk.clausr.koncert.ui.chat.navigation.chatGraph
-import dk.clausr.koncert.ui.home.navigation.HomeDestination
+import dk.clausr.koncert.KoncertAppState
 import dk.clausr.koncert.ui.home.navigation.homeGraph
+import dk.clausr.koncert.ui.onboarding.navigation.CREATE_USER_ROUTE
+import dk.clausr.koncert.ui.onboarding.navigation.onboardingGraph
 
 @Composable
 fun KoncertNavHost(
-    navController: NavHostController,
-    windowSizeClass: WindowSizeClass,
+    appState: KoncertAppState,
     modifier: Modifier = Modifier,
-    startDestination: String = HomeDestination.route
+    startDestination: String = CREATE_USER_ROUTE
 ) {
     NavHost(
-        navController = navController,
+        navController = appState.navController,
         startDestination = startDestination,
         modifier = modifier
     ) {
+
+        onboardingGraph(appState.navController)
+
         homeGraph(
-            windowSizeClass = windowSizeClass,
-            navController = navController,
+            windowSizeClass = appState.windowSizeClass,
+            navController = appState.navController,
         )
-        chatGraph(navController)
+
     }
 }

@@ -17,7 +17,12 @@ class JoinOrCreateChatRoomViewModel @Inject constructor(
     val viewEffects = _viewEffects.receiveAsFlow()
 
     fun setChatRoom(name: String) = viewModelScope.launch {
-        userRepository.setInitialChatRoom(name)
+        val initialChatRoom = userRepository.setInitialChatRoom(name)
+        _viewEffects.send(JoinOrCreateChatRoomViewEffects.ChatRoomJoined(initialChatRoom.id))
+    }
+
+    fun skip() = viewModelScope.launch {
+        _viewEffects.send(JoinOrCreateChatRoomViewEffects.SkipStep)
     }
 
     sealed interface JoinOrCreateChatRoomViewEffects {
