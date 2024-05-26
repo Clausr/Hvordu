@@ -5,6 +5,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import timber.log.Timber
 import javax.inject.Inject
 
 class ProfileApi @Inject constructor(
@@ -34,6 +35,15 @@ class ProfileApi @Inject constructor(
         }.decodeSingleOrNull() as ProfileDto?).apply {
             cachedProfileId = this?.id
         }?.id
+    }
+
+    suspend fun getProfile(loginId: String): ProfileDto? {
+        Timber.d("Try to get profile with id: $loginId")
+        return table.select {
+            filter {
+                eq("id", loginId)
+            }
+        }.decodeSingleOrNull<ProfileDto>()
     }
 
     private suspend fun createProfile(username: String): ProfileDto {

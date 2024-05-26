@@ -41,7 +41,11 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         Timber.d("OnNewIntent: $intent")
 
+        val test = intent.getStringExtra("Test")
+
+        Timber.d("Send data from deeplink to main -> $test")
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         enableEdgeToEdge()

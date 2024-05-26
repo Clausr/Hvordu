@@ -7,7 +7,6 @@ import dk.clausr.repo.userdata.UserRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,16 +17,13 @@ class CreateUserViewModel @Inject constructor(
     private val _viewEffects = Channel<CreateUserViewEffect>(Channel.BUFFERED)
     val viewEffects = _viewEffects.receiveAsFlow()
 
-    fun signInWithGoogle() = viewModelScope.launch {
-        val result = userRepository.signInWithGoogle()
-        if (result) {
-//            _viewEffects.send(CreateUserViewEffect.NavigateToJoinChatRoom)
-        } else {
-            Timber.e("result not good :(")
-        }
+    fun setUsername(username: String) = viewModelScope.launch {
+        userRepository.setInitialUsername(username)
+        _viewEffects.send(CreateUserViewEffect.NavigateToMainApp)
     }
 }
 
 sealed interface CreateUserViewEffect {
     data object NavigateToJoinChatRoom : CreateUserViewEffect
+    data object NavigateToMainApp : CreateUserViewEffect
 }

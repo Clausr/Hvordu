@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,7 +37,6 @@ import dk.clausr.repo.domain.Group
 fun HomeRoute(
     modifier: Modifier = Modifier,
     onNavigateToChat: (chatName: String) -> Unit,
-    navigateToSignIn: () -> Unit,
     addNewRoom: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -52,12 +53,13 @@ fun HomeRoute(
                 modifier = modifier.fillMaxSize(),
                 onChatRoomClicked = onNavigateToChat,
                 addNewRoom = addNewRoom,
+                onSignOut = { viewModel.signOut() },
             )
         }
 
         HomeUiState.Unauthenticated -> {
             HomeEmptyState(
-                onCta = navigateToSignIn
+                onCta = viewModel::signInWithGoogle
             )
         }
     }
@@ -69,12 +71,22 @@ fun HomeScreen(
     chatRooms: List<Group>,
     onChatRoomClicked: (chatRoomId: String) -> Unit,
     addNewRoom: () -> Unit,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(title = { Text(text = "Hvordu?") })
+            TopAppBar(
+                title = { Text(text = "Hvordu?") },
+                actions = {
+                    IconButton(onClick = { onSignOut() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.Logout,
+                            contentDescription = null
+                        )
+                    }
+                })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { addNewRoom() }) {
@@ -121,6 +133,7 @@ private fun HomeScreenPreview() {
             chatRooms = chatRooms,
             onChatRoomClicked = {},
             addNewRoom = {},
+            onSignOut = {},
         )
     }
 }

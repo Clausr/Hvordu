@@ -9,6 +9,8 @@ import io.github.jan.supabase.gotrue.SessionStatus
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,4 +42,17 @@ class HomeViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = HomeUiState.Loading
         )
+
+    fun signInWithGoogle() = viewModelScope.launch {
+        val result = userRepository.signInWithGoogle()
+        if (result) {
+//            _viewEffects.send(CreateUserViewEffect.NavigateToJoinChatRoom)
+        } else {
+            Timber.e("result not good :(")
+        }
+    }
+
+    fun signOut() = viewModelScope.launch {
+        userRepository.signOut()
+    }
 }

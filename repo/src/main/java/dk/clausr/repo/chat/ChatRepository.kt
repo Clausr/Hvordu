@@ -14,6 +14,8 @@ import dk.clausr.repo.domain.Message
 import dk.clausr.repo.domain.toGroup
 import dk.clausr.repo.domain.toMessage
 import dk.clausr.repo.userdata.UserRepository
+import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.SessionStatus
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.decodeRecord
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonPrimitive
@@ -41,12 +44,23 @@ class ChatRepository @Inject constructor(
     private val profileApi: ProfileApi,
     private val realtimeChannel: RealtimeChannel,
     private val storage: Storage,
+    private val auth: Auth,
     private val userRepository: UserRepository,
     @ApplicationContext private val context: Context,
     @Dispatcher(Dispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val chatMessages: Flow<List<Message>> = _messages
+
+    private val profileIdAuth = auth.sessionStatus.map {
+        when (it) {
+            is SessionStatus.Authenticated -> {
+                it.session.user?.id
+            }
+
+            else -> null
+        }
+    }
 
     suspend fun getProfileId(username: String) =
         profileApi.cachedProfileId ?: profileApi.getProfileId(username)
@@ -64,7 +78,7 @@ class ChatRepository @Inject constructor(
             _messages.value = remoteMessages ?: emptyList()
 
             remoteMessages ?: emptyList()
-    }
+        }
 
     suspend fun connectToRealtime() {
         if (realtimeChannel.status.value != RealtimeChannel.Status.SUBSCRIBED) {

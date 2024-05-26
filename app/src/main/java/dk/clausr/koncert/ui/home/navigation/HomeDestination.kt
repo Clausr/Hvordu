@@ -11,7 +11,6 @@ import dk.clausr.koncert.ui.chat.ChatRoute
 import dk.clausr.koncert.ui.chat.navigation.ChatDestination
 import dk.clausr.koncert.ui.chat.navigation.navigateToChatRoom
 import dk.clausr.koncert.ui.home.HomeRoute
-import dk.clausr.koncert.ui.onboarding.navigation.CREATE_USER_ROUTE
 import dk.clausr.koncert.ui.onboarding.navigation.JOIN_CHAT_ROOM_ROUTE
 
 object HomeDestination : KoncertNavigationDestination {
@@ -30,9 +29,6 @@ fun NavGraphBuilder.homeGraph(
             },
             addNewRoom = {
                 navController.navigate(JOIN_CHAT_ROOM_ROUTE)
-            },
-            navigateToSignIn = {
-                navController.navigate(CREATE_USER_ROUTE)
             }
         )
     }

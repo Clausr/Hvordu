@@ -12,9 +12,9 @@ import dk.clausr.repo.domain.Group
 import dk.clausr.repo.domain.toGroup
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.SignOutScope
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Google
-import io.github.jan.supabase.gotrue.providers.builtin.Email
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -61,6 +61,12 @@ class UserRepository @Inject constructor(
         return profileApi.getOrCreateProfile(profileName)
     }
 
+    suspend fun getUsername(userId: String): String? = withContext(ioDispatcher) {
+        val res = profileApi.getProfile(userId)
+        Timber.d("Profile: $res")
+        res?.username
+    }
+
     suspend fun getGroups(): List<Group> = withContext(ioDispatcher) {
         groupsApi.getAllChatRoomsGlobally().map(GroupDto::toGroup)
     }
@@ -73,32 +79,6 @@ class UserRepository @Inject constructor(
         userSettingDataSource.setProfileId(profileId)
     }
 
-    suspend fun signIn(email: String, password: String): Boolean {
-        return try {
-            auth.signInWith(Email) {
-                this.email = email
-                this.password = password
-            }
-            true
-        } catch (e: Exception) {
-            Timber.e(e, "Could not sign in")
-            false
-        }
-    }
-
-    suspend fun signUp(email: String, password: String): Boolean {
-        return try {
-            auth.signUpWith(Email) {
-                this.email = email
-                this.password = password
-            }
-            true
-        } catch (e: Exception) {
-            Timber.e(e, "Could not sign up")
-            false
-        }
-    }
-
     suspend fun signInWithGoogle(): Boolean {
         return try {
             supabaseClient.auth.signInWith(Google)
@@ -109,4 +89,13 @@ class UserRepository @Inject constructor(
         }
     }
 
+    suspend fun signOut(): Boolean {
+        return try {
+            auth.signOut(SignOutScope.GLOBAL)
+            true
+        } catch (e: Exception) {
+            Timber.e(e, "Couldn't sign out")
+            false
+        }
+    }
 }

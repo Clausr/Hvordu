@@ -52,13 +52,15 @@ fun CreateUserRoute(
             CreateUserViewEffect.NavigateToJoinChatRoom -> navController.navigate(
                 JOIN_CHAT_ROOM_ROUTE
             )
+
+            CreateUserViewEffect.NavigateToMainApp -> TODO()
         }
     }
 
     CreateUserScreen(
         modifier = modifier,
         onCreateClicked = {
-            viewModel.signInWithGoogle()
+            viewModel.setUsername(it)
         }
     )
 }
@@ -67,10 +69,11 @@ fun CreateUserRoute(
 @Composable
 fun CreateUserScreen(
     modifier: Modifier = Modifier,
+    existingUsername: String? = null,
     onCreateClicked: (username: String) -> Unit,
 ) {
-    var username by remember {
-        mutableStateOf("")
+    var username by remember(existingUsername) {
+        mutableStateOf(existingUsername ?: "")
     }
 
     val focusRequester = remember { FocusRequester() }

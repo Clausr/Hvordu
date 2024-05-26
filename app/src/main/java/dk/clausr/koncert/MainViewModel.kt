@@ -8,6 +8,7 @@ import io.github.jan.supabase.gotrue.SessionStatus
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -38,21 +39,15 @@ class MainViewModel @Inject constructor(userRepository: UserRepository) : ViewMo
 
         Timber.d("SessionState: $res")
         res
-//        val profileId = userData.profileId
-//        val lastVisitedChatRoomId = userData.lastVisitedChatRoomId
-//        if (profileId != null && userData.chatRoomIds.isNotEmpty()) {
-//            MainActivityUiState.UserCreated(
-//                profileId = profileId,
-//                lastVisitedChatRoomId = lastVisitedChatRoomId
-//            )
-//        } else {
-//            MainActivityUiState.Onboarding
-//        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = MainActivityUiState.Loading,
     )
+
+    fun signOut() = viewModelScope.launch {
+
+    }
 }
 
 sealed interface MainActivityUiState {
