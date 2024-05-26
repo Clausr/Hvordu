@@ -4,9 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
@@ -26,8 +29,7 @@ class DeepLinkHandlingActivity : ComponentActivity() {
     @Inject
     lateinit var supabaseClient: SupabaseClient
 
-    @Inject
-    lateinit var viewModel: DeepLinkHandlingViewModel
+    private val viewModel: DeepLinkHandlingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +40,15 @@ class DeepLinkHandlingActivity : ComponentActivity() {
         setContent {
             val userSession by viewModel.userSession.collectAsState(initial = null)
 
-            val emailState = remember(userSession) { mutableStateOf(userSession) }
+            val emailState = remember(userSession) { mutableStateOf(userSession?.user) }
             val createdAtState = remember { mutableStateOf("") }
 
             KoncertTheme {
-                Column(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
                     Text(text = "Sign in successfully!")
                     Text(text = "Email ${emailState.value}")
                     Text(text = "Created at ${createdAtState.value}")

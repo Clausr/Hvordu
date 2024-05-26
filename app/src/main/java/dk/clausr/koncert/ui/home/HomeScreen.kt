@@ -39,7 +39,7 @@ fun HomeRoute(
     addNewRoom: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState2.collectAsState()
 
     when (val state = uiState) {
         HomeUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -52,7 +52,12 @@ fun HomeRoute(
                 modifier = modifier.fillMaxSize(),
                 onChatRoomClicked = onNavigateToChat,
                 addNewRoom = addNewRoom,
-                onSignIn = navigateToSignIn,
+            )
+        }
+
+        HomeUiState.Unauthenticated -> {
+            HomeEmptyState(
+                onCta = navigateToSignIn
             )
         }
     }
@@ -64,7 +69,6 @@ fun HomeScreen(
     chatRooms: List<Group>,
     onChatRoomClicked: (chatRoomId: String) -> Unit,
     addNewRoom: () -> Unit,
-    onSignIn: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -103,10 +107,6 @@ fun HomeScreen(
                     }
                 }
             }
-        } else {
-            HomeEmptyState(
-                onCta = onSignIn
-            )
         }
     }
 }
@@ -121,7 +121,6 @@ private fun HomeScreenPreview() {
             chatRooms = chatRooms,
             onChatRoomClicked = {},
             addNewRoom = {},
-            onSignIn = {},
         )
     }
 }

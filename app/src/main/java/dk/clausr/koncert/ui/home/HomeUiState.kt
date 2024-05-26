@@ -7,4 +7,6 @@ sealed interface HomeUiState {
     data class Shown(
         val chatRooms: List<Group>
     ) : HomeUiState
+
+    data object Unauthenticated : HomeUiState
 }

@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.repo.chat.ChatRepository
 import dk.clausr.repo.userdata.UserRepository
+import io.github.jan.supabase.gotrue.SessionStatus
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -16,15 +16,25 @@ class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val chatRepository: ChatRepository,
 ) : ViewModel() {
-    val uiState: StateFlow<HomeUiState> = userRepository.getUserData()
-        .map {
-            val chatRoomIds = it.chatRoomIds
-                .toSet() // TODO Quickfix - Shouldn't happen...
-                .toList()
+    val uiState2 = combine(
+        userRepository.sessionStatus,
+        userRepository.getUserData()
+    ) { sessionStatus, userData ->
+        when (sessionStatus) {
+            is SessionStatus.Authenticated -> {
+                val chatRoomIds = userData.chatRoomIds
+                    .toSet() // TODO Quickfix - Shouldn't happen...
+                    .toList()
 
-            val chatRooms = chatRepository.getChatRooms(chatRoomIds)
-            HomeUiState.Shown(chatRooms)
+                val chatRooms = chatRepository.getChatRooms(chatRoomIds)
+                HomeUiState.Shown(chatRooms = chatRooms)
+            }
+
+            SessionStatus.LoadingFromStorage -> HomeUiState.Loading
+            SessionStatus.NetworkError -> HomeUiState.Loading
+            is SessionStatus.NotAuthenticated -> HomeUiState.Unauthenticated
         }
+    }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),

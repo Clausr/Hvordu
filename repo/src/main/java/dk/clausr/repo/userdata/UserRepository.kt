@@ -33,6 +33,8 @@ class UserRepository @Inject constructor(
 ) {
     fun getUserData(): Flow<UserData> = userSettingDataSource.userData
 
+    val sessionStatus = auth.sessionStatus
+
     suspend fun setInitialUsername(username: String) {
         val profile = createUsername(username)
         userSettingDataSource.setUsername(
