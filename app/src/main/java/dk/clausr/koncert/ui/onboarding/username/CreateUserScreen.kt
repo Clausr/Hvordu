@@ -30,6 +30,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -56,7 +57,9 @@ fun CreateUserRoute(
 
     CreateUserScreen(
         modifier = modifier,
-        onCreateClicked = viewModel::setUsername
+        onCreateClicked = {
+            viewModel.signInWithGoogle()
+        }
     )
 }
 
@@ -124,7 +127,8 @@ fun CreateUserScreen(
                     username = it
                 },
                 keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Words,
+                    keyboardType = KeyboardType.Email,
+                    capitalization = KeyboardCapitalization.None,
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(onDone = { onCreateClicked(username) }),

@@ -35,6 +35,7 @@ import dk.clausr.repo.domain.Group
 fun HomeRoute(
     modifier: Modifier = Modifier,
     onNavigateToChat: (chatName: String) -> Unit,
+    navigateToSignIn: () -> Unit,
     addNewRoom: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -51,6 +52,7 @@ fun HomeRoute(
                 modifier = modifier.fillMaxSize(),
                 onChatRoomClicked = onNavigateToChat,
                 addNewRoom = addNewRoom,
+                onSignIn = navigateToSignIn,
             )
         }
     }
@@ -62,6 +64,7 @@ fun HomeScreen(
     chatRooms: List<Group>,
     onChatRoomClicked: (chatRoomId: String) -> Unit,
     addNewRoom: () -> Unit,
+    onSignIn: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -75,31 +78,39 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
-        ) {
-            if (chatRooms.isNotEmpty()) {
-                items(chatRooms) { chatRoom ->
-                    Row(
-                        modifier = Modifier
-                            .clickable { onChatRoomClicked(chatRoom.id) }
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(chatRoom.friendlyName, style = MaterialTheme.typography.titleLarge)
-                            Text("Maybe the last text from the chatroom?")
+        if (chatRooms.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding())
+            ) {
+                if (chatRooms.isNotEmpty()) {
+                    items(chatRooms) { chatRoom ->
+                        Row(
+                            modifier = Modifier
+                                .clickable { onChatRoomClicked(chatRoom.id) }
+                                .padding(16.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(
+                                    chatRoom.friendlyName,
+                                    style = MaterialTheme.typography.titleLarge
+                                )
+                                Text("Maybe the last text from the chatroom?")
+                            }
                         }
                     }
                 }
-            } else {
-                item { Text("Empty state :(") }
             }
+        } else {
+            HomeEmptyState(
+                onCta = onSignIn
+            )
         }
     }
 }
+
 
 @Preview
 @Composable
@@ -110,6 +121,7 @@ private fun HomeScreenPreview() {
             chatRooms = chatRooms,
             onChatRoomClicked = {},
             addNewRoom = {},
+            onSignIn = {},
         )
     }
 }

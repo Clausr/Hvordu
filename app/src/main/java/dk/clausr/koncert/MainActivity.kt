@@ -1,5 +1,6 @@
 package dk.clausr.koncert
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,9 +20,12 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.koncert.ui.KoncertApp
 import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import io.github.jan.supabase.SupabaseClient
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
 
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -30,11 +34,20 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
 
+    @Inject
+    lateinit var supabase: SupabaseClient
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        Timber.d("OnNewIntent: $intent")
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         enableEdgeToEdge()
 
         super.onCreate(savedInstanceState)
+
         var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)
 
         lifecycleScope.launch {
@@ -53,7 +66,6 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-
             val navHostController = rememberNavController()
             val appState = rememberKoncertAppState(
                 windowSizeClass = calculateWindowSizeClass(

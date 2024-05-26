@@ -5,10 +5,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dk.clausr.koncert.supabase.BuildConfig
-
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.compose.auth.ComposeAuth
+import io.github.jan.supabase.compose.auth.composeAuth
+import io.github.jan.supabase.compose.auth.googleNativeLogin
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.FlowType
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
@@ -33,6 +36,14 @@ object SupabaseModule {
         install(Postgrest)
         install(Storage)
         install(Realtime)
+        install(Auth) {
+            flowType = FlowType.PKCE
+            scheme = "hvordu"
+            host = "dk.clausr.hvordu.user-management"
+        }
+        install(ComposeAuth) {
+            googleNativeLogin(serverClientId = BuildConfig.GOOGLE_SERVER_CLIENT_ID)
+        }
     }
 
     @Provides
@@ -64,5 +75,13 @@ object SupabaseModule {
     @Singleton
     fun provideSupabaseRealtimeChannel(realtime: Realtime): RealtimeChannel {
         return realtime.channel("test-chat")
+    }
+
+    @Provides
+    @Singleton
+    fun providesSupabaseComposeAuth(client: SupabaseClient): ComposeAuth {
+        return client.composeAuth.apply {
+            config.googleNativeLogin(serverClientId = BuildConfig.GOOGLE_SERVER_CLIENT_ID)
+        }
     }
 }

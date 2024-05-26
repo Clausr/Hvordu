@@ -31,6 +31,11 @@ android {
         )
         buildConfigField("String", "SECRET", "\"${properties.getProperty("SECRET")}\"")
         buildConfigField("String", "SUPABASE_URL", "\"${properties.getProperty("SUPABASE_URL")}\"")
+        buildConfigField(
+            "String",
+            "GOOGLE_SERVER_CLIENT_ID",
+            "\"${properties.getProperty("GOOGLE_SERVER_CLIENT_ID")}\""
+        )
     }
 
     buildTypes {
@@ -65,11 +70,5 @@ dependencies {
     api(libs.supabase.realtime)
     api(libs.supabase.postgrest)
     api(libs.supabase.storage)
-
-//    implementation(libs.androidx.ktx)
-//    implementation(libs.androidx.appcompat)
-//    implementation(libs.material)
-//    testImplementation(libs.junit)
-//    androidTestImplementation(libs.androidx.junit)
-//    androidTestImplementation(libs.androidx.espresso.core)
+    api(libs.supabase.auth.compose)
 }
