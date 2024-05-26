@@ -7,19 +7,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import dk.clausr.koncert.KoncertAppState
+import dk.clausr.koncert.HvorduAppState
 import dk.clausr.koncert.navigation.KoncertNavHost
-import dk.clausr.koncert.rememberKoncertAppState
-import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import dk.clausr.koncert.rememberHvorduAppState
+import dk.clausr.koncert.ui.compose.theme.HvorduTheme
 
 @Composable
-fun KoncertApp(
+fun HvorduApp(
     windowSizeClass: WindowSizeClass,
-    showOnboarding: Boolean,
-    appState: KoncertAppState = rememberKoncertAppState(windowSizeClass)
+    appState: HvorduAppState = rememberHvorduAppState(windowSizeClass)
 ) {
 
-    KoncertTheme {
+    HvorduTheme {
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { padding ->

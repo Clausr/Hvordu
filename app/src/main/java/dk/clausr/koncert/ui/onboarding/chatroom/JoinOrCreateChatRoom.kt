@@ -37,7 +37,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import dk.clausr.koncert.ui.compose.theme.HvorduTheme
 import dk.clausr.koncert.utils.extensions.collectWithLifecycle
 import dk.clausr.repo.domain.Group
 
@@ -183,7 +183,7 @@ fun JoinOrCreateChatRoomScreen(
 @Preview
 @Composable
 private fun JoinOrCreateChatRoomPreview() {
-    KoncertTheme {
+    HvorduTheme {
         JoinOrCreateChatRoomScreen(
             modifier = Modifier.fillMaxSize(),
             suggestedGroups = listOf(

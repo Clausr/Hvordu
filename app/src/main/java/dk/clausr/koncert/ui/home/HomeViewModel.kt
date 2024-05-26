@@ -25,7 +25,7 @@ class HomeViewModel @Inject constructor(
         when (sessionStatus) {
             is SessionStatus.Authenticated -> {
                 val chatRoomIds = userData.chatRoomIds
-                    .toSet() // TODO Quickfix - Shouldn't happen...
+                    .toSet()
                     .toList()
 
                 val chatRooms = chatRepository.getChatRooms(chatRoomIds)

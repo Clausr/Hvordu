@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import dk.clausr.koncert.ui.compose.theme.HvorduTheme
 import dk.clausr.repo.domain.Group
 
 @Composable
@@ -127,7 +127,7 @@ fun HomeScreen(
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    KoncertTheme {
+    HvorduTheme {
         val chatRooms = List(10) { Group(id = "", friendlyName = "Chat room ") }
         HomeScreen(
             chatRooms = chatRooms,

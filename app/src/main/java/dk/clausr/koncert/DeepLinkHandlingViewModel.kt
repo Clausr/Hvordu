@@ -36,15 +36,17 @@ class DeepLinkHandlingViewModel @Inject constructor(
         }
     }
 
-    fun setUsername(username: String) = viewModelScope.launch {
-        userRepository.setInitialUsername(username)
-        _viewEffect.send(DeepLinkHandlingViewEffect.NavigateToHome)
-    }
+    private val _uiState = MutableStateFlow<DeepLinkUiState>(DeepLinkUiState.Loading)
+    val uiState: Flow<DeepLinkUiState> = _uiState
 
-    val username = MutableStateFlow<String?>(null)
     fun getUsername(id: String) = viewModelScope.launch {
-        username.value = userRepository.getUsername(id)
+        _uiState.value = DeepLinkUiState.Success(userRepository.getUsername(id))
     }
+}
+
+sealed interface DeepLinkUiState {
+    data object Loading : DeepLinkUiState
+    data class Success(val username: String?) : DeepLinkUiState
 
 }
 

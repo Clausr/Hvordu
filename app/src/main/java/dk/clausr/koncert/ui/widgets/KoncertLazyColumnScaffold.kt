@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import dk.clausr.koncert.R
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
-import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import dk.clausr.koncert.ui.compose.theme.HvorduTheme
 import dk.clausr.koncert.utils.extensions.isScrollingUp
 
 
@@ -81,7 +81,7 @@ fun KoncertLazyColumnScaffold(
 private fun Preview(
     @PreviewParameter(ColorSchemeProvider::class) colorScheme: ColorScheme
 ) {
-    KoncertTheme(overrideColorScheme = colorScheme) {
+    HvorduTheme(overrideColorScheme = colorScheme) {
         KoncertLazyColumnScaffold(
             titleRes = R.string.app_name
         ) {

@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dk.clausr.koncert.ui.compose.preview.ColorSchemeProvider
-import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import dk.clausr.koncert.ui.compose.theme.HvorduTheme
 
 private val PaddingSize = 16.dp
 
@@ -63,7 +63,7 @@ fun ExtendableFloatingActionButton(
 private fun Preview(
     @PreviewParameter(ColorSchemeProvider::class) colorScheme: ColorScheme
 ) {
-    KoncertTheme(overrideColorScheme = colorScheme) {
+    HvorduTheme(overrideColorScheme = colorScheme) {
         ExtendableFloatingActionButton(
             extended = false,
             text = { Text(text = "Check in") },

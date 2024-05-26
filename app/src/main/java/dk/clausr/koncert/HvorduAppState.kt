@@ -11,17 +11,17 @@ import dk.clausr.koncert.navigation.KoncertNavigationDestination
 import dk.clausr.koncert.navigation.TopLevelDestination
 
 @Composable
-fun rememberKoncertAppState(
+fun rememberHvorduAppState(
     windowSizeClass: WindowSizeClass,
     navController: NavHostController = rememberNavController()
-): KoncertAppState {
+): HvorduAppState {
     return remember(navController, windowSizeClass) {
-        KoncertAppState(navController, windowSizeClass)
+        HvorduAppState(navController, windowSizeClass)
     }
 }
 
 @Stable
-class KoncertAppState(
+class HvorduAppState(
     val navController: NavHostController,
     val windowSizeClass: WindowSizeClass
 ) {

@@ -1,5 +1,6 @@
 package dk.clausr.koncert.ui.onboarding.navigation
 
+import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,6 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
+import dk.clausr.koncert.MainActivity
 import dk.clausr.koncert.ui.chat.navigation.navigateToChatRoom
 import dk.clausr.koncert.ui.home.navigation.HomeDestination
 import dk.clausr.koncert.ui.onboarding.chatroom.JoinOrCreateChatRoomRoute
@@ -43,13 +45,12 @@ fun NavGraphBuilder.onboardingGraph(
                 }
             },
             onSkipClicked = {
-                navHostController.navigate(HomeDestination.route) {
-                    navOptions {
-                        popUpTo(CREATE_USER_ROUTE) {
-                            inclusive = true
-                        }
-                    }
+                val context = navHostController.context
+                val intent = Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    putExtra(MainActivity.NEW_SIGN_IN, true)
                 }
+                context.startActivity(intent)
             },
         )
     }

@@ -6,15 +6,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dk.clausr.koncert.ui.compose.theme.KoncertTheme
-import dk.clausr.koncert.ui.onboarding.username.CreateUserScreen
+import dk.clausr.koncert.ui.compose.theme.HvorduTheme
+import dk.clausr.koncert.ui.onboarding.navigation.CREATE_USER_ROUTE
+import dk.clausr.koncert.ui.onboarding.navigation.JOIN_CHAT_ROOM_ROUTE
+import dk.clausr.koncert.ui.onboarding.navigation.onboardingGraph
+import dk.clausr.koncert.ui.widgets.LoadingScreen
 import dk.clausr.koncert.utils.extensions.collectWithLifecycle
 import io.github.jan.supabase.SupabaseClient
 import timber.log.Timber
@@ -36,27 +43,42 @@ class DeepLinkHandlingActivity : ComponentActivity() {
         Timber.d("OnCreate deeplink handler.. $intent")
 
         setContent {
-            val existingUsername by viewModel.username.collectAsState()
+            val uiState by viewModel.uiState.collectAsState(DeepLinkUiState.Loading)
+
             viewModel.viewEffects.collectWithLifecycle {
                 when (it) {
                     DeepLinkHandlingViewEffect.NavigateToHome -> navigateToMainApp()
                 }
             }
 
+            val navController = rememberNavController()
             val userSession by viewModel.userSession.collectAsState(initial = null)
-
-            val userInfo by remember(userSession) { mutableStateOf(userSession?.user) }
 
             Timber.d("Session user id ${userSession?.user?.id}")
 
-            KoncertTheme {
-                CreateUserScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    existingUsername = existingUsername,
-                    onCreateClicked = {
-                        viewModel.setUsername(it)
+            HvorduTheme {
+                Scaffold(
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                ) { padding ->
+                    when (val state = uiState) {
+                        DeepLinkUiState.Loading -> {
+                            LoadingScreen(Modifier.fillMaxSize())
+                        }
+
+                        is DeepLinkUiState.Success -> {
+                            NavHost(
+                                navController = navController,
+                                startDestination = if (state.username == null) CREATE_USER_ROUTE else JOIN_CHAT_ROOM_ROUTE,
+                                modifier = Modifier
+                                    .padding(padding)
+                                    .consumeWindowInsets(padding),
+                            ) {
+                                onboardingGraph(navController)
+                            }
+
+                        }
                     }
-                )
+                }
             }
         }
     }

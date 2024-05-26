@@ -54,7 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import dk.clausr.core.models.KeyboardHeightState
 import dk.clausr.koncert.ui.camera.AnnoyingCameraRoute
-import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import dk.clausr.koncert.ui.compose.theme.HvorduTheme
 import timber.log.Timber
 
 // TODO Give this its own ViewModel with keyboard things
@@ -262,7 +262,7 @@ private fun ChatComposer(
 @Preview
 @Composable
 private fun ComposerPreview() {
-    KoncertTheme {
+    HvorduTheme {
         ChatComposer(
             onChatSent = {},
             keyboardHeight = 300.dp,

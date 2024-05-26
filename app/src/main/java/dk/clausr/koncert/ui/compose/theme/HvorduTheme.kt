@@ -32,7 +32,7 @@ private val LocalKoncertDimens = staticCompositionLocalOf<KoncertDimens> {
 }
 
 @Composable
-fun KoncertTheme(
+fun HvorduTheme(
     overrideColorScheme: ColorScheme? = null,
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit

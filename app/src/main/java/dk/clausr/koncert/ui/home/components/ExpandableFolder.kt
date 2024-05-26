@@ -43,7 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.window.Popup
-import dk.clausr.koncert.ui.compose.theme.KoncertTheme
+import dk.clausr.koncert.ui.compose.theme.HvorduTheme
 
 
 data class FolderLayout(
@@ -189,7 +189,7 @@ fun NowComp(
 @Preview
 @Composable
 fun PreviewExpandableFolder() {
-    KoncertTheme {
+    HvorduTheme {
         Row(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
             NowComp(
                 expanded = false,
