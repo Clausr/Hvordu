@@ -27,16 +27,6 @@ class ProfileApi @Inject constructor(
         return profile
     }
 
-    suspend fun getProfileId(username: String): String? {
-        return cachedProfileId ?: (table.select {
-            filter {
-                eq("username", username)
-            }
-        }.decodeSingleOrNull() as ProfileDto?).apply {
-            cachedProfileId = this?.id
-        }?.id
-    }
-
     suspend fun getProfile(loginId: String): ProfileDto? {
         Timber.d("Try to get profile with id: $loginId")
         return table.select {
@@ -52,5 +42,10 @@ class ProfileApi @Inject constructor(
         }) {
             select()
         }.decodeSingle()
+    }
+
+    suspend fun updateFcmToken(token: String): ProfileDto? {
+        val myProfile = table.select().decodeSingle<ProfileDto>()
+        return table.upsert(myProfile.copy(fcmToken = token)).decodeSingle<ProfileDto>()
     }
 }

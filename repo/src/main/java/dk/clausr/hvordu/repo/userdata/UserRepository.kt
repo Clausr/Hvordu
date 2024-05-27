@@ -61,6 +61,11 @@ class UserRepository @Inject constructor(
         return profileApi.getOrCreateProfile(profileName)
     }
 
+    suspend fun setFcmToken(token: String) = withContext(ioDispatcher) {
+        profileApi.updateFcmToken(token)
+        Unit
+    }
+
     suspend fun getUsername(userId: String): String? = withContext(ioDispatcher) {
         val res = profileApi.getProfile(userId)
         Timber.d("Profile: $res")

@@ -8,17 +8,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import androidx.navigation.navOptions
 import dk.clausr.hvordu.MainActivity
-import dk.clausr.hvordu.ui.chat.navigation.navigateToChatRoom
 import dk.clausr.hvordu.ui.home.navigation.HomeDestination
 import dk.clausr.hvordu.ui.onboarding.chatroom.JoinOrCreateChatRoomRoute
+import dk.clausr.hvordu.ui.onboarding.notifications.NotificationPermissionRoute
 import dk.clausr.hvordu.ui.onboarding.username.CreateUserRoute
 import dk.clausr.hvordu.utils.extensions.collectWithLifecycle
 import timber.log.Timber
 
 const val CREATE_USER_ROUTE = "user_route"
 const val JOIN_CHAT_ROOM_ROUTE = "join_chat_room_route"
+const val NOTIFICATIONS_ROUTE = "notifications_route"
 
 fun NavGraphBuilder.onboardingGraph(
     navHostController: NavHostController,
@@ -35,26 +35,37 @@ fun NavGraphBuilder.onboardingGraph(
             modifier = Modifier.fillMaxSize(),
             onCreateClicked = {
                 Timber.d("Navigate to $it")
-                navHostController.navigateToChatRoom(it) {
-                    navOptions {
-                        popUpTo(CREATE_USER_ROUTE) {
-                            inclusive = true
-                        }
-                        launchSingleTop = true
-                    }
-                }
+//                navHostController.navigateToChatRoom(it) {
+//                    navOptions {
+//                        popUpTo(CREATE_USER_ROUTE) {
+//                            inclusive = true
+//                        }
+//                        launchSingleTop = true
+//                    }
+//                }
+                navHostController.navigate(NOTIFICATIONS_ROUTE)
             },
             onSkipClicked = {
-                val context = navHostController.context
-                val intent = Intent(context, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    putExtra(MainActivity.NEW_SIGN_IN, true)
-                }
-                context.startActivity(intent)
+                navHostController.navigate(NOTIFICATIONS_ROUTE)
             },
         )
     }
 
+    composable(NOTIFICATIONS_ROUTE) {
+        NotificationPermissionRoute(modifier = Modifier.fillMaxSize())
+//        {
+//            goToMainApp(navHostController)
+//        }
+    }
+}
+
+private fun goToMainApp(navController: NavController) {
+    val context = navController.context
+    val intent = Intent(context, MainActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        putExtra(MainActivity.NEW_SIGN_IN, true)
+    }
+    context.startActivity(intent)
 }
 
 @Composable
