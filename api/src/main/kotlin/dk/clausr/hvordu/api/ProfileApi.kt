@@ -46,6 +46,7 @@ class ProfileApi @Inject constructor(
 
     suspend fun updateFcmToken(token: String): ProfileDto? {
         val myProfile = table.select().decodeSingle<ProfileDto>()
+        Timber.d("My profile: $myProfile")
         return table.upsert(myProfile.copy(fcmToken = token)).decodeSingle<ProfileDto>()
     }
 }
