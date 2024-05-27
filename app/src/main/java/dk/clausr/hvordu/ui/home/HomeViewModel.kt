@@ -2,6 +2,7 @@ package dk.clausr.hvordu.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.hvordu.repo.chat.ChatRepository
 import dk.clausr.hvordu.repo.userdata.UserRepository
@@ -10,6 +11,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,5 +51,12 @@ class HomeViewModel @Inject constructor(
 
     fun signOut() = viewModelScope.launch {
         userRepository.signOut()
+    }
+
+    init {
+        viewModelScope.launch {
+            val token = FirebaseMessaging.getInstance().token.await()
+            Timber.d("Firebase token: $token")
+        }
     }
 }

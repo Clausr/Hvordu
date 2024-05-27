@@ -4,8 +4,10 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -51,11 +53,8 @@ android {
         jvmTarget = "17"
     }
     buildFeatures {
-        viewBinding = true
+        buildConfig = true
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"
     }
     namespace = "dk.clausr.hvordu"
 }
@@ -66,7 +65,6 @@ dependencies {
     implementation(project(":core:supabase"))
 
     implementation(libs.androidx.ktx)
-
     implementation(libs.androidx.core.splashscreen)
 
 
@@ -92,12 +90,13 @@ dependencies {
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
+
     // Tooling support (Previews, etc.)
     implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.animation)
 
     // Material Design
-    implementation(libs.androidx.material)
+//    implementation(libs.androidx.material)
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.material3)
@@ -107,6 +106,9 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(libs.kotlinx.coroutines.android)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
 
 
     implementation(libs.timber)

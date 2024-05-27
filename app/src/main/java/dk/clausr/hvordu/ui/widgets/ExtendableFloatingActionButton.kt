@@ -5,13 +5,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,7 +35,7 @@ fun ExtendableFloatingActionButton(
     FloatingActionButton(
         modifier = modifier,
         onClick = onClick,
-        backgroundColor = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp),
+        containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(6.dp),
         contentColor = MaterialTheme.colorScheme.primary
     ) {
         Row(

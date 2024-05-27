@@ -1,36 +1,45 @@
 {
   "project_info": {
-    "project_number": "1077745174222",
-    "project_id": "koncert-418d3",
-    "storage_bucket": "koncert-418d3.appspot.com"
+    "project_number": "144676045367",
+    "project_id": "hvordu-b6a95",
+    "storage_bucket": "hvordu-b6a95.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1077745174222:android:0b9cde1a08229f9c0d329f",
+        "mobilesdk_app_id": "1:144676045367:android:99314d1a88cbaae36f35b2",
         "android_client_info": {
-          "package_name": "dk.clausr.koncert"
+          "package_name": "dk.clausr.hvordu"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "1077745174222-2hhefums8n7nr9n2hjlndqp2hf0m86dp.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDWnf-34KM3fT420hHGBqcs7mt8Tl-atxo"
+          "current_key": "AIzaSyA5AgqN-tOei8LfYxwhIeIZNmgpWPlqZbo"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1077745174222-2hhefums8n7nr9n2hjlndqp2hf0m86dp.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144676045367:android:66bef6f7d9ebc7456f35b2",
+        "android_client_info": {
+          "package_name": "dk.clausr.hvordu.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5AgqN-tOei8LfYxwhIeIZNmgpWPlqZbo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
         }
       }
     }
