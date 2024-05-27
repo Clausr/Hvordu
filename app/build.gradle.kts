@@ -12,7 +12,7 @@ android {
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "dk.clausr.koncert"
+        applicationId = "dk.clausr.hvordu"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
@@ -57,7 +57,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.12"
     }
-    namespace = "dk.clausr.koncert"
+    namespace = "dk.clausr.hvordu"
 }
 
 dependencies {

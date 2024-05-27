@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "dk.clausr.koncert.supabase"
+    namespace = "dk.clausr.hvordu.supabase"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

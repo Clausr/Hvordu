@@ -31,7 +31,7 @@ android {
         jvmTarget = "17"
     }
 
-    namespace = "dk.clausr.koncert.api"
+    namespace = "dk.clausr.hvordu.api"
 }
 
 dependencies {

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "dk.clausr.koncert.core.datastore.proto"
+    namespace = "dk.clausr.hvordu.core.datastore.proto"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
 }

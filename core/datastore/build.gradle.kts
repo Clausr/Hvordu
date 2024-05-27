@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "dk.clausr.koncert.core.datastore"
+    namespace = "dk.clausr.hvordu.core.datastore"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {

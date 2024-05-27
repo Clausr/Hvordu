@@ -25,7 +25,7 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    namespace = "dk.clausr.koncert.repo"
+    namespace = "dk.clausr.hvordu.repo"
 }
 
 dependencies {
