@@ -40,7 +40,7 @@ fun HomeRoute(
     addNewRoom: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState2.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     when (val state = uiState) {
         HomeUiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

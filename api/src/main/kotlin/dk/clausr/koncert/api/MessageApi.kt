@@ -15,20 +15,18 @@ class MessageApi @Inject constructor(
 
     suspend fun retrieveMessages(groupId: String): List<MessageDto> =
         table
-            .select(columns = Columns.raw("*, ...profiles(sender_username:username)")) {
+            .select(columns = Columns.raw("*, ...profiles(profile_id:id, username)")) {
                 filter { this.eq("group_id", groupId) }
             }
             .decodeList()
 
     suspend fun createMessage(
-        id: String,
         content: String,
         groupId: String,
         imageUrl: String?,
     ) {
         table.insert(buildJsonObject {
             put("content", content)
-            put("profile_id", id)
             put("group_id", groupId)
             put("image_url", imageUrl)
         }) {

@@ -38,9 +38,7 @@ class ChatViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            username.collect {
-                chatRepository.getMessages(chatArgs.chatRoomId, it)
-            }
+            chatRepository.getMessages(chatArgs.chatRoomId)
         }
     }
 
@@ -72,13 +70,15 @@ class ChatViewModel @Inject constructor(
     }
 
     fun sendMessage(message: String) = viewModelScope.launch {
+        val imageToSend = _imageUrl.value
+        _imageUri.value = null
+        _imageUrl.value = null
+
         chatRepository.createMessage(
             chatRoomId = chatArgs.chatRoomId,
             message = message,
-            imageUrl = _imageUrl.value
+            imageUrl = imageToSend
         )
-        _imageUri.value = null
-        _imageUrl.value = null
     }
 
     fun setImageUri(imageResult: Result<ImageCapture.OutputFileResults>) = viewModelScope.launch {
