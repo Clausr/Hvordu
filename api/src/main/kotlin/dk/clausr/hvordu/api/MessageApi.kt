@@ -15,7 +15,7 @@ class MessageApi @Inject constructor(
 
     suspend fun retrieveMessages(groupId: String): List<MessageDto> =
         table
-            .select(columns = Columns.raw("*, ...profiles(profile_id:id, username)")) {
+            .select(columns = Columns.raw("*, ...profiles(profile_id:id, sender_username:username)")) {
                 filter { this.eq("group_id", groupId) }
             }
             .decodeList()
