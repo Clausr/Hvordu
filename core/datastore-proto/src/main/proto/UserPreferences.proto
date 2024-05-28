@@ -3,18 +3,16 @@ syntax = "proto3";
 option java_package = "dk.clausr.hvordu.data";
 option java_multiple_files = true;
 
-
-
 message UserPreferences {
   enum KeyboardHeightStateProto {
     UNKNOWN = 0;
     KNOWN = 1;
   }
-  string user_name = 1;
+  reserved 1;
   reserved 2;
   optional float keyboardHeight = 3;
   KeyboardHeightStateProto keyboardHeightState = 4;
   repeated string chatRoomIds = 5;
-  optional string profile_id = 6;
+  reserved 6;
   optional string last_visited_chat_room_id = 7;
 }

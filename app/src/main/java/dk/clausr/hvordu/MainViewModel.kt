@@ -8,8 +8,6 @@ import io.github.jan.supabase.gotrue.SessionStatus
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,13 +17,12 @@ class MainViewModel @Inject constructor(userRepository: UserRepository) : ViewMo
         userRepository.sessionStatus,
         userRepository.getUserData()
     ) { sessionStatus, userData ->
-        Timber.i("Session status: $sessionStatus")
-
-        val res = when (sessionStatus) {
+        when (sessionStatus) {
             is SessionStatus.Authenticated -> {
                 MainActivityUiState.UserCreated(
-                    profileId = sessionStatus.session.user?.id ?: "no id",
-                    lastVisitedChatRoomId = userData.lastVisitedChatRoomId
+                    profileId = sessionStatus.session.user?.id
+                        ?: throw IllegalStateException("Can't continue without a userId"),
+                    lastVisitedChatRoomId = userData.lastVisitedChatRoomId,
                 )
             }
 
@@ -36,18 +33,11 @@ class MainViewModel @Inject constructor(userRepository: UserRepository) : ViewMo
             SessionStatus.NetworkError -> MainActivityUiState.Loading
             is SessionStatus.NotAuthenticated -> MainActivityUiState.Onboarding
         }
-
-        Timber.d("SessionState: $res")
-        res
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = MainActivityUiState.Loading,
     )
-
-    fun signOut() = viewModelScope.launch {
-
-    }
 }
 
 sealed interface MainActivityUiState {

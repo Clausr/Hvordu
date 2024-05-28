@@ -10,3 +10,9 @@ data class ProfileDto(
     @SerialName("fcm_token")
     val fcmToken: String? = null,
 )
+
+@Serializable
+data class InsertProfileUsernameDto(
+    val username: String,
+)
+

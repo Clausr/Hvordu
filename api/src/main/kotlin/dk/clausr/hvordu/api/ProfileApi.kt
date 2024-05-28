@@ -1,19 +1,17 @@
 package dk.clausr.hvordu.api
 
+import dk.clausr.hvordu.api.models.InsertProfileUsernameDto
 import dk.clausr.hvordu.api.models.ProfileDto
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.postgrest
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import timber.log.Timber
 import javax.inject.Inject
 
 class ProfileApi @Inject constructor(
-    client: SupabaseClient
+    private val client: SupabaseClient
 ) {
     private val table = client.postgrest["profiles"]
-
-    var cachedProfileId: String? = null
 
     suspend fun getOrCreateProfile(profileName: String): ProfileDto {
         val profile = table.select {
@@ -21,8 +19,6 @@ class ProfileApi @Inject constructor(
                 eq("username", profileName)
             }
         }.decodeSingleOrNull<ProfileDto>() ?: createProfile(profileName)
-
-        cachedProfileId = profile.id
 
         return profile
     }
@@ -37,16 +33,20 @@ class ProfileApi @Inject constructor(
     }
 
     private suspend fun createProfile(username: String): ProfileDto {
-        return table.insert(buildJsonObject {
-            put("username", username)
-        }) {
-            select()
-        }.decodeSingle()
+        return table.insert(InsertProfileUsernameDto(username)) { select() }
+            .decodeSingle<ProfileDto>()
     }
 
-    suspend fun updateFcmToken(token: String): ProfileDto? {
-        val myProfile = table.select().decodeSingle<ProfileDto>()
-        Timber.d("My profile: $myProfile")
-        return table.upsert(myProfile.copy(fcmToken = token)).decodeSingle<ProfileDto>()
+    suspend fun updateFcmToken(token: String) {
+        try {
+            val myProfile = table.select() {
+                filter {
+                    (ProfileDto::id eq client.auth.currentUserOrNull()?.id)
+                }
+            }.decodeSingle<ProfileDto>()
+            table.upsert(myProfile.copy(fcmToken = token))
+        } catch (e: Exception) {
+            Timber.e("Could not update firebase token")
+        }
     }
 }

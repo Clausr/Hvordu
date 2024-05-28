@@ -14,29 +14,10 @@ class UserPreferencesDataSource @Inject constructor(
 ) {
     val userData = userPreferenceDataStore.data.map {
         UserData(
-            username = it.userName,
-            profileId = it.profileId.ifBlank { null },
             chatRoomIds = it.chatRoomIdsList,
-            lastVisitedChatRoomId = null, // TODO Set this?
+            lastVisitedChatRoomId = it.lastVisitedChatRoomId.ifBlank { null },
             keyboardHeightState = it.keyboardHeightState.toModel(it.keyboardHeight)
         )
-    }
-
-    suspend fun setUsername(username: String, profileId: String) {
-        userPreferenceDataStore.updateData { currentData ->
-            currentData.toBuilder()
-                .setUserName(username)
-                .setProfileId(profileId)
-                .build()
-        }
-    }
-
-    suspend fun setInitialChatRoom(chatRoomId: String) {
-        userPreferenceDataStore.updateData { currentData ->
-            currentData.toBuilder()
-                .addChatRoomIds(chatRoomId)
-                .build()
-        }
     }
 
     suspend fun setKeyboardHeight(keyboardHeight: Float) {
@@ -89,14 +70,6 @@ class UserPreferencesDataSource @Inject constructor(
                         setLastVisitedChatRoomId(chatRoomId)
                     }
                 }
-                .build()
-        }
-    }
-
-    suspend fun setProfileId(profileId: String) {
-        userPreferenceDataStore.updateData {
-            it.toBuilder()
-                .setProfileId(profileId)
                 .build()
         }
     }

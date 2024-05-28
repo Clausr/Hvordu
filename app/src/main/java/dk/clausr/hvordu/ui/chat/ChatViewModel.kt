@@ -5,18 +5,18 @@ import androidx.camera.core.ImageCapture
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.hvordu.repo.chat.ChatRepository
-import dk.clausr.hvordu.repo.userdata.UserRepository
 import dk.clausr.hvordu.ui.chat.navigation.ChatArgs
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -24,7 +24,6 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val chatRepository: ChatRepository,
-    userRepository: UserRepository,
     realtimeChannel: RealtimeChannel,
 ) : ViewModel() {
 
@@ -34,12 +33,12 @@ class ChatViewModel @Inject constructor(
     private val _imageUri = MutableStateFlow<Uri?>(null)
     val imageUri: Flow<Uri?> = _imageUri
 
-    private val username = userRepository.getUserData().map { it.username }
-
     init {
         viewModelScope.launch {
             chatRepository.getMessages(chatArgs.chatRoomId)
+            FirebaseMessaging.getInstance().subscribeToTopic(chatArgs.chatRoomId).await()
         }
+        // TODO Unnecessary
     }
 
     val messages = chatRepository.chatMessages

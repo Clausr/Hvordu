@@ -14,7 +14,6 @@ import dk.clausr.hvordu.ui.onboarding.chatroom.JoinOrCreateChatRoomRoute
 import dk.clausr.hvordu.ui.onboarding.notifications.NotificationPermissionRoute
 import dk.clausr.hvordu.ui.onboarding.username.CreateUserRoute
 import dk.clausr.hvordu.utils.extensions.collectWithLifecycle
-import timber.log.Timber
 
 const val CREATE_USER_ROUTE = "user_route"
 const val JOIN_CHAT_ROOM_ROUTE = "join_chat_room_route"
@@ -33,29 +32,18 @@ fun NavGraphBuilder.onboardingGraph(
     composable(route = JOIN_CHAT_ROOM_ROUTE) {
         JoinOrCreateChatRoomRoute(
             modifier = Modifier.fillMaxSize(),
-            onCreateClicked = {
-                Timber.d("Navigate to $it")
-//                navHostController.navigateToChatRoom(it) {
-//                    navOptions {
-//                        popUpTo(CREATE_USER_ROUTE) {
-//                            inclusive = true
-//                        }
-//                        launchSingleTop = true
-//                    }
-//                }
-                navHostController.navigate(NOTIFICATIONS_ROUTE)
-            },
-            onSkipClicked = {
+            onNextClicked = {
                 navHostController.navigate(NOTIFICATIONS_ROUTE)
             },
         )
     }
 
     composable(NOTIFICATIONS_ROUTE) {
-        NotificationPermissionRoute(modifier = Modifier.fillMaxSize())
-//        {
-//            goToMainApp(navHostController)
-//        }
+        NotificationPermissionRoute(
+            modifier = Modifier.fillMaxSize(),
+            onNavigateToChatRoomOverview = {
+                goToMainApp(navHostController)
+            })
     }
 }
 

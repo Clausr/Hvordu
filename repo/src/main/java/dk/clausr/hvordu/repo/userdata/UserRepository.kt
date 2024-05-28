@@ -10,10 +10,8 @@ import dk.clausr.hvordu.api.models.ProfileDto
 import dk.clausr.hvordu.data.UserPreferencesDataSource
 import dk.clausr.hvordu.repo.domain.Group
 import dk.clausr.hvordu.repo.domain.toGroup
-import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.SignOutScope
-import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.gotrue.providers.Google
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -28,24 +26,25 @@ class UserRepository @Inject constructor(
     private val groupsApi: GroupsApi,
     private val profileApi: ProfileApi,
     private val auth: Auth,
-    private val supabaseClient: SupabaseClient,
     @Dispatcher(Dispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     fun getUserData(): Flow<UserData> = userSettingDataSource.userData
 
     val sessionStatus = auth.sessionStatus
 
-    suspend fun setInitialUsername(username: String) {
-        val profile = createUsername(username)
-        userSettingDataSource.setUsername(
-            username = profile.username,
-            profileId = profile.id
-        )
+    suspend fun setInitialUsername(username: String) = withContext(ioDispatcher) {
+        try {
+            createUsername(username)
+            true
+        } catch (e: Exception) {
+            Timber.e(e, "Coulnd't create username $username")
+            false
+        }
     }
 
     suspend fun setInitialChatRoom(chatRoomName: String): Group = withContext(ioDispatcher) {
         val chatRoom = joinOrCreateChatRoom(name = chatRoomName)
-        userSettingDataSource.setInitialChatRoom(chatRoom.id)
+        userSettingDataSource.addChatRoomId(chatRoom.id)
         chatRoom
     }
 
@@ -61,9 +60,10 @@ class UserRepository @Inject constructor(
         return profileApi.getOrCreateProfile(profileName)
     }
 
-    suspend fun setFcmToken(token: String) = withContext(ioDispatcher) {
-        profileApi.updateFcmToken(token)
-        Unit
+    suspend fun setFcmToken(token: String) {
+        withContext(ioDispatcher) {
+            profileApi.updateFcmToken(token)
+        }
     }
 
     suspend fun getUsername(userId: String): String? = withContext(ioDispatcher) {
@@ -80,13 +80,9 @@ class UserRepository @Inject constructor(
         userSettingDataSource.setLastVisitedChatRoom(chatRoomId)
     }
 
-    suspend fun setProfileId(profileId: String) = withContext(ioDispatcher) {
-        userSettingDataSource.setProfileId(profileId)
-    }
-
     suspend fun signInWithGoogle(): Boolean {
         return try {
-            supabaseClient.auth.signInWith(Google)
+            auth.signInWith(Google)
             true
         } catch (e: Exception) {
             Timber.e(e, "Could not sign in with google...")

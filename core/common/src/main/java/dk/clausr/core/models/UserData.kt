@@ -1,8 +1,8 @@
 package dk.clausr.core.models
 
 data class UserData(
-    val username: String,
-    val profileId: String?,
+//    val username: String,
+//    val profileId: String?,
     val chatRoomIds: List<String>,
     val lastVisitedChatRoomId: String?,
     val keyboardHeightState: KeyboardHeightState,

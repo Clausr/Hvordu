@@ -11,3 +11,9 @@ data class GroupDto(
     @SerialName("friendly_name")
     val friendlyName: String,
 )
+
+@Serializable
+data class CreateGroupDto(
+    @SerialName("friendly_name")
+    val friendlyName: String,
+)
