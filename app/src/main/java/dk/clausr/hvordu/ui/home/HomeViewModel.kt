@@ -56,6 +56,7 @@ class HomeViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val token = FirebaseMessaging.getInstance().token.await()
+            userRepository.setFcmToken(token)
             Timber.d("Firebase token: $token")
         }
     }

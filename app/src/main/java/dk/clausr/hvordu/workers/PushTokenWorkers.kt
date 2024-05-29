@@ -63,6 +63,7 @@ class PushTokenResolverWorker @AssistedInject constructor(
             Timber.wtf(exception)
             return Result.retry()
         } catch (exception: Exception) {
+            Timber.e(exception, "Resolve token error")
             return Result.failure()
         }
     }
