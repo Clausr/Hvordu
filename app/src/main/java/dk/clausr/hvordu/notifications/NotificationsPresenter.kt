@@ -2,13 +2,21 @@ package dk.clausr.hvordu.notifications
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import dk.clausr.hvordu.R
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
+
+
+private const val DEEP_LINK_SCHEME_AND_HOST = "https://hvordu.clausr.dk"
+private const val MESSAGE_NOTIFICATION_REQUEST_CODE = 80085
 
 @Singleton
 class NotificationsPresenter @Inject constructor(
@@ -27,12 +35,14 @@ class NotificationsPresenter @Inject constructor(
         tag: String?,
         id: Int,
         notificationChannel: HvorduNotificationChannel,
+        chatRoomId: String?,
     ) {
-        Timber.d("Show notification: $title - $contentText")
-
+        val intent = messagePendingIntent(chatRoomId)
+        Timber.d("Show notification: $title - $contentText .. intent $intent")
         val notification = NotificationCompat.Builder(context, notificationChannel.channelId)
             .setContentTitle(title)
             .setContentText(contentText)
+            .setContentIntent(intent)
             .setSmallIcon(R.drawable.ic_notifications_black_24dp)
             .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
             .setAutoCancel(true)
@@ -52,6 +62,23 @@ class NotificationsPresenter @Inject constructor(
             }
     }
 
+    private fun messagePendingIntent(chatRoomId: String?): PendingIntent? =
+        chatRoomId?.let { chatId ->
+            Timber.d("messagePendingIntent $chatRoomId")
+            PendingIntent.getActivity(
+                context,
+                MESSAGE_NOTIFICATION_REQUEST_CODE,
+                Intent().apply {
+                    action = Intent.ACTION_VIEW
+                    data = "$DEEP_LINK_SCHEME_AND_HOST/chatroom/$chatId".toUri()
+                    component = ComponentName(
+                        context.packageName,
+                        "dk.clausr.hvordu.MainActivity"
+                    )
+                },
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        }
 
     private fun getNotificationChannel(hvorduNotificationChannel: HvorduNotificationChannel): NotificationChannel {
         return NotificationChannel(

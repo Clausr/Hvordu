@@ -1,5 +1,6 @@
 package dk.clausr.hvordu
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -35,6 +36,11 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var supabase: SupabaseClient
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        Timber.d("On new intent ${intent.toUri(0)}")
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         enableEdgeToEdge()
@@ -43,7 +49,8 @@ class MainActivity : ComponentActivity() {
 
         val newSignIn = intent.getBooleanExtra(/* name = */ NEW_SIGN_IN, /* defaultValue = */ false)
 
-        Timber.d("New Sign in? -> $newSignIn")
+        Timber.d("New Sign in? -> ${intent.toUri(0)}")
+//        Timber.d("New Sign in? -> $newSignIn")
 
         var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)
 

@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import dk.clausr.hvordu.navigation.KoncertNavigationDestination
 import dk.clausr.hvordu.ui.chat.ChatRoute
 import dk.clausr.hvordu.ui.chat.navigation.ChatDestination
@@ -36,6 +37,9 @@ fun NavGraphBuilder.homeGraph(
         route = ChatDestination.route,
         arguments = listOf(
             navArgument(ChatDestination.CHAT_ROOM_ID) { type = NavType.StringType },
+        ),
+        deepLinks = listOf(
+            navDeepLink { uriPattern = ChatDestination.deepLinkUriPattern }
         )
     ) {
         ChatRoute(

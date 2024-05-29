@@ -10,6 +10,7 @@ import kotlin.text.Charsets.UTF_8
 
 object ChatDestination : KoncertNavigationDestination {
     const val CHAT_ROOM_ID = "chatRoomId"
+    const val deepLinkUriPattern = "https://hvordu.clausr.dk/chatroom/{$CHAT_ROOM_ID}"
     override val route: String = "chat_route/{$CHAT_ROOM_ID}"
     override val destination: String = "chat_destination"
 }
@@ -30,7 +31,9 @@ fun NavController.navigateToChatRoom(
     chatRoomId: String,
     navOptions: NavOptionsBuilder.() -> Unit = {}
 ) {
-    navigate(chatRoomRoute(chatRoomId)) {
+    navigate(
+        route = chatRoomRoute(chatRoomId),
+    ) {
         navOptions()
     }
 }
@@ -39,16 +42,3 @@ fun chatRoomRoute(chatRoomId: String): String {
     val encodedId = URLEncoder.encode(chatRoomId, URL_CHARACTER_ENCODING)
     return "chat_route/$encodedId"
 }
-//
-//fun NavGraphBuilder.chatGraph(navController: NavController) {
-//    composable(
-//        route = ChatDestination.route,
-//        arguments = listOf(
-//            navArgument(ChatDestination.CHAT_ROOM_ID) { type = NavType.StringType },
-//        )
-//    ) {
-//        ChatRoute(
-//            onBack = { navController.navigateUp() }
-//        )
-//    }
-//}

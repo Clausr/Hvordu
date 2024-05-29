@@ -117,7 +117,9 @@ fun ChatScreen(
                         RealtimeChannel.Status.SUBSCRIBED -> "🟢"
                         RealtimeChannel.Status.UNSUBSCRIBING -> "🟣"
                     }
-                    Text(statusEmoji)
+                    IconButton(onClick = {}) {
+                        Text(statusEmoji)
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
