@@ -70,6 +70,7 @@ dependencies {
 
     //Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.work.runtime.ktx)
     ksp(libs.hilt.compiler)
     ksp(libs.androidx.hilt)
 
@@ -96,7 +97,6 @@ dependencies {
     implementation(libs.androidx.animation)
 
     // Material Design
-//    implementation(libs.androidx.material)
     implementation(libs.androidx.material.icons.core)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.material3)

@@ -33,7 +33,6 @@ fun NotificationPermissionRoute(
     viewModel: NotificationPermissionViewModel = hiltViewModel(),
     onNavigateToChatRoomOverview: () -> Unit,
 ) {
-
     viewModel.viewEffects.collectWithLifecycle {
         when (it) {
             NotificationPermissionViewEffect.NavigateToChatRoomOverview -> {
