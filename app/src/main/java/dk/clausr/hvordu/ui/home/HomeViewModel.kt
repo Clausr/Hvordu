@@ -20,6 +20,7 @@ class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val chatRepository: ChatRepository,
 ) : ViewModel() {
+
     val uiState = combine(
         userRepository.sessionStatus,
         userRepository.getUserData()

@@ -27,11 +27,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dk.clausr.hvordu.repo.domain.Group
+import dk.clausr.hvordu.repo.domain.ChatRoom
 import dk.clausr.hvordu.ui.compose.theme.HvorduTheme
+import kotlinx.datetime.Clock
 
 @Composable
 fun HomeRoute(
@@ -68,7 +71,7 @@ fun HomeRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    chatRooms: List<Group>,
+    chatRooms: List<ChatRoom>,
     onChatRoomClicked: (chatRoomId: String) -> Unit,
     addNewRoom: () -> Unit,
     onSignOut: () -> Unit,
@@ -110,10 +113,17 @@ fun HomeScreen(
                         ) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(
-                                    chatRoom.friendlyName,
-                                    style = MaterialTheme.typography.titleLarge
+                                    text = chatRoom.roomName,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
                                 )
-                                Text("Maybe the last text from the chatroom?")
+                                Text(
+                                    text = "${chatRoom.sender}: ${chatRoom.latestMessage}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
                             }
                         }
                     }
@@ -128,7 +138,15 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenPreview() {
     HvorduTheme {
-        val chatRooms = List(10) { Group(id = "", friendlyName = "Chat room ") }
+        val chatRooms = List(10) {
+            ChatRoom(
+                id = "",
+                roomName = "Chat room ",
+                latestMessage = "Seneste besked".repeat(it),
+                latestMessageAt = Clock.System.now(),
+                sender = "Some sender"
+            )
+        }
         HomeScreen(
             chatRooms = chatRooms,
             onChatRoomClicked = {},

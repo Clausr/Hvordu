@@ -7,9 +7,11 @@ import dk.clausr.core.dispatchers.Dispatcher
 import dk.clausr.core.dispatchers.Dispatchers
 import dk.clausr.hvordu.api.GroupsApi
 import dk.clausr.hvordu.api.MessageApi
-import dk.clausr.hvordu.api.models.GroupDto
+import dk.clausr.hvordu.api.OverviewApi
+import dk.clausr.hvordu.api.models.ChatRoomDto
 import dk.clausr.hvordu.api.models.MessageDto
 import dk.clausr.hvordu.repo.domain.Message
+import dk.clausr.hvordu.repo.domain.toChatRoomOverview
 import dk.clausr.hvordu.repo.domain.toGroup
 import dk.clausr.hvordu.repo.domain.toMessage
 import io.github.jan.supabase.gotrue.Auth
@@ -35,6 +37,7 @@ import javax.inject.Singleton
 @Singleton
 class ChatRepository @Inject constructor(
     private val messageApi: MessageApi,
+    private val overviewApi: OverviewApi,
     private val groupApi: GroupsApi,
     private val realtimeChannel: RealtimeChannel,
     private val storage: Storage,
@@ -160,7 +163,7 @@ class ChatRepository @Inject constructor(
     }
 
     suspend fun getChatRooms(chatRoomIds: List<String>) = withContext(ioDispatcher) {
-        groupApi.getChatRooms(chatRoomIds).map(GroupDto::toGroup)
+        overviewApi.getOverviewItems(chatRoomIds).map(ChatRoomDto::toChatRoomOverview)
     }
 
     suspend fun uploadImage(imageUri: Uri): String? = withContext(ioDispatcher) {
@@ -177,6 +180,10 @@ class ChatRepository @Inject constructor(
     suspend fun deleteImage(url: String) = withContext(ioDispatcher) {
         storage.from("message_images").delete(url.split("/").last())
     }
+
+//    suspend fun getChatRooms(chatRoomId: String): List<ChatRoomOverview> = withContext(ioDispatcher) {
+//        overviewApi.getOverviewItems(chatRoomId).map(ChatRoomDto::toChatRoomOverview)
+//    }
 }
 
 fun String.isOnlyEmoji(): Boolean {
