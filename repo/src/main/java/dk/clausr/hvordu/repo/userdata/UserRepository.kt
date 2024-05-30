@@ -42,18 +42,14 @@ class UserRepository @Inject constructor(
         }
     }
 
-    suspend fun setInitialChatRoom(chatRoomName: String): Group = withContext(ioDispatcher) {
-        val chatRoom = joinOrCreateChatRoom(name = chatRoomName)
+    suspend fun joinOrCreateChatRoom(chatRoomName: String): Group = withContext(ioDispatcher) {
+        val chatRoom = groupsApi.joinOrCreate(chatRoomName).toGroup()
         userSettingDataSource.addChatRoomId(chatRoom.id)
         chatRoom
     }
 
     suspend fun setKeyboardHeight(height: Float) {
         userSettingDataSource.setKeyboardHeight(height)
-    }
-
-    suspend fun joinOrCreateChatRoom(name: String): Group {
-        return groupsApi.joinOrCreate(name).toGroup()
     }
 
     private suspend fun createUsername(profileName: String): ProfileDto {

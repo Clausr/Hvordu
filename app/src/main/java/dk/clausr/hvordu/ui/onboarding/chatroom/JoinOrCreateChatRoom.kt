@@ -117,36 +117,38 @@ fun JoinOrCreateChatRoomScreen(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(onDone = { onJoinOrCreateChatRoom(chatRoomName) }),
-                supportingText = { Text("Create or join group of this name") },
-                placeholder = { Text("Groupname") }
+                supportingText = { Text("Create or join a chat room with this name") },
+                placeholder = { Text("Chat room name") }
             )
         }
 
         item {
-            Column(
-                modifier = Modifier.padding(top = 32.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = "Suggested groups",
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.align(Alignment.Start)
-                )
-                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
-                    Column {
-                        suggestedGroups.take(5)
-                            .forEachIndexed { index, group ->
-                                Text(
-                                    text = group.friendlyName,
-                                    modifier = Modifier
-                                        .clickable {
-                                            chatRoomName = group.friendlyName
-                                        }
-                                        .padding(16.dp)
-                                        .fillMaxWidth(),
-                                )
-                                if (index < suggestedGroups.size - 1) HorizontalDivider()
-                            }
+            if (suggestedGroups.isNotEmpty()) {
+                Column(
+                    modifier = Modifier.padding(top = 32.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Suggested chat rooms",
+                        style = MaterialTheme.typography.labelLarge,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                        Column {
+                            suggestedGroups.take(5)
+                                .forEachIndexed { index, group ->
+                                    Text(
+                                        text = group.friendlyName,
+                                        modifier = Modifier
+                                            .clickable {
+                                                chatRoomName = group.friendlyName
+                                            }
+                                            .padding(16.dp)
+                                            .fillMaxWidth(),
+                                    )
+                                    if (index < suggestedGroups.size - 1) HorizontalDivider()
+                                }
+                        }
                     }
                 }
             }

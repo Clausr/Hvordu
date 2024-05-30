@@ -1,4 +1,4 @@
-package dk.clausr.hvordu.ui.home
+package dk.clausr.hvordu.ui.home.overview
 
 import dk.clausr.hvordu.repo.domain.ChatRoom
 

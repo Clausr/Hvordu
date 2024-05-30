@@ -1,4 +1,4 @@
-package dk.clausr.hvordu.ui.home
+package dk.clausr.hvordu.ui.home.overview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -21,7 +21,7 @@ class JoinOrCreateChatRoomViewModel @Inject constructor(
     val viewEffects = _viewEffects.receiveAsFlow()
 
     fun setChatRoom(name: String) = viewModelScope.launch {
-        val initialChatRoom = userRepository.setInitialChatRoom(name)
+        val initialChatRoom = userRepository.joinOrCreateChatRoom(name)
 
         FirebaseMessaging.getInstance().subscribeToTopic(initialChatRoom.id)
 

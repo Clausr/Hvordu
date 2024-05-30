@@ -164,6 +164,7 @@ class ChatRepository @Inject constructor(
 
     suspend fun getChatRooms(chatRoomIds: List<String>) = withContext(ioDispatcher) {
         overviewApi.getOverviewItems(chatRoomIds).map(ChatRoomDto::toChatRoomOverview)
+            .sortedByDescending { it.latestMessageAt }
     }
 
     suspend fun uploadImage(imageUri: Uri): String? = withContext(ioDispatcher) {

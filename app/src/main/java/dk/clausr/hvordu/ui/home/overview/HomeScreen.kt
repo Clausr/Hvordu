@@ -1,4 +1,4 @@
-package dk.clausr.hvordu.ui.home
+package dk.clausr.hvordu.ui.home.overview
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,10 +28,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import dk.clausr.core.extensions.getCustomRelativeTimeSpanString
 import dk.clausr.hvordu.repo.domain.ChatRoom
 import dk.clausr.hvordu.ui.compose.theme.HvorduTheme
 import kotlinx.datetime.Clock
@@ -109,7 +111,8 @@ fun HomeScreen(
                             modifier = Modifier
                                 .clickable { onChatRoomClicked(chatRoom.id) }
                                 .padding(16.dp)
-                                .fillMaxWidth()
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(
@@ -120,11 +123,17 @@ fun HomeScreen(
                                 )
                                 Text(
                                     text = "${chatRoom.sender}: ${chatRoom.latestMessage}",
-                                    style = MaterialTheme.typography.bodyMedium,
                                     maxLines = 2,
                                     overflow = TextOverflow.Ellipsis,
                                 )
                             }
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                textAlign = TextAlign.End,
+                                style = MaterialTheme.typography.bodyMedium,
+                                text = chatRoom.latestMessageAt?.getCustomRelativeTimeSpanString()
+                                    ?: ""
+                            )
                         }
                     }
                 }

@@ -10,9 +10,10 @@ import androidx.navigation.navDeepLink
 import dk.clausr.hvordu.navigation.KoncertNavigationDestination
 import dk.clausr.hvordu.ui.chat.ChatRoute
 import dk.clausr.hvordu.ui.chat.navigation.ChatDestination
+import dk.clausr.hvordu.ui.chat.navigation.chatRoomRoute
 import dk.clausr.hvordu.ui.chat.navigation.navigateToChatRoom
-import dk.clausr.hvordu.ui.home.HomeRoute
-import dk.clausr.hvordu.ui.onboarding.navigation.JOIN_CHAT_ROOM_ROUTE
+import dk.clausr.hvordu.ui.home.joinroom.JoinRoomRoute
+import dk.clausr.hvordu.ui.home.overview.HomeRoute
 
 object HomeDestination : KoncertNavigationDestination {
     override val route: String = "home_route"
@@ -29,7 +30,8 @@ fun NavGraphBuilder.homeGraph(
                 navController.navigateToChatRoom(it)
             },
             addNewRoom = {
-                navController.navigate(JOIN_CHAT_ROOM_ROUTE)
+//                navController.navigate(JOIN_CHAT_ROOM_ROUTE)
+                navController.navigate("JOIN_CHAT_ROOM")
             }
         )
     }
@@ -45,5 +47,15 @@ fun NavGraphBuilder.homeGraph(
         ChatRoute(
             onBack = { navController.navigateUp() }
         )
+    }
+
+    composable(
+        route = "JOIN_CHAT_ROOM",
+    ) {
+        JoinRoomRoute {
+            navController.navigate(chatRoomRoute(it)) {
+                popUpTo(HomeDestination.route)
+            }
+        }
     }
 }

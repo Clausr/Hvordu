@@ -31,7 +31,11 @@ fun NavGraphBuilder.onboardingGraph(
         JoinOrCreateChatRoomRoute(
             modifier = Modifier.fillMaxSize(),
             onNextClicked = {
+//                if (ActivityCompat.checkSelfPermission(navHostController.context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+//
+//                } else {
                 navHostController.navigate(NOTIFICATIONS_ROUTE)
+//                }
             },
         )
     }

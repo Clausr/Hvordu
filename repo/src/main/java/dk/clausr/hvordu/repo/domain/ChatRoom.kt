@@ -5,9 +5,9 @@ import kotlinx.datetime.Instant
 
 data class ChatRoom(
     val id: String,
-    val latestMessage: String,
-    val sender: String,
-    val latestMessageAt: Instant,
+    val latestMessage: String?,
+    val sender: String?,
+    val latestMessageAt: Instant?,
     val roomName: String,
 )
 

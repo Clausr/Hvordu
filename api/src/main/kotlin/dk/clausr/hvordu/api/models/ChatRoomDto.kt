@@ -8,11 +8,11 @@ import kotlinx.serialization.Serializable
 data class ChatRoomDto(
     val id: String,
     @SerialName("latest_message")
-    val latestMessage: String,
+    val latestMessage: String?,
     @SerialName("latest_sender")
-    val sender: String,
+    val sender: String?,
     @SerialName("latest_message_at")
-    val latestMessageAt: Instant,
+    val latestMessageAt: Instant?,
     @SerialName("room_name")
     val roomName: String,
 )
