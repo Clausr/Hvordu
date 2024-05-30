@@ -169,7 +169,8 @@ fun AnnoyingCameraScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Roll: $roll - Pitch: $pitch",
+                    text = "⬇️ Look down! ⬇️",
+//                    text = "Roll: $roll - Pitch: $pitch",
                     color = MaterialTheme.colorScheme.background
                 )
             }

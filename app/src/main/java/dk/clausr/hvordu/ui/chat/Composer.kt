@@ -135,6 +135,13 @@ private fun ChatComposer(
         }
     }
 
+    // Focus on keyboard after image is taken
+    LaunchedEffect(imageTakenUri) {
+        if (imageTakenUri != null) {
+            focusRequester.requestFocus()
+        }
+    }
+
     fun onSend() {
         onChatSent(textField.text)
         textField = TextFieldValue()
