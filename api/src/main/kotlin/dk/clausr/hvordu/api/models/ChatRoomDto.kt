@@ -15,4 +15,6 @@ data class ChatRoomDto(
     val latestMessageAt: Instant?,
     @SerialName("room_name")
     val roomName: String,
+    @SerialName("image_url")
+    val imageUrl: String?
 )

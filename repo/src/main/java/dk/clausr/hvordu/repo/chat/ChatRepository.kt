@@ -8,7 +8,6 @@ import dk.clausr.core.dispatchers.Dispatchers
 import dk.clausr.hvordu.api.GroupsApi
 import dk.clausr.hvordu.api.MessageApi
 import dk.clausr.hvordu.api.OverviewApi
-import dk.clausr.hvordu.api.models.ChatRoomDto
 import dk.clausr.hvordu.api.models.MessageDto
 import dk.clausr.hvordu.repo.domain.Message
 import dk.clausr.hvordu.repo.domain.toChatRoomOverview
@@ -163,7 +162,14 @@ class ChatRepository @Inject constructor(
     }
 
     suspend fun getChatRooms(chatRoomIds: List<String>) = withContext(ioDispatcher) {
-        overviewApi.getOverviewItems(chatRoomIds).map(ChatRoomDto::toChatRoomOverview)
+        overviewApi.getOverviewItems(chatRoomIds)
+            .map {
+                val imageUrl = it.imageUrl?.let {
+                    val (bucket, url) = it.split(("/"))
+                    storage.from(bucket).publicUrl(url)
+                }
+                it.toChatRoomOverview().copy(imageUrl = imageUrl)
+            }
             .sortedByDescending { it.latestMessageAt }
     }
 

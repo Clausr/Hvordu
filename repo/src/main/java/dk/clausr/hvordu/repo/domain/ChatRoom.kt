@@ -9,6 +9,7 @@ data class ChatRoom(
     val sender: String?,
     val latestMessageAt: Instant?,
     val roomName: String,
+    val imageUrl: String?,
 )
 
 fun ChatRoomDto.toChatRoomOverview(): ChatRoom = ChatRoom(
@@ -16,5 +17,6 @@ fun ChatRoomDto.toChatRoomOverview(): ChatRoom = ChatRoom(
     latestMessage = latestMessage,
     sender = sender,
     latestMessageAt = latestMessageAt,
-    roomName = roomName
+    roomName = roomName,
+    imageUrl = imageUrl,
 )
