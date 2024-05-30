@@ -35,10 +35,8 @@ class ChatViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            chatRepository.getMessages(chatArgs.chatRoomId)
             FirebaseMessaging.getInstance().subscribeToTopic(chatArgs.chatRoomId).await()
         }
-        // TODO Unnecessary
     }
 
     val messages = chatRepository.chatMessages
@@ -60,6 +58,10 @@ class ChatViewModel @Inject constructor(
 
     val connectionStatus = realtimeChannel.status
 
+    fun refreshMessages() = viewModelScope.launch {
+        chatRepository.getMessages(chatArgs.chatRoomId)
+
+    }
     fun connectToRealtime() = viewModelScope.launch {
         chatRepository.connectToRealtime()
     }
