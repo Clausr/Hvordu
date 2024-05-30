@@ -26,9 +26,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-//    kotlinOptions {
-//        jvmTarget = "17"
-//    }
     namespace = "dk.clausr.core"
 }
 
@@ -38,6 +35,7 @@ dependencies {
     testImplementation(libs.junit)
 
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.kotlinx.datetime)
 
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.android)

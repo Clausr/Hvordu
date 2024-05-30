@@ -25,9 +25,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 import kotlinx.serialization.json.jsonPrimitive
 import timber.log.Timber
-import java.time.OffsetDateTime
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -54,7 +54,7 @@ class ChatRepository @Inject constructor(
                 retrieveMessages(
                     chatRoomId = chatRoomId,
                     profileId = getProfileId(),
-                ).getOrNull()?.reversed()
+                ).getOrNull()
 
             _messages.value = remoteMessages ?: emptyList()
 
@@ -104,7 +104,6 @@ class ChatRepository @Inject constructor(
         message: String,
         imageUrl: String?
     ) = withContext(ioDispatcher) {
-
         kotlin.runCatching {
             messageApi.createMessage(
                 content = message,
@@ -113,14 +112,14 @@ class ChatRepository @Inject constructor(
             )
         }.onSuccess {
             _messages.value += Message(
-                "temp",
-                message,
-                "me",
-                OffsetDateTime.now(),
-                senderName = "username",
-                Message.Direction.Out,
-                imageUrl,
-                profileId = "profileId"
+                id = UUID.randomUUID().toString(),
+                content = message,
+                creatorId = auth.currentUserOrNull()?.id ?: "me",
+                createdAt = Clock.System.now(),
+                senderName = "",
+                direction = Message.Direction.Out,
+                imageUrl = imageUrl,
+                profileId = auth.currentUserOrNull()?.id ?: "profileId"
             )
         }
             .onFailure {
@@ -136,7 +135,7 @@ class ChatRepository @Inject constructor(
         }
     }
 
-    suspend fun retrieveMessages(
+    private suspend fun retrieveMessages(
         chatRoomId: String,
         profileId: String?,
     ) = withContext(ioDispatcher) {

@@ -11,17 +11,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dk.clausr.core.extensions.getCustomRelativeTimeSpanString
 import dk.clausr.hvordu.ui.chat.types.ChatItemData
 import dk.clausr.hvordu.ui.chat.types.ChatItemDirection
 import dk.clausr.hvordu.ui.chat.types.ChatMessage
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
+import kotlinx.datetime.Instant
 
 @Composable
 fun ChatItem(
     item: ChatItemData,
-    timestamp: OffsetDateTime,
+    timestamp: Instant,
     modifier: Modifier = Modifier,
 ) {
     if (item is ChatItemData.Empty) return
@@ -60,9 +59,10 @@ fun ChatItem(
             }
 
             Text(
-                style = MaterialTheme.typography.labelSmall,
-                text = timestamp.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)),
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.padding(top = 4.dp),
+                text = timestamp.getCustomRelativeTimeSpanString(),
+                style = MaterialTheme.typography.labelSmall
+//                text = timestamp.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
             )
         }
     }

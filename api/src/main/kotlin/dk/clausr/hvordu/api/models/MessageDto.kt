@@ -1,5 +1,6 @@
 package dk.clausr.hvordu.api.models
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -11,7 +12,7 @@ data class MessageDto(
     @SerialName("profile_id")
     val profileId: String,
     @SerialName("created_at")
-    val createdAt: String,
+    val createdAt: Instant,
     @SerialName("sender_username")
     val senderUsername: String? = null,
     @SerialName("image_url")

@@ -1,13 +1,13 @@
 package dk.clausr.hvordu.repo.domain
 
 import dk.clausr.hvordu.api.models.MessageDto
-import java.time.OffsetDateTime
+import kotlinx.datetime.Instant
 
 data class Message(
     val id: String,
     val content: String,
     val creatorId: String,
-    val createdAt: OffsetDateTime,
+    val createdAt: Instant,
     val senderName: String?,
     val direction: Direction,
     val imageUrl: String?,
@@ -28,7 +28,7 @@ fun MessageDto.toMessage(direction: Message.Direction): Message =
         id = id,
         content = content,
         creatorId = "creatorId",
-        createdAt = OffsetDateTime.parse(createdAt),
+        createdAt = createdAt,
         direction = direction,
         senderName = senderUsername,
         imageUrl = imageUrl,

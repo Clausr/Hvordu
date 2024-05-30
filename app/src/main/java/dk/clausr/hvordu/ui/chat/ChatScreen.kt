@@ -156,7 +156,7 @@ fun ChatScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 reverseLayout = true,
             ) {
-                items(messages) { message ->
+                items(messages.reversed()) { message ->
                     val chatItem = message.mapToChatItem()
                     ChatItem(
                         item = chatItem,
