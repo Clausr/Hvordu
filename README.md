@@ -3,11 +3,11 @@
 Stupid app aiming at idiots, who doesn't want to actually share their positions, by only allowing
 users to take photos of the ground.
 
-- [ ] Notifications
-    - [ ] Screen
-    - [ ] Permissions
-    - [ ] Firebase
-    - [ ] Supabase
+- [x] Notifications
+  - [x] Screen
+  - [x] Permissions
+  - [x] Firebase
+  - [x] Supabase
 
 ## Chat
 
@@ -16,12 +16,12 @@ users to take photos of the ground.
 
 ### Composer
 
-- [ ] Chat: Keyboard needs to go up after taking an image
-- [ ] Image should be removed from composer after sending
+- [x] Chat: Keyboard needs to go up after taking an image
+- [x] Image should be removed from composer after sending
 - [ ] Should be able to send image without message
 
 ### Chat overview
 
 - [ ] Delete chat room
-- [ ] Get latest messages (and image?) to show in overview
-- [ ] Sort based on latest activity
+- [x] Get latest messages (and image?) to show in overview
+- [x] Sort based on latest activity
