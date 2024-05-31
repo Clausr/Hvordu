@@ -45,6 +45,7 @@ class HvorduFirebaseMessagingService : FirebaseMessagingService() {
             id = 0,
             notificationChannel = HvorduNotificationChannel.ChatNotifications,
             chatRoomId = message.data["group_id"],
+            imageUrl = message.data["image_url"],
         )
     }
 }

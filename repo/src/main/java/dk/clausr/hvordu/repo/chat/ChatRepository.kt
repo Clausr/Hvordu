@@ -169,6 +169,7 @@ class ChatRepository @Inject constructor(
                     val (bucket, url) = it.split(("/"))
                     storage.from(bucket).publicUrl(url)
                 }
+                Timber.d("Image: $imageUrl")
                 it.toChatRoomOverview().copy(imageUrl = imageUrl)
             }
             .sortedByDescending { it.latestMessageAt }

@@ -6,10 +6,17 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
+import coil.ImageLoader
+import coil.request.ImageRequest
 import dk.clausr.hvordu.R
+import io.github.jan.supabase.storage.Storage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,7 +27,8 @@ private const val MESSAGE_NOTIFICATION_REQUEST_CODE = 80085
 
 @Singleton
 class NotificationsPresenter @Inject constructor(
-    private val applicationContext: Context
+    private val applicationContext: Context,
+    private val storage: Storage,
 ) {
     private val context: Context
         get() = ContextThemeWrapper(applicationContext, R.style.Theme_Hvordu)
@@ -36,22 +44,40 @@ class NotificationsPresenter @Inject constructor(
         id: Int,
         notificationChannel: HvorduNotificationChannel,
         chatRoomId: String?,
+        imageUrl: String?,
     ) {
         val intent = messagePendingIntent(chatRoomId)
         Timber.d("Show notification: $title - $contentText .. intent $intent")
-        val notification = NotificationCompat.Builder(context, notificationChannel.channelId)
-            .setContentTitle(title)
-            .setContentText(contentText)
-            .setContentIntent(intent)
-            .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
-            .setAutoCancel(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-            .setChannelId(notificationChannel.channelId)
-            .build()
+        val loader = ImageLoader(context)
+        val imageRequest = imageUrl?.let {
+            val (bucket, url) = it.split(("/"))
+            val fullUrl = storage.from(bucket).publicUrl(url)
 
-        notificationManager.notify(tag, id, notification)
+            ImageRequest
+                .Builder(context)
+                .data(fullUrl)
+                .build()
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val image =
+                imageRequest?.let { loader.execute(imageRequest).drawable as BitmapDrawable }?.bitmap
+
+            val notification = NotificationCompat.Builder(context, notificationChannel.channelId)
+                .setContentTitle(title)
+                .setContentText(contentText)
+                .setContentIntent(intent)
+                .setLargeIcon(image)
+                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setChannelId(notificationChannel.channelId)
+                .build()
+
+            notificationManager.notify(tag, id, notification)
+        }
     }
 
     fun registerChannels() {
