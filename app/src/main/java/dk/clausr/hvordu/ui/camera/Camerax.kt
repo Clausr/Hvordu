@@ -7,6 +7,7 @@ import android.provider.MediaStore
 import android.util.Rational
 import android.util.Size
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalZeroShutterLag
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -45,12 +46,14 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import dk.clausr.core.extensions.createTempPictureFile
 import dk.clausr.hvordu.ui.compose.theme.KoncertTheme
 import timber.log.Timber
 import java.util.UUID
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+@ExperimentalZeroShutterLag
 @Composable
 fun CameraPreviewScreen(
     enableTakeImageButton: Boolean,
@@ -71,7 +74,9 @@ fun CameraPreviewScreen(
     val viewPort = ViewPort.Builder(aspectRatio, preview.targetRotation).build()
     Timber.d("Viewport: ${viewPort.aspectRatio} - ${previewSize.width}x${previewSize.height}")
     val imageCapture = remember {
-        ImageCapture.Builder().build()
+        ImageCapture.Builder()
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+            .build()
     }
     val imageAnalysis = ImageAnalysis.Builder()
         .setResolutionSelector(
@@ -164,14 +169,17 @@ private fun captureImage(
             put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Hvordu")
         }
     }
-    val outputOptions = ImageCapture.OutputFileOptions
-        .Builder(
-            context.contentResolver,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            contentValues
-        )
-        .build()
+//    val outputOptions = ImageCapture.OutputFileOptions
+//        .Builder(
+//            context.contentResolver,
+//            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+//            contentValues
+//        )
+//        .build()
 
+    val outputOptions = ImageCapture.OutputFileOptions
+        .Builder(context.createTempPictureFile())
+        .build()
     imageCapture.takePicture(
         outputOptions,
         ContextCompat.getMainExecutor(context),
