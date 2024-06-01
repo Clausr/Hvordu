@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import dk.clausr.core.extensions.getCustomRelativeTimeSpanString
+import dk.clausr.hvordu.R
 import dk.clausr.hvordu.repo.domain.ChatRoom
 import dk.clausr.hvordu.ui.compose.theme.HvorduTheme
 import kotlinx.datetime.Clock
@@ -90,7 +92,7 @@ fun HomeScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(text = "Hvordu?") },
+                title = { Text(text = stringResource(id = R.string.app_name)) },
                 actions = {
                     IconButton(onClick = { onSignOut() }) {
                         Icon(
