@@ -1,9 +1,6 @@
 package dk.clausr.hvordu.ui.camera
 
-import android.content.ContentValues
 import android.content.Context
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Rational
 import android.util.Size
 import androidx.camera.core.CameraSelector
@@ -49,7 +46,6 @@ import androidx.core.content.ContextCompat
 import dk.clausr.core.extensions.createTempPictureFile
 import dk.clausr.hvordu.ui.compose.theme.KoncertTheme
 import timber.log.Timber
-import java.util.UUID
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -161,22 +157,6 @@ private fun captureImage(
     context: Context,
     pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
 ) {
-    val name = "${UUID.randomUUID()}.jpeg"
-    val contentValues = ContentValues().apply {
-        put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Hvordu")
-        }
-    }
-//    val outputOptions = ImageCapture.OutputFileOptions
-//        .Builder(
-//            context.contentResolver,
-//            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-//            contentValues
-//        )
-//        .build()
-
     val outputOptions = ImageCapture.OutputFileOptions
         .Builder(context.createTempPictureFile())
         .build()
@@ -193,7 +173,6 @@ private fun captureImage(
                 pictureResult(Result.failure(exception))
                 Timber.e(exception, "Faileddd")
             }
-
         })
 }
 

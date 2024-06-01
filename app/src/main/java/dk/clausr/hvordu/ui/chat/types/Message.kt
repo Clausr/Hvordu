@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -23,10 +24,12 @@ internal fun ChatMessage(
 ) {
     when (item) {
         is ChatItemData.Message.TextSent -> TextMessage(
+            modifier = Modifier.fillMaxWidth(0.75f),
             message = item.message,
             imageUrl = item.imageUrl,
             surfaceColor = MaterialTheme.colorScheme.primaryContainer,
             textColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            align = Alignment.End,
         )
 
         is ChatItemData.Message.TextReceived -> {
@@ -36,10 +39,12 @@ internal fun ChatMessage(
                     style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 TextMessage(
+                    modifier = Modifier.fillMaxWidth(0.8f),
                     message = item.message,
                     imageUrl = item.imageUrl,
                     surfaceColor = MaterialTheme.colorScheme.surfaceVariant,
                     textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    align = Alignment.Start,
                 )
             }
         }
@@ -60,13 +65,15 @@ private fun TextMessage(
     surfaceColor: Color,
     textColor: Color,
     imageUrl: String?,
+    align: Alignment.Horizontal,
     modifier: Modifier = Modifier,
 ) {
     ChatSurface(
         modifier = modifier,
         color = surfaceColor,
-        minWidth = 0.dp,
-        maxWidth = 240.dp,
+        align = align,
+//        minWidth = 0.dp,
+//        maxWidth = 340.dp,
     ) {
         Column {
             Text(
