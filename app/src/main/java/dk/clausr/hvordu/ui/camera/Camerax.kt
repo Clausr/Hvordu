@@ -4,14 +4,22 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Rational
+import android.util.Size
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
+import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.ViewPort
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,8 +38,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -50,20 +60,47 @@ fun CameraPreviewScreen(
     val lensFacing = CameraSelector.LENS_FACING_BACK
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
+
     val preview = Preview.Builder().build()
     val previewView = remember {
         PreviewView(context)
     }
+    var previewSize by remember { mutableStateOf(IntSize.Zero) }
     val cameraxSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
+    val aspectRatio = Rational(previewSize.width, previewSize.height)
+    val viewPort = ViewPort.Builder(aspectRatio, preview.targetRotation).build()
+    Timber.d("Viewport: ${viewPort.aspectRatio} - ${previewSize.width}x${previewSize.height}")
     val imageCapture = remember {
         ImageCapture.Builder().build()
     }
-    LaunchedEffect(lensFacing) {
+    val imageAnalysis = ImageAnalysis.Builder()
+        .setResolutionSelector(
+            ResolutionSelector.Builder()
+                .setResolutionStrategy(
+                    ResolutionStrategy(
+                        Size(previewSize.width, previewSize.height),
+                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER
+                    )
+                )
+                .build()
+        )
+        .build()
+
+
+    LaunchedEffect(lensFacing, previewSize) {
         val cameraProvider = context.getCameraProvider()
         cameraProvider.unbindAll()
-        cameraProvider.bindToLifecycle(lifecycleOwner, cameraxSelector, preview, imageCapture)
-        preview.setSurfaceProvider(previewView.surfaceProvider)
+        val useCaseGroup = UseCaseGroup.Builder()
+            .addUseCase(preview)
+            .addUseCase(imageCapture)
+            .addUseCase(imageAnalysis)
+            .setViewPort(viewPort)
+            .build()
+
+        cameraProvider.bindToLifecycle(lifecycleOwner, cameraxSelector, useCaseGroup)
     }
+    preview.setSurfaceProvider(previewView.surfaceProvider)
+
     var takePictureInProgress by remember {
         mutableStateOf(false)
     }
@@ -72,8 +109,10 @@ fun CameraPreviewScreen(
     Box(
         contentAlignment = Alignment.BottomCenter,
         modifier = modifier
+            .fillMaxSize()
+            .onSizeChanged { previewSize = it }
     ) {
-        AndroidView({ previewView })
+        AndroidView({ previewView }, modifier = Modifier)
 
         Box(
             modifier = Modifier
@@ -132,12 +171,13 @@ private fun captureImage(
             contentValues
         )
         .build()
+
     imageCapture.takePicture(
         outputOptions,
         ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                Timber.d("Successs")
+                Timber.d("Success")
                 pictureResult(Result.success(outputFileResults))
             }
 
