@@ -28,12 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dk.clausr.hvordu.R
 import dk.clausr.hvordu.repo.domain.Group
 import dk.clausr.hvordu.ui.compose.theme.HvorduTheme
 import dk.clausr.hvordu.ui.widgets.HvorduLazyColumnScaffold
@@ -81,7 +83,7 @@ fun JoinOrCreateChatRoomScreen(
 
     HvorduLazyColumnScaffold(
         modifier = modifier,
-        title = "Join chatroom",
+        title = stringResource(id = R.string.join_room_title),
         lazyColumnContentPadding = PaddingValues(16.dp),
         bottomBarContent = {
             Row(
@@ -97,7 +99,7 @@ fun JoinOrCreateChatRoomScreen(
                         onJoinOrCreateChatRoom(chatRoomName)
                     },
                 ) {
-                    Text("Add chat room")
+                    Text(stringResource(id = R.string.join_room_button_cta))
                 }
             }
         }
@@ -117,8 +119,8 @@ fun JoinOrCreateChatRoomScreen(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(onDone = { onJoinOrCreateChatRoom(chatRoomName) }),
-                supportingText = { Text("Create or join a chat room with this name") },
-                placeholder = { Text("Chat room name") }
+                supportingText = { Text(stringResource(id = R.string.join_room_text_field_supporting_text)) },
+                placeholder = { Text(stringResource(id = R.string.join_room_text_field_placeholder)) }
             )
         }
 
@@ -129,7 +131,7 @@ fun JoinOrCreateChatRoomScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Suggested chat rooms",
+                        text = stringResource(id = R.string.join_room_suggestion_title),
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier.align(Alignment.Start)
                     )
@@ -165,6 +167,8 @@ private fun JoinOrCreateChatRoomPreview() {
             suggestedGroups = listOf(
                 Group("0", "Rock Am Ring 2024"),
                 Group("1", "Roskilde 2024"),
+                Group("2", "Roskilde 2025"),
+                Group("3", "Roskilde 2026"),
             ),
             onJoinOrCreateChatRoom = {},
         )

@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Hvordu</string>
-    <string name="tab_overview">Overview</string>
-    <string name="tab_artists">Artists</string>
-    <string name="tab_parallax">Parallax</string>
+    <string name="create_username_title">Username</string>
+    <string name="create_username_text_field_supporting_text">Should be unique</string>
+    <string name="create_username_text_field_placeholder">Username</string>
+    <string name="join_room_title">Chatroom</string>
+    <string name="join_room_button_cta">Add chat room</string>
+    <string name="join_room_text_field_supporting_text">Create or join a chat room with this name</string>
+    <string name="join_room_text_field_placeholder">Chat room name</string>
+    <string name="join_room_suggestion_title">Suggested chat rooms</string>
+    <string name="general_continue">Continue</string>
 </resources>

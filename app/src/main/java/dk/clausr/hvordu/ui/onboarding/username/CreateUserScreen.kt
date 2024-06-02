@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -92,7 +92,7 @@ fun CreateUserScreen(
                 windowInsets = WindowInsets.statusBars,
                 title = {
                     Text(
-                        text = stringResource(id = R.string.tab_overview),
+                        text = stringResource(id = R.string.create_username_title),
                     )
                 },
             )
@@ -103,7 +103,7 @@ fun CreateUserScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
-                    .safeDrawingPadding(),
+                    .safeContentPadding(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(
@@ -112,7 +112,7 @@ fun CreateUserScreen(
                         onCreateClicked(username.text)
                     },
                 ) {
-                    Text("Continue")
+                    Text(stringResource(id = R.string.general_continue))
                 }
             }
         }
@@ -139,8 +139,8 @@ fun CreateUserScreen(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(onDone = { onCreateClicked(username.text) }),
-                supportingText = { Text("Should be unique") },
-                placeholder = { Text("Username") }
+                supportingText = { Text(stringResource(id = R.string.create_username_text_field_supporting_text)) },
+                placeholder = { Text(stringResource(id = R.string.create_username_text_field_placeholder)) }
             )
         }
     }
