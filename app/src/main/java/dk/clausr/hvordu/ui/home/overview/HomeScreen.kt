@@ -50,7 +50,7 @@ import kotlinx.datetime.Clock
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
-    onNavigateToChat: (chatName: String) -> Unit,
+    onNavigateToChat: (chatRoomId: String, chatName: String?) -> Unit,
     addNewRoom: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -83,7 +83,7 @@ fun HomeRoute(
 @Composable
 fun HomeScreen(
     chatRooms: List<ChatRoom>,
-    onChatRoomClicked: (chatRoomId: String) -> Unit,
+    onChatRoomClicked: (chatRoomId: String, chatName: String?) -> Unit,
     addNewRoom: () -> Unit,
     onSignOut: () -> Unit,
     modifier: Modifier = Modifier,
@@ -118,7 +118,7 @@ fun HomeScreen(
                     items(chatRooms) { chatRoom ->
                         Row(
                             modifier = Modifier
-                                .clickable { onChatRoomClicked(chatRoom.id) }
+                                .clickable { onChatRoomClicked(chatRoom.id, chatRoom.roomName) }
                                 .padding(16.dp)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
@@ -174,7 +174,7 @@ private fun HomeScreenPreview() {
         }
         HomeScreen(
             chatRooms = chatRooms,
-            onChatRoomClicked = {},
+            onChatRoomClicked = { _, _ -> },
             addNewRoom = {},
             onSignOut = {},
         )

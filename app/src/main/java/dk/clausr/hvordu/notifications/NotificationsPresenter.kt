@@ -22,7 +22,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
-private const val DEEP_LINK_SCHEME_AND_HOST = "https://hvordu.clausr.dk"
+private const val DEEP_LINK_SCHEME = "hvordu"
 private const val MESSAGE_NOTIFICATION_REQUEST_CODE = 80085
 
 @Singleton
@@ -96,7 +96,7 @@ class NotificationsPresenter @Inject constructor(
                 MESSAGE_NOTIFICATION_REQUEST_CODE,
                 Intent().apply {
                     action = Intent.ACTION_VIEW
-                    data = "$DEEP_LINK_SCHEME_AND_HOST/chatroom/$chatId".toUri()
+                    data = "$DEEP_LINK_SCHEME/chatroom/$chatId".toUri()
                     component = ComponentName(
                         context.packageName,
                         "dk.clausr.hvordu.MainActivity"

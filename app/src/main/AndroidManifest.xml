@@ -22,12 +22,20 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleTask"
+
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="hvordu" />
+                <data android:host="chatroom" />
+
             </intent-filter>
         </activity>
 
@@ -41,9 +49,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with YOUR_SCHEME://YOUR_HOST -->
-                <data
-                    android:host="dk.clausr.hvordu.user-management"
-                    android:scheme="hvordu" />
+                <data android:scheme="hvordu" />
+                <data android:host="dk.clausr.hvordu.user-management" />
             </intent-filter>
         </activity>
 

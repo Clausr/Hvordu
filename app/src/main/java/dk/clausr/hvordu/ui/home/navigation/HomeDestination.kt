@@ -26,11 +26,10 @@ fun NavGraphBuilder.homeGraph(
 ) {
     composable(route = HomeDestination.route) {
         HomeRoute(
-            onNavigateToChat = {
-                navController.navigateToChatRoom(it)
+            onNavigateToChat = { id, name ->
+                navController.navigateToChatRoom(chatRoomId = id, friendlyName = name)
             },
             addNewRoom = {
-//                navController.navigate(JOIN_CHAT_ROOM_ROUTE)
                 navController.navigate("JOIN_CHAT_ROOM")
             }
         )
@@ -39,6 +38,10 @@ fun NavGraphBuilder.homeGraph(
         route = ChatDestination.route,
         arguments = listOf(
             navArgument(ChatDestination.CHAT_ROOM_ID) { type = NavType.StringType },
+            navArgument(ChatDestination.CHAT_ROOM_NAME) {
+                type = NavType.StringType
+                nullable = true
+            },
         ),
         deepLinks = listOf(
             navDeepLink { uriPattern = ChatDestination.deepLinkUriPattern }
@@ -53,7 +56,7 @@ fun NavGraphBuilder.homeGraph(
         route = "JOIN_CHAT_ROOM",
     ) {
         JoinRoomRoute {
-            navController.navigate(chatRoomRoute(it)) {
+            navController.navigate(chatRoomRoute(it, null)) {
                 popUpTo(HomeDestination.route)
             }
         }
