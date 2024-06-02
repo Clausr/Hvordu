@@ -40,7 +40,6 @@ android {
 
 
     signingConfigs {
-
         create("release") {
             storeFile = rootProject.file("signing/Clausr.keystore")
             storePassword = keystoreProperties["SIGNING_STORE_PASSWORD"] as String

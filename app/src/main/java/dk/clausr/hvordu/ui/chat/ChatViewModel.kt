@@ -9,10 +9,12 @@ import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.hvordu.repo.chat.ChatRepository
 import dk.clausr.hvordu.ui.chat.navigation.ChatArgs
+import dk.clausr.hvordu.ui.chat.navigation.ChatDestination
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -38,10 +40,16 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    val messages = chatRepository.chatMessages
-//        savedStateHandle.getStateFlow(ChatDestination.CHAT_ROOM_ID, "NO-ID").map { roomId ->
-//            chatRepository.getMessages(roomId)
+    val messages = combine(
+        chatRepository.chatMessages,
+        savedStateHandle.getStateFlow(
+            ChatDestination.CHAT_ROOM_ID, "NO-ID"
+        )
+    ) { messages, roomId ->
+//        if (messages.isNotEmpty()) {
+        chatRepository.getMessages(roomId)
 //        }
+    }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -64,6 +72,7 @@ class ChatViewModel @Inject constructor(
         chatRepository.getMessages(chatArgs.chatRoomId)
 
     }
+
     fun connectToRealtime() = viewModelScope.launch {
         chatRepository.connectToRealtime()
     }

@@ -2,7 +2,7 @@
 
 <resources>
     <color name="seed">#007756</color>
-    <color name="md_theme_light_primary">#006C4E</color>
+    <color name="md_theme_light_primary">#8C4F26</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#87F8C9</color>
     <color name="md_theme_light_onPrimaryContainer">#002115</color>
@@ -10,7 +10,7 @@
     <color name="md_theme_light_onSecondary">#FFFFFF</color>
     <color name="md_theme_light_secondaryContainer">#CFE9DA</color>
     <color name="md_theme_light_onSecondaryContainer">#092017</color>
-    <color name="md_theme_light_tertiary">#3E6374</color>
+    <color name="md_theme_light_tertiary">#626033</color>
     <color name="md_theme_light_onTertiary">#FFFFFF</color>
     <color name="md_theme_light_tertiaryContainer">#C1E8FC</color>
     <color name="md_theme_light_onTertiaryContainer">#001F2A</color>
@@ -31,15 +31,16 @@
     <color name="md_theme_light_shadow">#000000</color>
     <color name="md_theme_light_surfaceTint">#006C4E</color>
     <color name="md_theme_light_surfaceTintColor">#006C4E</color>
-    <color name="md_theme_dark_primary">#6ADBAE</color>
-    <color name="md_theme_dark_onPrimary">#003827</color>
+
+    <color name="md_theme_dark_primary">#FFB68B</color>
+    <color name="md_theme_dark_onPrimary">#522300</color>
     <color name="md_theme_dark_primaryContainer">#00513A</color>
     <color name="md_theme_dark_onPrimaryContainer">#87F8C9</color>
     <color name="md_theme_dark_secondary">#B3CCBE</color>
     <color name="md_theme_dark_onSecondary">#1F352B</color>
     <color name="md_theme_dark_secondaryContainer">#354B41</color>
     <color name="md_theme_dark_onSecondaryContainer">#CFE9DA</color>
-    <color name="md_theme_dark_tertiary">#A6CCDF</color>
+    <color name="md_theme_dark_tertiary">#CCC992</color>
     <color name="md_theme_dark_onTertiary">#083544</color>
     <color name="md_theme_dark_tertiaryContainer">#254B5B</color>
     <color name="md_theme_dark_onTertiaryContainer">#C1E8FC</color>
