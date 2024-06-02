@@ -30,8 +30,6 @@ android {
     }
 }
 
-
-
 dependencies {
     api(project(":core:datastore-proto"))
     implementation(project(":core:common"))

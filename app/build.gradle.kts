@@ -9,6 +9,10 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.google.services)
 }
+val keystorePropertiesFile = rootProject.file("signing/secrets.properties")
+val keystoreProperties = Properties()
+keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
 
 android {
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -34,16 +38,32 @@ android {
         buildConfigField("String", "SUPABASE_URL", "\"${properties.getProperty("SUPABASE_URL")}\"")
     }
 
+
+    signingConfigs {
+
+        create("release") {
+            storeFile = rootProject.file("signing/Clausr.keystore")
+            storePassword = keystoreProperties["SIGNING_STORE_PASSWORD"] as String
+            keyAlias = keystoreProperties["GOOGLE_PLAY_SIGNING_KEY_ALIAS"] as String
+            keyPassword = keystoreProperties["SIGNING_KEY_PASSWORD"] as String
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
-//            proguardFiles += getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             isMinifyEnabled = false
             applicationIdSuffix = ".debug"
         }
     }
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -125,4 +145,24 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+
+fun getEnvNullable(variableName: String): String {
+    return System.getenv(variableName)
+        .let {
+            if (it?.isNotEmpty() == true) {
+                "$it"
+            } else {
+                "\"\""
+            }
+        }
+}
+
+fun getPropertyOrEnvNullable(variableName: String, keystoreProperties: Properties): String {
+    val variable = keystoreProperties[variableName] as String?
+
+    val output = variable ?: getEnvNullable(variableName)
+
+    return output
 }
