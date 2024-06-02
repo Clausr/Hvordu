@@ -14,6 +14,8 @@ fun Message.mapToChatItem(): ChatItemData {
         Message.Direction.Out -> ChatItemDirection.Sent
     }
 
+    if (content.isBlank()) ChatItemData.Empty
+
     return when (chatDirection) {
         ChatItemDirection.Sent -> if (content.isOnlyEmoji()) {
             ChatItemData.Message.EmojiSent(messageText = content)

@@ -9,15 +9,16 @@ import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.hvordu.repo.chat.ChatRepository
 import dk.clausr.hvordu.ui.chat.navigation.ChatArgs
+import dk.clausr.hvordu.ui.chat.navigation.ChatDestination
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,8 +40,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    val messages = chatRepository.chatMessages
-        .stateIn(
+    val messages =
+        savedStateHandle.getStateFlow(ChatDestination.CHAT_ROOM_ID, "NO-ID").map { roomId ->
+            chatRepository.getMessages(roomId)
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
@@ -49,7 +52,6 @@ class ChatViewModel @Inject constructor(
     val chatName = flow {
         val friendlyName = chatArgs.friendlyName
             ?: chatRepository.getGroup(chatRoomId = chatArgs.chatRoomId)?.friendlyName
-        Timber.d("ChatName flow.. $friendlyName")
         emit(friendlyName)
     }.stateIn(
         scope = viewModelScope,

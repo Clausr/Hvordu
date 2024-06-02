@@ -38,14 +38,16 @@ class HvorduFirebaseMessagingService : FirebaseMessagingService() {
         // Filter away notifications that were sent because of current user
         if (message.data["profile_id"] == auth.currentUserOrNull()?.id) return
 
+
         notificationsPresenter.showNotification(
             title = message.notification?.title ?: getString(R.string.app_name),
             contentText = message.notification?.body ?: "",
             tag = message.notification?.tag,
             id = 0,
             notificationChannel = HvorduNotificationChannel.ChatNotifications,
-            chatRoomId = message.data["group_id"],
+            chatRoomId = message.data["group_id"] ?: "No Id",
             imageUrl = message.data["image_url"],
+            chatRoomName = message.data["chat_room_name"],
         )
     }
 }

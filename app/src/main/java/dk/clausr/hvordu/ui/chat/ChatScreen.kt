@@ -2,6 +2,7 @@ package dk.clausr.hvordu.ui.chat
 
 import android.net.Uri
 import androidx.camera.core.ImageCapture
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -65,7 +66,6 @@ fun ChatRoute(
         Timber.d("Lifecycle state $lifecycleState")
         when (lifecycleState) {
             Lifecycle.State.CREATED -> chatViewModel.connectToRealtime()
-            Lifecycle.State.RESUMED -> chatViewModel.refreshMessages()
             else -> Unit
         }
     }
@@ -91,7 +91,7 @@ fun ChatRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatScreen(
     chatName: String,

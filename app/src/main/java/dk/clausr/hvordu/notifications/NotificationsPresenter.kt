@@ -43,10 +43,11 @@ class NotificationsPresenter @Inject constructor(
         tag: String?,
         id: Int,
         notificationChannel: HvorduNotificationChannel,
-        chatRoomId: String?,
+        chatRoomId: String,
         imageUrl: String?,
+        chatRoomName: String?,
     ) {
-        val intent = messagePendingIntent(chatRoomId)
+        val intent = messagePendingIntent(chatRoomId, chatRoomName)
         Timber.d("Show notification: $title - $contentText .. intent $intent")
         val loader = ImageLoader(context)
         val imageRequest = imageUrl?.let {
@@ -88,23 +89,20 @@ class NotificationsPresenter @Inject constructor(
             }
     }
 
-    private fun messagePendingIntent(chatRoomId: String?): PendingIntent? =
-        chatRoomId?.let { chatId ->
-            Timber.d("messagePendingIntent $chatRoomId")
-            PendingIntent.getActivity(
-                context,
-                MESSAGE_NOTIFICATION_REQUEST_CODE,
-                Intent().apply {
-                    action = Intent.ACTION_VIEW
-                    data = "$DEEP_LINK_SCHEME/chatroom/$chatId".toUri()
-                    component = ComponentName(
-                        context.packageName,
-                        "dk.clausr.hvordu.MainActivity"
-                    )
-                },
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-        }
+    private fun messagePendingIntent(chatRoomId: String, chatRoomName: String?): PendingIntent? =
+        PendingIntent.getActivity(
+            context,
+            MESSAGE_NOTIFICATION_REQUEST_CODE,
+            Intent().apply {
+                action = Intent.ACTION_VIEW
+                data = "$DEEP_LINK_SCHEME/chatroom/$chatRoomId?name=$chatRoomName".toUri()
+                component = ComponentName(
+                    context.packageName,
+                    "dk.clausr.hvordu.MainActivity"
+                )
+            },
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
     private fun getNotificationChannel(hvorduNotificationChannel: HvorduNotificationChannel): NotificationChannel {
         return NotificationChannel(
