@@ -46,9 +46,7 @@ class ChatViewModel @Inject constructor(
             ChatDestination.CHAT_ROOM_ID, "NO-ID"
         )
     ) { messages, roomId ->
-//        if (messages.isNotEmpty()) {
         chatRepository.getMessages(roomId)
-//        }
     }
         .stateIn(
             scope = viewModelScope,
@@ -68,17 +66,8 @@ class ChatViewModel @Inject constructor(
 
     val connectionStatus = realtimeChannel.status
 
-    fun refreshMessages() = viewModelScope.launch {
-        chatRepository.getMessages(chatArgs.chatRoomId)
-
-    }
-
     fun connectToRealtime() = viewModelScope.launch {
         chatRepository.connectToRealtime()
-    }
-
-    fun disconnectFromRealtime() = viewModelScope.launch {
-        chatRepository.disconnectFromRealtime()
     }
 
     fun sendMessage(message: String) = viewModelScope.launch {

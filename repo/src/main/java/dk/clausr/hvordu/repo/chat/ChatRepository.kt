@@ -97,10 +97,6 @@ class ChatRepository @Inject constructor(
         realtimeChannel.subscribe()
     }
 
-    suspend fun disconnectFromRealtime() {
-        realtimeChannel.unsubscribe()
-    }
-
     suspend fun createMessage(
         chatRoomId: String,
         message: String,
@@ -188,10 +184,6 @@ class ChatRepository @Inject constructor(
     suspend fun deleteImage(url: String) = withContext(ioDispatcher) {
         storage.from("message_images").delete(url.split("/").last())
     }
-
-//    suspend fun getChatRooms(chatRoomId: String): List<ChatRoomOverview> = withContext(ioDispatcher) {
-//        overviewApi.getOverviewItems(chatRoomId).map(ChatRoomDto::toChatRoomOverview)
-//    }
 }
 
 fun String.isOnlyEmoji(): Boolean {
