@@ -2,7 +2,6 @@ package dk.clausr.hvordu.ui.chat
 
 import android.net.Uri
 import androidx.camera.core.ImageCapture
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,18 +33,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.compose.currentStateAsState
 import dk.clausr.hvordu.repo.domain.Message
 import dk.clausr.hvordu.ui.chat.mapper.mapToChatItem
 import dk.clausr.hvordu.ui.chat.ui.ChatItem
 import dk.clausr.hvordu.utils.extensions.toDp
 import dk.clausr.hvordu.utils.extensions.toPx
 import io.github.jan.supabase.realtime.RealtimeChannel
-import timber.log.Timber
 
 @Composable
 fun ChatRoute(
@@ -57,21 +53,6 @@ fun ChatRoute(
     val status by chatViewModel.connectionStatus.collectAsStateWithLifecycle()
     val chatName by chatViewModel.chatName.collectAsState()
     val imageUri by chatViewModel.imageUri.collectAsStateWithLifecycle(null)
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val lifecycleState by lifecycleOwner.lifecycle.currentStateAsState()
-
-    LaunchedEffect(lifecycleState) {
-        Timber.d("Lifecycle state $lifecycleState")
-        when (lifecycleState) {
-//            Lifecycle.State.CREATED -> chatViewModel.connectToRealtime()
-            else -> Unit
-        }
-    }
-
-//    LaunchedEffect(Unit) {
-//        chatViewModel.connectToRealtime()
-//    }
 
     ChatScreen(
         modifier = modifier,
@@ -90,7 +71,7 @@ fun ChatRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
     chatName: String,

@@ -61,8 +61,11 @@ fun ChatItem(
             Text(
                 modifier = Modifier.padding(top = 4.dp),
                 text = timestamp.getCustomRelativeTimeSpanString(),
-                style = MaterialTheme.typography.labelSmall
-//                text = timestamp.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM))
+                style = MaterialTheme.typography.labelSmall,
+//                text = timestamp
+//                    .toLocalDateTime(TimeZone.currentSystemDefault())
+//                    .toJavaLocalDateTime()
+//                    .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
             )
         }
     }

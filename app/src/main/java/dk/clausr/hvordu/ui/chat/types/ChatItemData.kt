@@ -11,25 +11,26 @@ sealed class ChatItemDirection {
 sealed class ChatItemData(val direction: ChatItemDirection) {
     sealed class Message(
         direction: ChatItemDirection,
-        val message: String,
-        val image: String? = null,
     ) : ChatItemData(direction) {
         data class TextSent(
-            val messageText: String,
+            val message: String,
             val imageUrl: String?,
         ) : Message(
             direction = ChatItemDirection.Sent,
-            message = messageText,
-            image = imageUrl,
         )
 
-        data class EmojiSent(val messageText: String) : Message(
+        data class ImageSent(
+            val imageUrl: String
+        ) : Message(
             direction = ChatItemDirection.Sent,
-            message = messageText,
+        )
+
+        data class EmojiSent(val message: String) : Message(
+            direction = ChatItemDirection.Sent,
         )
 
         data class TextReceived(
-            val messageText: String,
+            val message: String,
             val senderAvatar: String?,
             val senderName: String,
             val imageUrl: String?,
@@ -38,12 +39,10 @@ sealed class ChatItemData(val direction: ChatItemDirection) {
                 avatar = senderAvatar,
                 senderName = senderName,
             ),
-            message = messageText,
-            image = imageUrl,
         )
 
-        data class EmojiReceived(
-            val messageText: String,
+        data class ImageReceived(
+            val imageUrl: String,
             val senderAvatar: String?,
             val senderName: String,
         ) : Message(
@@ -51,7 +50,17 @@ sealed class ChatItemData(val direction: ChatItemDirection) {
                 avatar = senderAvatar,
                 senderName = senderName,
             ),
-            message = messageText,
+        )
+
+        data class EmojiReceived(
+            val message: String,
+            val senderAvatar: String?,
+            val senderName: String,
+        ) : Message(
+            direction = ChatItemDirection.Received(
+                avatar = senderAvatar,
+                senderName = senderName,
+            ),
         )
     }
 

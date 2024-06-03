@@ -32,6 +32,9 @@ class ChatViewModel @Inject constructor(
     private val _imageUri = MutableStateFlow<Uri?>(null)
     val imageUri: Flow<Uri?> = _imageUri
 
+    private val _uploading: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
+    val uploading: Flow<Boolean> = _uploading
+
     init {
         viewModelScope.launch {
             FirebaseMessaging.getInstance().subscribeToTopic(chatArgs.chatRoomId).await()
@@ -70,9 +73,11 @@ class ChatViewModel @Inject constructor(
     }
 
     fun setImageUri(imageResult: Result<ImageCapture.OutputFileResults>) = viewModelScope.launch {
-        val imageUri = imageResult.getOrNull()?.savedUri
-        _imageUrl.value = imageUri?.let {
-            chatRepository.uploadImage(it)
+        imageResult.getOrNull()?.savedUri?.let { imageUri ->
+            _uploading.value = true
+            _imageUri.value = imageUri
+            _imageUrl.value = chatRepository.uploadImage(imageUri)
+            _uploading.value = false
         }
     }
 

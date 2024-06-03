@@ -6,7 +6,6 @@ import kotlinx.datetime.Instant
 data class Message(
     val id: String,
     val content: String?,
-    val creatorId: String,
     val createdAt: Instant,
     val senderName: String?,
     val direction: Direction,
@@ -27,7 +26,6 @@ fun MessageDto.toMessage(direction: Message.Direction): Message =
     Message(
         id = id,
         content = content,
-        creatorId = "creatorId",
         createdAt = createdAt,
         direction = direction,
         senderName = senderUsername,

@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Rational
 import android.util.Size
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ExperimentalZeroShutterLag
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -49,7 +48,6 @@ import timber.log.Timber
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-@ExperimentalZeroShutterLag
 @Composable
 fun CameraPreviewScreen(
     enableTakeImageButton: Boolean,

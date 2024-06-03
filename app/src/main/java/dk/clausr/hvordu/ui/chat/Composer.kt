@@ -57,8 +57,6 @@ import dk.clausr.hvordu.ui.camera.AnnoyingCameraRoute
 import dk.clausr.hvordu.ui.compose.theme.HvorduTheme
 import timber.log.Timber
 
-// TODO Give this its own ViewModel with keyboard things
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChatComposer(
@@ -221,8 +219,7 @@ private fun ChatComposer(
                 )
 
                 IconButton(
-                    enabled = textField.text.isNotBlank(),
-//                    enabled = textField.text.isNotBlank() || imageTakenUri != null,
+                    enabled = textField.text.isNotBlank() || imageTakenUri != null,
                     onClick = {
                         onSend()
                     },

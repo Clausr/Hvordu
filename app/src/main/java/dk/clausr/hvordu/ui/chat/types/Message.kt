@@ -49,10 +49,34 @@ internal fun ChatMessage(
             }
         }
 
+        is ChatItemData.Message.ImageSent -> {
+            ImageMessage(
+                modifier = Modifier.fillMaxWidth(0.8f),
+                imageUrl = item.imageUrl,
+                align = Alignment.End,
+            )
+        }
+
+        is ChatItemData.Message.ImageReceived -> {
+            Column(modifier = Modifier.fillMaxWidth(0.8f)) {
+                Text(
+                    text = item.senderName,
+                    style = MaterialTheme.typography.labelLarge
+                )
+                ImageMessage(
+                    imageUrl = item.imageUrl,
+                    align = Alignment.Start,
+                )
+            }
+        }
+
         is ChatItemData.Message.EmojiSent -> EmojiMessage(emojis = item.message)
         is ChatItemData.Message.EmojiReceived -> {
             Column {
-                Text(text = item.senderName, style = MaterialTheme.typography.labelLarge)
+                Text(
+                    text = item.senderName,
+                    style = MaterialTheme.typography.labelLarge
+                )
                 EmojiMessage(item.message)
             }
         }
@@ -72,8 +96,6 @@ private fun TextMessage(
         modifier = modifier,
         color = surfaceColor,
         align = align,
-//        minWidth = 0.dp,
-//        maxWidth = 340.dp,
     ) {
         Column {
             Text(
@@ -82,14 +104,29 @@ private fun TextMessage(
                 style = MaterialTheme.typography.bodyLarge.copy(color = textColor),
             )
 
-            if (imageUrl != null) {
+            imageUrl?.let {
                 AsyncImage(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = modifier.fillMaxWidth(),
                     model = imageUrl,
                     contentDescription = null
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ImageMessage(
+    imageUrl: String,
+    align: Alignment.Horizontal,
+    modifier: Modifier = Modifier,
+) {
+    ChatSurface(align = align) {
+        AsyncImage(
+            modifier = modifier.fillMaxWidth(),
+            model = imageUrl,
+            contentDescription = null
+        )
     }
 }
 

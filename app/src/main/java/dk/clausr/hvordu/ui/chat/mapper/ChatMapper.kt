@@ -11,35 +11,48 @@ fun Message.mapToChatItem(): ChatItemData {
             avatar = null,
             senderName = senderName.orEmpty()
         )
+
         Message.Direction.Out -> ChatItemDirection.Sent
     }
 
-    val chatMessage = content
-    if (chatMessage.isNullOrBlank()) return ChatItemData.Empty
+    val chatMessage = content?.ifBlank { null }
+    val image = imageUrl
 
     return when (chatDirection) {
-        ChatItemDirection.Sent -> if (chatMessage.isOnlyEmoji()) {
-            ChatItemData.Message.EmojiSent(messageText = chatMessage)
-        } else {
-            ChatItemData.Message.TextSent(
-                messageText = chatMessage,
-                imageUrl = imageUrl,
-            )
+        ChatItemDirection.Sent -> {
+            if (chatMessage == null && image != null) {
+                ChatItemData.Message.ImageSent(image)
+            } else if (chatMessage?.isOnlyEmoji() == true) {
+                ChatItemData.Message.EmojiSent(message = chatMessage)
+            } else {
+                ChatItemData.Message.TextSent(
+                    message = chatMessage ?: "INGEN TEKST CLAUS DIN IDIOT",
+                    imageUrl = imageUrl,
+                )
+            }
         }
 
-        is ChatItemDirection.Received -> if (chatMessage.isOnlyEmoji()) {
-            ChatItemData.Message.EmojiReceived(
-                messageText = chatMessage,
-                senderAvatar = null,
-                senderName = senderName.orEmpty(),
-            )
-        } else {
-            ChatItemData.Message.TextReceived(
-                messageText = chatMessage,
-                senderAvatar = null, // TODO Remove ?
-                senderName = senderName.orEmpty(),
-                imageUrl = imageUrl,
-            )
+        is ChatItemDirection.Received -> {
+            if (chatMessage == null && image != null) {
+                ChatItemData.Message.ImageReceived(
+                    imageUrl = image,
+                    senderAvatar = chatDirection.avatar,
+                    senderName = chatDirection.senderName
+                )
+            } else if (chatMessage?.isOnlyEmoji() == true) {
+                ChatItemData.Message.EmojiReceived(
+                    message = chatMessage,
+                    senderAvatar = chatDirection.avatar,
+                    senderName = chatDirection.senderName,
+                )
+            } else {
+                ChatItemData.Message.TextReceived(
+                    message = chatMessage!!,
+                    senderAvatar = chatDirection.avatar,
+                    senderName = chatDirection.senderName,
+                    imageUrl = imageUrl,
+                )
+            }
         }
     }
 }

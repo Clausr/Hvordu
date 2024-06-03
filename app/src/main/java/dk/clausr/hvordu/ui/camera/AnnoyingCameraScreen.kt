@@ -170,7 +170,6 @@ fun AnnoyingCameraScreen(
             ) {
                 Text(
                     text = "⬇️ Look down! ⬇️",
-//                    text = "Roll: $roll - Pitch: $pitch",
                     color = MaterialTheme.colorScheme.background
                 )
             }
