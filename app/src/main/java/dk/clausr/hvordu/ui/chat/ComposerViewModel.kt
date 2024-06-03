@@ -29,8 +29,6 @@ class ComposerViewModel @Inject constructor(
     sealed interface KeyboardState {
         data object Shown : KeyboardState
         data object Hidden : KeyboardState
-
-        //        data object InTransit : KeyboardState
         data object KeyboardHeight : KeyboardState
     }
 }

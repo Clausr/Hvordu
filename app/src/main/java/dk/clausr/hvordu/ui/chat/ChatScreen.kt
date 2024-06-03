@@ -37,7 +37,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.currentStateAsState
 import dk.clausr.hvordu.repo.domain.Message
@@ -65,14 +64,14 @@ fun ChatRoute(
     LaunchedEffect(lifecycleState) {
         Timber.d("Lifecycle state $lifecycleState")
         when (lifecycleState) {
-            Lifecycle.State.CREATED -> chatViewModel.connectToRealtime()
+//            Lifecycle.State.CREATED -> chatViewModel.connectToRealtime()
             else -> Unit
         }
     }
 
-    LaunchedEffect(Unit) {
-        chatViewModel.connectToRealtime()
-    }
+//    LaunchedEffect(Unit) {
+//        chatViewModel.connectToRealtime()
+//    }
 
     ChatScreen(
         modifier = modifier,

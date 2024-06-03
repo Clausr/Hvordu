@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MessageDto(
     val id: String,
-    val content: String,
+    val content: String?,
     @SerialName("profile_id")
     val profileId: String,
     @SerialName("created_at")

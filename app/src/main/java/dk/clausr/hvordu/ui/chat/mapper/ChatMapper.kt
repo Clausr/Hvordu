@@ -14,27 +14,28 @@ fun Message.mapToChatItem(): ChatItemData {
         Message.Direction.Out -> ChatItemDirection.Sent
     }
 
-    if (content.isBlank()) ChatItemData.Empty
+    val chatMessage = content
+    if (chatMessage.isNullOrBlank()) return ChatItemData.Empty
 
     return when (chatDirection) {
-        ChatItemDirection.Sent -> if (content.isOnlyEmoji()) {
-            ChatItemData.Message.EmojiSent(messageText = content)
+        ChatItemDirection.Sent -> if (chatMessage.isOnlyEmoji()) {
+            ChatItemData.Message.EmojiSent(messageText = chatMessage)
         } else {
             ChatItemData.Message.TextSent(
-                messageText = content,
+                messageText = chatMessage,
                 imageUrl = imageUrl,
             )
         }
 
-        is ChatItemDirection.Received -> if (content.isOnlyEmoji()) {
+        is ChatItemDirection.Received -> if (chatMessage.isOnlyEmoji()) {
             ChatItemData.Message.EmojiReceived(
-                messageText = content,
+                messageText = chatMessage,
                 senderAvatar = null,
                 senderName = senderName.orEmpty(),
             )
         } else {
             ChatItemData.Message.TextReceived(
-                messageText = content,
+                messageText = chatMessage,
                 senderAvatar = null, // TODO Remove ?
                 senderName = senderName.orEmpty(),
                 imageUrl = imageUrl,

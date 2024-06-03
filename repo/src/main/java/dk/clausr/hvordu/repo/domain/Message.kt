@@ -5,7 +5,7 @@ import kotlinx.datetime.Instant
 
 data class Message(
     val id: String,
-    val content: String,
+    val content: String?,
     val creatorId: String,
     val createdAt: Instant,
     val senderName: String?,

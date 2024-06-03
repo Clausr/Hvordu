@@ -48,7 +48,7 @@ class NotificationsPresenter @Inject constructor(
         chatRoomName: String?,
     ) {
         val intent = messagePendingIntent(chatRoomId, chatRoomName)
-        Timber.d("Show notification: $title - $contentText .. intent $intent")
+        Timber.d("Show notification: $title - $contentText .. intent ${intent?.describeContents()}")
         val loader = ImageLoader(context)
         val imageRequest = imageUrl?.let {
             val (bucket, url) = it.split(("/"))
@@ -95,7 +95,7 @@ class NotificationsPresenter @Inject constructor(
             MESSAGE_NOTIFICATION_REQUEST_CODE,
             Intent().apply {
                 action = Intent.ACTION_VIEW
-                data = "$DEEP_LINK_SCHEME://chatroom/$chatRoomId?name=$chatRoomName".toUri()
+                data = "hvordu://chatroom/$chatRoomId?name=$chatRoomName".toUri()
                 component = ComponentName(
                     context.packageName,
                     "dk.clausr.hvordu.MainActivity"

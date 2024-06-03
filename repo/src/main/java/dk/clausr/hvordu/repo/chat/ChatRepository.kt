@@ -14,20 +14,18 @@ import dk.clausr.hvordu.repo.domain.toChatRoomOverview
 import dk.clausr.hvordu.repo.domain.toGroup
 import dk.clausr.hvordu.repo.domain.toMessage
 import io.github.jan.supabase.gotrue.Auth
-import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.postgrest.query.filter.FilterOperation
+import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import io.github.jan.supabase.realtime.RealtimeChannel
-import io.github.jan.supabase.realtime.decodeRecord
-import io.github.jan.supabase.realtime.postgresChangeFlow
+import io.github.jan.supabase.realtime.postgresListDataFlow
 import io.github.jan.supabase.storage.Storage
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
-import kotlinx.serialization.json.jsonPrimitive
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
@@ -44,81 +42,50 @@ class ChatRepository @Inject constructor(
     @ApplicationContext private val context: Context,
     @Dispatcher(Dispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
-    private val _messages = MutableStateFlow<List<Message>>(emptyList())
-    val chatMessages: Flow<List<Message>> = _messages
-
     private fun getProfileId() = auth.currentUserOrNull()?.id
 
-    suspend fun getMessages(chatRoomId: String): List<Message> =
-        withContext(ioDispatcher) {
-            // Get new messages
-            val remoteMessages =
-                retrieveMessages(
-                    chatRoomId = chatRoomId,
-                    profileId = getProfileId(),
-                ).getOrNull()
-
-            _messages.value = remoteMessages ?: emptyList()
-
-            remoteMessages ?: emptyList()
-        }
-
-    suspend fun connectToRealtime() {
-        if (realtimeChannel.status.value != RealtimeChannel.Status.SUBSCRIBED) {
-            realtimeChannel.postgresChangeFlow<PostgresAction>("public") {
-                table = "messages"
-            }.onEach {
-                when (it) {
-                    is PostgresAction.Delete -> _messages.value =
-                        _messages.value.filter { message -> message.id != it.oldRecord["id"]!!.jsonPrimitive.content }
-
-                    is PostgresAction.Insert -> {
-                        // Currently no join on realtime, so just get everything again
-                        Timber.d("Insert $it")
-                        val newInsert = it.decodeRecord<MessageDto>()
-                        getMessages(
-                            chatRoomId = newInsert.chatRoomId,
-                        )
-                        // TODO Maybe just query the messages matched by the new insert?
-//                        try {
-
-//                            _messages.value += newInsert
-//                                .toMessage(Message.Direction.map(username == newInsert.senderUsername))
-//                        } catch (e: Exception) {
-//                            Timber.e(e, "error decoding")
-//                        }
+    fun getMessagesForChatRoom(withId: String): Flow<List<Message>> =
+        realtimeChannel.postgresListDataFlow(
+            table = "messages",
+            primaryKey = MessageDto::id,
+            filter = FilterOperation(
+                column = "group_id",
+                operator = FilterOperator.EQ,
+                value = withId
+            )
+        )
+            .onStart { realtimeChannel.subscribe() }
+            .map { messagesDto ->
+                messagesDto.map { messageDto ->
+                    val imageUrl = messageDto.imageUrl?.let {
+                        val (bucket, url) = it.split(("/"))
+                        storage.from(bucket).publicUrl(url)
                     }
-
-                    is PostgresAction.Select -> error("Select should not be possible")
-                    is PostgresAction.Update -> error("Update should not be possible")
+                    messageDto.copy(imageUrl = imageUrl)
+                        .toMessage(
+                            Message.Direction.map(
+                                messageDto.profileId == getProfileId()
+                            )
+                        )
                 }
-            }.launchIn(CoroutineScope(ioDispatcher))
-        }
-        realtimeChannel.subscribe()
-    }
+            }
+            .onCompletion {
+                Timber.d("Unsubscribe")
+                realtimeChannel.unsubscribe()
+            }
+            .flowOn(ioDispatcher)
 
     suspend fun createMessage(
         chatRoomId: String,
         message: String,
         imageUrl: String?,
 
-    ) = withContext(ioDispatcher) {
+        ) = withContext(ioDispatcher) {
         kotlin.runCatching {
             messageApi.createMessage(
                 content = message,
                 groupId = chatRoomId,
                 imageUrl = imageUrl,
-            )
-        }.onSuccess {
-            _messages.value += Message(
-                id = UUID.randomUUID().toString(),
-                content = message,
-                creatorId = auth.currentUserOrNull()?.id ?: "me",
-                createdAt = Clock.System.now(),
-                senderName = "",
-                direction = Message.Direction.Out,
-                imageUrl = imageUrl,
-                profileId = auth.currentUserOrNull()?.id ?: "profileId"
             )
         }
             .onFailure {
@@ -131,26 +98,6 @@ class ChatRepository @Inject constructor(
             messageApi.deleteMessage(id)
         }.onFailure {
             Timber.e(it, "Error while deleting message")
-        }
-    }
-
-    private suspend fun retrieveMessages(
-        chatRoomId: String,
-        profileId: String?,
-    ) = withContext(ioDispatcher) {
-        kotlin.runCatching {
-            messageApi.retrieveMessages(chatRoomId)
-                .map {
-                    val imageUrl = it.imageUrl?.let {
-                        val (bucket, url) = it.split(("/"))
-                        storage.from(bucket).publicUrl(url)
-                    }
-
-                    it.copy(imageUrl = imageUrl)
-                        .toMessage(Message.Direction.map(it.profileId == profileId))
-                }
-        }.onFailure {
-            Timber.e(it, "Error while retrieving messages")
         }
     }
 

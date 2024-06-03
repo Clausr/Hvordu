@@ -9,12 +9,10 @@ import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dk.clausr.hvordu.repo.chat.ChatRepository
 import dk.clausr.hvordu.ui.chat.navigation.ChatArgs
-import dk.clausr.hvordu.ui.chat.navigation.ChatDestination
 import io.github.jan.supabase.realtime.RealtimeChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -40,14 +38,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    val messages = combine(
-        chatRepository.chatMessages,
-        savedStateHandle.getStateFlow(
-            ChatDestination.CHAT_ROOM_ID, "NO-ID"
-        )
-    ) { messages, roomId ->
-        chatRepository.getMessages(roomId)
-    }
+    val messages = chatRepository.getMessagesForChatRoom(chatArgs.chatRoomId)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -66,10 +57,6 @@ class ChatViewModel @Inject constructor(
 
     val connectionStatus = realtimeChannel.status
 
-    fun connectToRealtime() = viewModelScope.launch {
-        chatRepository.connectToRealtime()
-    }
-
     fun sendMessage(message: String) = viewModelScope.launch {
         val imageToSend = _imageUrl.value
         _imageUri.value = null
@@ -84,9 +71,9 @@ class ChatViewModel @Inject constructor(
 
     fun setImageUri(imageResult: Result<ImageCapture.OutputFileResults>) = viewModelScope.launch {
         val imageUri = imageResult.getOrNull()?.savedUri
-        _imageUri.value = imageUri
-
-        _imageUrl.value = imageUri?.let { chatRepository.uploadImage(it) }
+        _imageUrl.value = imageUri?.let {
+            chatRepository.uploadImage(it)
+        }
     }
 
     fun deleteImage() = viewModelScope.launch {

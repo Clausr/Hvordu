@@ -85,14 +85,10 @@ fun ChatComposer(
     val keyboardHeight = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding()
     LaunchedEffect(keyboardHeight) {
         Timber.d("keyboardHeightState $keyboardHeight -- state: $keyboardHeightState")
-//        if (keyboardHeightState is KeyboardHeightState.Known) {
         if (keyboardHeight.value != 0f) {
             viewModel.setKeyboardHeight(keyboardHeight.value)
         }
-//        }
     }
-
-    Timber.d("Keyboard height: $keyboardHeight - last $lastKeyboardHeight")
 
     ChatComposer(
         modifier = modifier,
@@ -223,9 +219,10 @@ private fun ChatComposer(
                         }
                     }
                 )
-                // TODO Preview image?
+
                 IconButton(
                     enabled = textField.text.isNotBlank(),
+//                    enabled = textField.text.isNotBlank() || imageTakenUri != null,
                     onClick = {
                         onSend()
                     },

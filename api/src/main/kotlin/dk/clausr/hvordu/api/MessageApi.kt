@@ -9,7 +9,7 @@ import kotlinx.serialization.json.put
 import javax.inject.Inject
 
 class MessageApi @Inject constructor(
-    private val client: SupabaseClient
+    client: SupabaseClient
 ) {
     private val table = client.postgrest["messages"]
 
@@ -21,7 +21,7 @@ class MessageApi @Inject constructor(
             .decodeList()
 
     suspend fun createMessage(
-        content: String,
+        content: String?,
         groupId: String,
         imageUrl: String?,
     ) {
