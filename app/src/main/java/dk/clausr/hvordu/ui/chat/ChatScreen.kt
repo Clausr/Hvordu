@@ -1,7 +1,5 @@
 package dk.clausr.hvordu.ui.chat
 
-import android.net.Uri
-import androidx.camera.core.ImageCapture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -52,21 +50,13 @@ fun ChatRoute(
     val messages by chatViewModel.messages.collectAsStateWithLifecycle()
     val status by chatViewModel.connectionStatus.collectAsStateWithLifecycle()
     val chatName by chatViewModel.chatName.collectAsState()
-    val imageUri by chatViewModel.imageUri.collectAsStateWithLifecycle(null)
 
     ChatScreen(
         modifier = modifier,
         chatName = chatName ?: "",
         messages = messages,
         connectionStatus = status,
-        onSendChat = {
-            chatViewModel.sendMessage(it)
-        },
-        pictureResult = {
-            chatViewModel.setImageUri(it)
-        },
-        imageUri = imageUri,
-        removeImage = { chatViewModel.deleteImage() },
+        onSendChat = chatViewModel::sendMessage,
         onBack = onBack,
     )
 }
@@ -77,10 +67,7 @@ fun ChatScreen(
     chatName: String,
     messages: List<Message>,
     connectionStatus: RealtimeChannel.Status,
-    onSendChat: (String) -> Unit,
-    pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
-    imageUri: Uri?,
-    removeImage: (Uri) -> Unit,
+    onSendChat: (message: String?, imageUrl: String?) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -131,9 +118,6 @@ fun ChatScreen(
             ChatComposer(
                 modifier = Modifier.onSizeChanged { bottomBarHeight = it.height },
                 onChatSent = onSendChat,
-                pictureResult = pictureResult,
-                imageUri = imageUri,
-                removeImage = { removeImage(it) },
             )
         },
         containerColor = MaterialTheme.colorScheme.background,

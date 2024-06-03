@@ -77,11 +77,11 @@ class ChatRepository @Inject constructor(
 
     suspend fun createMessage(
         chatRoomId: String,
-        message: String,
+        message: String?,
         imageUrl: String?,
-
-        ) = withContext(ioDispatcher) {
+    ) = withContext(ioDispatcher) {
         kotlin.runCatching {
+            if (message == null && imageUrl == null) throw IllegalStateException("Must have at least message or imageUrl")
             messageApi.createMessage(
                 content = message,
                 groupId = chatRoomId,

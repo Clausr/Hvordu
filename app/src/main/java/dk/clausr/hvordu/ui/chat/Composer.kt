@@ -2,6 +2,15 @@ package dk.clausr.hvordu.ui.chat
 
 import android.net.Uri
 import androidx.camera.core.ImageCapture
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +18,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imeAnimationTarget
@@ -18,8 +28,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -30,17 +41,22 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -60,15 +76,15 @@ import timber.log.Timber
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChatComposer(
-    onChatSent: (String) -> Unit,
+    onChatSent: (message: String?, imageUrl: String?) -> Unit,
     modifier: Modifier = Modifier,
-    pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
-    imageUri: Uri?,
-    removeImage: (Uri) -> Unit,
     viewModel: ComposerViewModel = hiltViewModel()
 ) {
     val keyboardHeightState by viewModel.keyboardHeightState.collectAsStateWithLifecycle()
 
+    val imageUri by viewModel.imageUri.collectAsState(null)
+    val imageUrl by viewModel.imageUrl.collectAsState(initial = null)
+    val isUploading by viewModel.uploading.collectAsState(initial = false)
     // Keyboard thingy
     val lastKeyboardHeight by remember(keyboardHeightState) {
         Timber.d("State height: $keyboardHeightState")
@@ -90,19 +106,26 @@ fun ChatComposer(
 
     ChatComposer(
         modifier = modifier,
-        onChatSent = onChatSent,
+        isUploading = isUploading,
+        onChatSent = { message ->
+            onChatSent.invoke(message, imageUrl)
+            viewModel.clearImage()
+        },
         keyboardHeight = lastKeyboardHeight,
-        pictureResult = pictureResult,
+        pictureResult = {
+            viewModel.setImageUri(it)
+        },
         imageTakenUri = imageUri,
         onRemoveImage = {
-            removeImage(it)
+            viewModel.deleteImage()
         }
     )
 }
 
 @Composable
 private fun ChatComposer(
-    onChatSent: (String) -> Unit,
+    isUploading: Boolean,
+    onChatSent: (message: String?) -> Unit,
     modifier: Modifier = Modifier,
     keyboardHeight: Dp = 300.dp,
     pictureResult: (Result<ImageCapture.OutputFileResults>) -> Unit,
@@ -156,24 +179,67 @@ private fun ChatComposer(
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
     ) {
         Column {
-            if (imageTakenUri != null) {
-                Box(
-                    modifier = Modifier
-                        .height(140.dp)
-                        .clip(RoundedCornerShape(10.dp)),
-                ) {
-                    AsyncImage(
-                        model = imageTakenUri,
-                        contentDescription = null,
-                    )
-                    IconButton(
-                        onClick = { onRemoveImage(imageTakenUri) },
-                        colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White)
+            val blurState by animateDpAsState(
+                targetValue = when (isUploading) {
+                    true -> 2.5.dp
+                    else -> 0.dp
+                },
+                label = "Blur state",
+                animationSpec = tween(durationMillis = 1000),
+            )
+
+            AnimatedContent(
+                targetState = imageTakenUri,
+                transitionSpec = {
+                    (fadeIn(animationSpec = tween(220, delayMillis = 90)) +
+                            slideInVertically(animationSpec = tween(220, delayMillis = 90)))
+                        .togetherWith(fadeOut(animationSpec = tween(90)) + slideOutVertically())
+                }) { imageUri ->
+                if (imageUri != null) {
+                    Box(
+                        modifier = Modifier
+                            .height(140.dp)
+                            .padding(horizontal = 16.dp)
+                            .clip(MaterialTheme.shapes.small),
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = null)
+                        AsyncImage(
+                            model = imageTakenUri,
+                            modifier = Modifier.blur(
+                                radiusX = blurState,
+                                radiusY = blurState,
+                                edgeTreatment = BlurredEdgeTreatment(MaterialTheme.shapes.small),
+                            ),
+                            colorFilter = if (isUploading) {
+                                ColorFilter.tint(
+                                    MaterialTheme.colorScheme.primaryContainer.copy(
+                                        alpha = 0.5f
+                                    ), blendMode = BlendMode.Multiply
+                                )
+                            } else null,
+                            contentDescription = null,
+                        )
+
+                        Crossfade(
+                            targetState = isUploading,
+                            label = "Crossfade actions",
+                            modifier = Modifier.fillMaxSize(),
+                        ) { uploading ->
+                            if (uploading) {
+                                CircularProgressIndicator()
+                            } else {
+                                IconButton(
+                                    modifier = Modifier.align(Alignment.TopEnd),
+                                    onClick = { onRemoveImage(imageUri) },
+                                    colors = IconButtonDefaults.iconButtonColors(contentColor = Color.White)
+                                ) {
+                                    Icon(Icons.Default.DeleteOutline, contentDescription = null)
+                                }
+                            }
+                        }
                     }
                 }
             }
+
             Row(
                 modifier = Modifier
                     .padding(8.dp),
@@ -219,7 +285,7 @@ private fun ChatComposer(
                 )
 
                 IconButton(
-                    enabled = textField.text.isNotBlank() || imageTakenUri != null,
+                    enabled = (textField.text.isNotBlank() || imageTakenUri != null) && !isUploading,
                     onClick = {
                         onSend()
                     },
@@ -265,6 +331,7 @@ private fun ChatComposer(
 private fun ComposerPreview() {
     HvorduTheme {
         ChatComposer(
+            isUploading = false,
             onChatSent = {},
             keyboardHeight = 300.dp,
             pictureResult = {},
