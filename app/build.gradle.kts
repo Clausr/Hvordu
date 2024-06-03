@@ -13,6 +13,11 @@ val keystorePropertiesFile = rootProject.file("signing/secrets.properties")
 val keystoreProperties = Properties()
 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
+fun getGitCommitCount(): Int {
+    val process = Runtime.getRuntime().exec("git rev-list --count HEAD")
+    return process.inputStream.bufferedReader().use { it.readText().trim().toInt() }
+}
+
 
 android {
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -21,7 +26,7 @@ android {
         applicationId = "dk.clausr.hvordu"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 3
+        versionCode = getGitCommitCount()
         versionName = "1.0"
 
         // Set value part
