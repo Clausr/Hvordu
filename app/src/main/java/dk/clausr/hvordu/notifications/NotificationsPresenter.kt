@@ -95,7 +95,7 @@ class NotificationsPresenter @Inject constructor(
             MESSAGE_NOTIFICATION_REQUEST_CODE,
             Intent().apply {
                 action = Intent.ACTION_VIEW
-                data = "$DEEP_LINK_SCHEME/chatroom/$chatRoomId?name=$chatRoomName".toUri()
+                data = "$DEEP_LINK_SCHEME://chatroom/$chatRoomId?name=$chatRoomName".toUri()
                 component = ComponentName(
                     context.packageName,
                     "dk.clausr.hvordu.MainActivity"
