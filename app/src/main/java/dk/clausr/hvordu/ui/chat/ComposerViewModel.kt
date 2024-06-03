@@ -28,7 +28,6 @@ class ComposerViewModel @Inject constructor(
     private val _uploading: MutableStateFlow<Boolean> = MutableStateFlow<Boolean>(false)
     val uploading: Flow<Boolean> = _uploading
 
-
     val keyboardHeightState = userRepository.getUserData().map { it.keyboardHeightState }
         .stateIn(
             scope = viewModelScope,

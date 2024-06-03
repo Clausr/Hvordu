@@ -32,6 +32,12 @@ class ProfileApi @Inject constructor(
         }.decodeSingleOrNull<ProfileDto>()
     }
 
+    suspend fun getProfiles(): List<ProfileDto> {
+        return table.select {
+
+        }.decodeList()
+    }
+
     private suspend fun createProfile(username: String): ProfileDto {
         return table.insert(InsertProfileUsernameDto(username)) { select() }
             .decodeSingle<ProfileDto>()
