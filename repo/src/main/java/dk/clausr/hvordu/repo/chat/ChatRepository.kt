@@ -22,7 +22,6 @@ import io.github.jan.supabase.realtime.postgresListDataFlow
 import io.github.jan.supabase.storage.Storage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -46,11 +45,11 @@ class ChatRepository @Inject constructor(
     @Dispatcher(Dispatchers.IO) private val ioDispatcher: CoroutineDispatcher,
 ) {
     private fun getProfileId() = auth.currentUserOrNull()?.id
-    private val _profiles = MutableStateFlow<Map<String, String>>(mapOf())
+    private val _profiles: MutableMap<String, String> = mutableMapOf()
 
     private suspend fun getProfiles() {
-        if (_profiles.value.isEmpty()) {
-            _profiles.value = profileApi.getProfiles().associate { it.id to it.username }
+        if (_profiles.isEmpty()) {
+            _profiles.putAll(profileApi.getProfiles().associate { it.id to it.username })
         }
     }
 
@@ -77,7 +76,7 @@ class ChatRepository @Inject constructor(
 
                     messageDto
                         .copy(imageUrl = imageUrl)
-                        .copy(senderUsername = _profiles.value[messageDto.profileId]) // Questionable solution...
+                        .copy(senderUsername = _profiles[messageDto.profileId]) // Questionable solution...
                         .toMessage(
                             Message.Direction.map(
                                 messageDto.profileId == getProfileId()
