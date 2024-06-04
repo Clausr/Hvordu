@@ -48,9 +48,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val newSignIn = intent.getBooleanExtra(/* name = */ NEW_SIGN_IN, /* defaultValue = */ false)
-
-        Timber.d("New Sign in? -> ${intent.toUri(0)}")
-//        Timber.d("New Sign in? -> $newSignIn")
+        Timber.d("New Sign in? -> $newSignIn")
 
         var uiState: MainActivityUiState by mutableStateOf(MainActivityUiState.Loading)
 

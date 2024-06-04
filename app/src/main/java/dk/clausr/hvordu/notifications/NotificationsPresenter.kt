@@ -45,9 +45,8 @@ class NotificationsPresenter @Inject constructor(
         notificationChannel: HvorduNotificationChannel,
         chatRoomId: String,
         imageUrl: String?,
-        chatRoomName: String?,
     ) {
-        val intent = messagePendingIntent(chatRoomId, chatRoomName)
+        val intent = messagePendingIntent(chatRoomId)
         Timber.d("Show notification: $title - $contentText .. intent ${intent?.describeContents()}")
         val loader = ImageLoader(context)
         val imageRequest = imageUrl?.let {
@@ -89,13 +88,13 @@ class NotificationsPresenter @Inject constructor(
             }
     }
 
-    private fun messagePendingIntent(chatRoomId: String, chatRoomName: String?): PendingIntent? =
+    private fun messagePendingIntent(chatRoomId: String): PendingIntent? =
         PendingIntent.getActivity(
             context,
             MESSAGE_NOTIFICATION_REQUEST_CODE,
             Intent().apply {
                 action = Intent.ACTION_VIEW
-                data = "hvordu://chatroom/$chatRoomId?name=$chatRoomName".toUri()
+                data = "hvordu://chatroom/$chatRoomId".toUri()
                 component = ComponentName(
                     context.packageName,
                     "dk.clausr.hvordu.MainActivity"

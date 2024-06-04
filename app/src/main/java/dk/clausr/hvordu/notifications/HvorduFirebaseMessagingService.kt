@@ -6,6 +6,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import dk.clausr.hvordu.R
 import dk.clausr.hvordu.repo.userdata.UserRepository
 import io.github.jan.supabase.gotrue.Auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -30,6 +33,9 @@ class HvorduFirebaseMessagingService : FirebaseMessagingService() {
         super.onNewToken(token)
 
         Timber.d("New firebase token: $token")
+        CoroutineScope(Dispatchers.IO).launch {
+            userRepository.setFcmToken(token)
+        }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -37,7 +43,6 @@ class HvorduFirebaseMessagingService : FirebaseMessagingService() {
 
         // Filter away notifications that were sent because of current user
         if (message.data["profile_id"] == auth.currentUserOrNull()?.id) return
-
 
         notificationsPresenter.showNotification(
             title = message.notification?.title ?: getString(R.string.app_name),
@@ -47,7 +52,6 @@ class HvorduFirebaseMessagingService : FirebaseMessagingService() {
             notificationChannel = HvorduNotificationChannel.ChatNotifications,
             chatRoomId = message.data["group_id"] ?: "No Id",
             imageUrl = message.data["image_url"],
-            chatRoomName = message.data["chat_room_name"],
         )
     }
 }
