@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,7 +25,7 @@ internal fun ChatMessage(
 ) {
     when (item) {
         is ChatItemData.Message.TextSent -> TextMessage(
-            modifier = Modifier.fillMaxWidth(0.75f),
+            modifier = Modifier.fillMaxWidth(0.8f),
             message = item.message,
             imageUrl = item.imageUrl,
             surfaceColor = MaterialTheme.colorScheme.primaryContainer,
@@ -106,8 +107,9 @@ private fun TextMessage(
 
             imageUrl?.let {
                 AsyncImage(
-                    modifier = modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     model = imageUrl,
+                    contentScale = ContentScale.FillWidth,
                     contentDescription = null
                 )
             }
